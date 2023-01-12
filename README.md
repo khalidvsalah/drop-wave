@@ -1,2 +1,1 @@
-# Ardor
 ### Lite JS Library.
