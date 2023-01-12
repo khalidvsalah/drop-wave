@@ -1,0 +1,21 @@
+{
+  "name": "ardorrr",
+  "version": "0.0.1",
+  "description": "Animation Library",
+  "main": "./src/index.js",
+  "author": "khalid_salah",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/khalidsalahh/Ardor"
+  },
+  "scripts": {
+    "build": "webpack --config webpack.build.js"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.12",
+    "@babel/preset-env": "^7.20.2",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1"
+  }
+}
