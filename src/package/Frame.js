@@ -44,6 +44,11 @@ class _F {
     this.play();
   }
 
+  kill(index) {
+    this.items[index].cb(this.elapsed);
+    this.items.splice(index, 1);
+  }
+
   play() {
     if (this.items.length === !1) return;
     window.requestAnimationFrame(this.update.bind(this));
