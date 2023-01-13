@@ -4,8 +4,15 @@ class _F {
   }
 
   push(o) {
-    this.items.push(o);
-    return this.items.length - 1;
+    if (Array.isArray(o)) {
+      return o.map((obj) => {
+        this.items.push(obj);
+        return this.items.length - 1;
+      });
+    } else if (typeof o === "object") {
+      this.items.push(o);
+      return this.items.length - 1;
+    }
   }
 
   update(t) {
@@ -17,17 +24,16 @@ class _F {
         }
       } else {
         if (this.items[i].d) {
-          const elapsed = (t - this.items[i].st) / this.items[i].d;
+          this.elapsed = (t - this.items[i].st) / this.items[i].d;
 
-          if (elapsed >= 1) {
-            this.items[i].cb(elapsed);
+          if (this.elapsed >= 1) {
+            this.items[i].cb(this.elapsed);
             if (this.items[i].completed) {
               this.items[i].completed();
             }
-
             this.items.splice(i, 1);
           } else {
-            this.items[i].cb(elapsed);
+            this.items[i].cb(this.elapsed);
           }
         } else {
           this.items[i].cb(t);
@@ -35,8 +41,7 @@ class _F {
       }
     }
 
-
-    this.play()
+    this.play();
   }
 
   play() {
