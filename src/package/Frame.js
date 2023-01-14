@@ -45,8 +45,17 @@ class _F {
   }
 
   kill(index) {
-    this.items[index].cb(this.elapsed);
-    this.items.splice(index, 1);
+    if (Array.isArray(index)) {
+      index.map((i) => {
+        this.items[i].cb(this.elapsed);
+        this.items.splice(i, 1);
+      });
+    } else if (typeof index === "number") {
+      this.items[index].cb(this.elapsed);
+      this.items.splice(index, 1);
+    } else {
+      console.error("You Need To Pass Array or Number");
+    }
   }
 
   play() {
