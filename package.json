@@ -12,6 +12,9 @@
   "scripts": {
     "build": "webpack --config webpack.build.js"
   },
+  "bugs": {
+    "url": "https://github.com/khalidsalahh/Ardor/issues"
+  },
   "devDependencies": {
     "@babel/core": "^7.20.12",
     "@babel/preset-env": "^7.20.2",
