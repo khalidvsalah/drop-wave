@@ -26,14 +26,15 @@ class _F {
         if (this.items[i].d) {
           this.elapsed = (t - this.items[i].st) / this.items[i].d;
 
-          if (this.elapsed >= 1) {
+          if (this.items[i].cb) {
             this.items[i].cb(this.elapsed);
+          }
+
+          if (this.elapsed >= 1) {
             if (this.items[i].completed) {
               this.items[i].completed();
             }
             this.items.splice(i, 1);
-          } else {
-            this.items[i].cb(this.elapsed);
           }
         } else {
           this.items[i].cb(t);
@@ -44,22 +45,26 @@ class _F {
     this.play();
   }
 
-  kill(index) {
-    if (Array.isArray(index)) {
-      index.map((i) => {
+  kill(n) {
+    if (Array.isArray(n)) {
+      n.map((i) => {
         this.items[i].cb(this.elapsed);
         this.items.splice(i, 1);
       });
-    } else if (typeof index === "number") {
-      this.items[index].cb(this.elapsed);
-      this.items.splice(index, 1);
+    } else if (typeof n === "number") {
+      this.items[n].cb(this.elapsed);
+      this.items.splice(n, 1);
     } else {
       console.error("You Need To Pass Array or Number");
     }
   }
 
   play() {
-    if (this.items.length === !1) return;
+    if (this.items.length === !1) {
+      this.on = false;
+      return;
+    }
+    this.on = true;
     window.requestAnimationFrame(this.update.bind(this));
   }
 }
