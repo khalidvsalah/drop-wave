@@ -12,6 +12,8 @@ class _F {
     } else if (typeof o === "object") {
       this.items.push(o);
       return this.items.length - 1;
+    } else {
+      console.error("Failed To Push Object");
     }
   }
 
