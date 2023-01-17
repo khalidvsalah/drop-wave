@@ -50,11 +50,15 @@ class _F {
   kill(n) {
     if (Array.isArray(n)) {
       n.map((i) => {
-        this.items[i].cb(this.elapsed);
+        if (this.items[i].cb) {
+          this.items[i].cb(this.elapsed);
+        }
         this.items.splice(i, 1);
       });
     } else if (typeof n === "number") {
-      this.items[n].cb(this.elapsed);
+      if (this.items[n].cb) {
+        this.items[n].cb(this.elapsed);
+      }
       this.items.splice(n, 1);
     } else {
       console.error("You Need To Pass Array or Number");
