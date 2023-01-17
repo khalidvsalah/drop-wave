@@ -25,7 +25,7 @@ class _F {
           this.items[i].start();
         }
       } else {
-        if (this.items[i].d) {
+        if (this.items[i].d || typeof this.items[i].d === "number") {
           this.elapsed = (t - this.items[i].st) / this.items[i].d;
 
           if (this.items[i].cb) {
