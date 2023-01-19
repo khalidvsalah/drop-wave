@@ -2,21 +2,22 @@ const path = require("path");
 
 module.exports = {
   entry: {
-    main: path.join(__dirname, "./src/index.js"),
+    main: path.join(__dirname, "./index.js"),
   },
   mode: "production",
   output: {
-    filename: "bundle.js",
-    path: path.resolve(__dirname, "core"),
-    publicPath: "/",
+    library: "Ardor",
+    filename: "ardor.js",
+    path: path.resolve(__dirname, "./"),
+    asyncChunks: true,
   },
   module: {
     rules: [
       {
-        test: /\.(js|mjs)$/,
+        test: /\.(js)$/,
         exclude: /node_modules/,
         loader: "babel-loader",
-      }
+      },
     ],
   },
 };
