@@ -3,46 +3,38 @@ class _R {
     this.cache = new Map();
   }
 
-  async xhr(u, p, m, t, c) {
-    if (!this.cache.get(u)) {
+  async xhr({ url, push, post, isText, compile }) {
+    if (!this.cache.get(url)) {
       try {
-        if(!c) {
-          const requst = new Request(u, {
+        var text;
+
+        if (compile) {
+          const requst = new Request(url, {
             headers: new Headers({
-              "Content-type": t
+              "Content-type": isText
                 ? "application/x-ww-form-urlencodeed"
                 : "text/html",
             }),
-            method: m ? "POST" : "GET",
+            method: post ? "POST" : "GET",
             mode: "cors",
           });
           const responed = await fetch(requst);
-          const text = t ? await responed.json() : await responed.text();
-  
-          p && window.history.pushState({}, "", u);
-  
-          const res = {
-            url: url.match(/(?:\w+:)?\/\/[^\/]+([^?#]+)/)[1],
-            data: text,
-            stored: false,
-          };
-          
-          this.cache.set(u, res);
-          return res;
-        } else {
-          p && window.history.pushState({}, "", u);
-  
-          const res = {
-            url: url.match(/(?:\w+:)?\/\/[^\/]+([^?#]+)/)[1],
-            data: "",
-            stored: false,
-          };
-
-          return res;
+          text = isText ? await responed.json() : await responed.text();
         }
 
-      } catch {
-        console.error("Failed To Get The Data");
+        push && window.history.pushState({}, "", url);
+        const match = url.match(/(?:\w+:)?\/\/[^\/]+([^?#]+)/);
+
+        const res = {
+          url: match ? match[1] : url,
+          data: compile ? text : "",
+          stored: false,
+        };
+
+        this.cache.set(url, res);
+        return res;
+      } catch (e) {
+        console.error("Failed To Get The Data", e.message);
       }
     } else {
       p && window.history.pushState({}, "", u);

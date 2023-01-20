@@ -1,9 +1,9 @@
-import _F from "./src/Frame";
-import _R from "./src/Route";
-import _C from "./src/Mount";
-import Delay from "./src/Delay";
-import { Ease, Clamp, Lerp } from "./src/Math";
-import { PrE } from "./src/Utils";
+import _F from "./src/Frame.js";
+import _R from "./src/Route.js";
+import _C from "./src/Mount.js";
+import Delay from "./src/Delay.js";
+import { Ease, Clamp, Lerp } from "./src/Math.js";
+import { PrE } from "./src/Utils.js";
 
 const Ardor = {
   _F,
