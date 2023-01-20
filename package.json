@@ -1,8 +1,8 @@
 {
   "name": "ardorrr",
-  "version": "0.0.1",
+  "version": "0.0.12",
   "description": "Animation Library",
-  "main": "./src/index.js",
+  "main": "./index.js",
   "author": "khalid_salah",
   "license": "ISC",
   "repository": {

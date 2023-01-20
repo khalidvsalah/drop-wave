@@ -1,9 +1,9 @@
-import _F from "./src/Frame.js";
-import _R from "./src/Route.js";
-import _C from "./src/Mount.js";
-import Delay from "./src/Delay.js";
-import { Ease, Clamp, Lerp } from "./src/Math.js";
-import { PrE } from "./src/Utils.js";
+import _F from "./src/Frame";
+import _R from "./src/Route";
+import _C from "./src/Mount";
+import Delay from "./src/Delay";
+import { Ease, Clamp, Lerp } from "./src/Math";
+import { PrE } from "./src/Utils";
 
 const Ardor = {
   _F,
@@ -16,3 +16,5 @@ const Ardor = {
   PrE,
   Has: (o, p) => window.hasOwnProperty.call(o, p),
 };
+
+export default Ardor;
