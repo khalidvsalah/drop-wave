@@ -37,7 +37,7 @@ class _R {
         console.error("Failed To Get The Data", e.message);
       }
     } else {
-      p && window.history.pushState({}, "", u);
+      push && window.history.pushState({}, "", url);
       return { ...this.cache.get(url), stored: true };
     }
   }
