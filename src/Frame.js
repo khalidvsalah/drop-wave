@@ -1,3 +1,4 @@
+import Ardor from "../index.js";
 class _F {
   constructor() {
     this.items = [];
@@ -26,7 +27,11 @@ class _F {
         }
       } else {
         if (this.items[i].d || typeof this.items[i].d === "number") {
-          this.elapsed = (t - this.items[i].st) / this.items[i].d;
+          this.elapsed = Ardor.Clamp(
+            0,
+            1,
+            (t - this.items[i].st) / this.items[i].d
+          );
 
           if (this.items[i].cb) {
             this.items[i].cb(this.elapsed);
