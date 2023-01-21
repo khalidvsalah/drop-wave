@@ -1,18 +1,35 @@
 import Ardor from "../index.js";
 
 export default class Delay {
-  constructor({ delay, cb }) {
+  constructor({ delay, o }) {
     this.delay = delay;
-    this.cb = cb;
+    this.o = o;
+    this.played = false;
   }
 
   kill() {
+    if (!this.played) {
+      console.warn("You need to play it before kill it.");
+      return;
+    }
     Ardor._F.kill(this.index);
-    Ardor._F.push({ completed: this.cb, d: 0 });
+    this.elapsed();
   }
 
   play() {
-    this.index = Ardor._F.push({ completed: this.cb, d: this.delay });
+    this.played = true;
+    this.index = Ardor._F.push({
+      completed: this.elapsed.bind(this),
+      d: this.delay,
+    });
+    if (!Ardor._F.on) {
+      Ardor._F.play();
+    }
+  }
+
+  elapsed() {
+    Ardor._F.push(this.o);
+
     if (!Ardor._F.on) {
       Ardor._F.play();
     }
