@@ -1,5 +1,5 @@
 export const Ease = {
-  linear: (t) => t,
+  l: (t) => t,
   i1: (x) => 1 - Math.cos((x * Math.PI) / 2),
   o1: (x) => Math.sin((x * Math.PI) / 2),
   io1: (x) => -(Math.cos(Math.PI * x) - 1) / 2,
