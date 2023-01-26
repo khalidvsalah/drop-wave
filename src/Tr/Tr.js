@@ -1,5 +1,5 @@
-import A from "../index.js";
-import props from "./props/props.js";
+import A from "../../index.js";
+import props from "./props.js";
 
 function checkElement(element, o) {
   if (!element || !o) return;
@@ -12,6 +12,21 @@ function checkElement(element, o) {
     }
   } else if (element instanceof window.HTMLElement) {
     this.selector.push(element);
+  }
+}
+
+function checkProps() {
+  this.pRe = [];
+
+  if (A.Has(this.ph, "x") || A.Has(this.ph, "y")) {
+    var x = A.Has(this.ph, "x") && this.ph["x"];
+    var y = A.Has(this.ph, "y") && this.ph["y"];
+    this.pRe.push({ name: "transform", cb: props["transform"](x, y) });
+  }
+
+  if (A.Has(this.ph, "opacity")) {
+    var o = this.ph["opacity"];
+    this.pRe.push({ name: "opacity", cb: props["opacity"](o) });
   }
 }
 
@@ -37,22 +52,11 @@ class Tr {
     this.keys = Object.keys(o.p);
     this.ps = [];
 
-    this.toward();
+    checkProps.call(this);
   }
 
-  toward() {
-    this.pRe = [];
-
-    if (A.Has(this.ph, "x") || A.Has(this.ph, "y")) {
-      var x = A.Has(this.ph, "x") && this.ph["x"];
-      var y = A.Has(this.ph, "y") && this.ph["y"];
-      this.pRe.push({ name: "transform", cb: props["transform"](x, y) });
-    }
-
-    if (A.Has(this.ph, "opacity")) {
-      var o = this.ph["opacity"];
-      this.pRe.push({ name: "opacity", cb: props["opacity"](o) });
-    }
+  set(element, o) {
+    checkElement.call(this, element, o);
   }
 
   run(t) {
