@@ -1,23 +1,28 @@
 import A from "../index.js";
 import props from "./props/props.js";
 
+function checkElement(element, o) {
+  if (!element || !o) return;
+  if (typeof element === "string") {
+    var els = document.querySelectorAll(element);
+    if (els.length === 0) {
+      console.error("Found no element");
+    } else {
+      this.selector = new Array(...els);
+    }
+  } else if (element instanceof window.HTMLElement) {
+    this.selector.push(element);
+  }
+}
+
 class Tr {
   constructor() {
     this.selector = [];
+    this.tl = [];
   }
 
   to(element, o) {
-    if (!element || !o) return;
-    if (typeof element === "string") {
-      var els = document.querySelectorAll(element);
-      if (els.length === 0) {
-        console.error("Found no element");
-      } else {
-        this.selector = new Array(...els);
-      }
-    } else if (element instanceof window.HTMLElement) {
-      this.selector.push(element);
-    }
+    checkElement.call(this, element, o);
 
     var ob = {
       cb: this.run.bind(this),
@@ -50,12 +55,6 @@ class Tr {
     }
   }
 
-  // reverse() {}
-
-  play() {
-    this.delay.play();
-  }
-
   run(t) {
     var e = this.ease(t);
 
@@ -64,6 +63,10 @@ class Tr {
         s.style[p.name] = p.cb(e);
       });
     });
+  }
+
+  play() {
+    this.delay.play();
   }
 }
 
