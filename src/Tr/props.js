@@ -34,6 +34,9 @@ const props = {
   pointer: (e) => {
     return () => e;
   },
+  display: (e) => {
+    return () => e;
+  },
 };
 
 export default props;

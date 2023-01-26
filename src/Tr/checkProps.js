@@ -19,4 +19,9 @@ export default function checkProps() {
     var o = this.props["pointer"];
     this.results.push({ name: "pointerEvents", cb: props["pointer"](o) });
   }
+
+  if (A.Has(this.props, "display")) {
+    var o = this.props["display"];
+    this.results.push({ name: "display", cb: props["display"](o) });
+  }
 }
