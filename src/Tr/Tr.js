@@ -28,6 +28,19 @@ class Tr {
 
   set(element, o) {
     checkElement.call(this, element, o);
+
+    var cbO = {
+      cb: this.run.bind(this),
+    };
+
+    this.delay = new A.Delay({ delay: 0, o: cbO });
+    this.ease = A.Ease["l"];
+
+    this.props = o.p;
+    this.keys = Object.keys(o.p);
+
+    checkProps.call(this);
+    this.play();
   }
 
   run(t) {
