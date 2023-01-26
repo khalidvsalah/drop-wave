@@ -2,7 +2,7 @@ import _F from "./src/Frame.js";
 import _R from "./src/Route.js";
 import _C from "./src/Mount.js";
 import Delay from "./src/Delay.js";
-import Tr from "./src/Tr/Tr.js";
+import Tr from "./src/TL/TL.js";
 import { Ease, Clamp, Lerp } from "./src/Math.js";
 import { PrE } from "./src/Utils.js";
 

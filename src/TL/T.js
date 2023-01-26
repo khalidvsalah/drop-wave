@@ -2,26 +2,29 @@ import A from "../../index.js";
 import checkElement from "./Element.js";
 import checkProps from "./checkProps.js";
 
-class Tr {
-  constructor() {
+export default class T {
+  constructor(element, o) {
+    this.element = element;
+    this.o = o;
     this.selector = [];
-    this.tl = [];
+    this.to();
   }
 
-  to(element, o) {
-    if (!checkElement.call(this, element, o)) return;
+  to() {
+    if (!checkElement.call(this, this.element, this.o)) return;
 
-    var cbO = {
+    this.d = this.o.d ? this.o.d : 500;
+    this.cbO = {
       cb: this.run.bind(this),
-      d: o.d ? o.d : 500,
+      d: this.d,
     };
 
-    var del = o.delay ? o.delay : 0;
-    this.delay = new A.Delay({ delay: del, o: cbO });
-    this.ease = o.ease ? A.Ease[o.ease] : A.Ease["l"];
+    this.del = this.o.delay ? this.o.delay : 0;
+    this.delay = new A.Delay({ delay: this.del, o: this.cbO });
+    this.ease = this.o.ease ? A.Ease[this.o.ease] : A.Ease["l"];
 
-    this.props = o.p;
-    this.keys = Object.keys(o.p);
+    this.props = this.o.p;
+    this.keys = Object.keys(this.props);
 
     checkProps.call(this);
   }
@@ -57,5 +60,3 @@ class Tr {
     this.delay.play();
   }
 }
-
-export default Tr;
