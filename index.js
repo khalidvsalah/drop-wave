@@ -2,6 +2,7 @@ import _F from "./src/Frame.js";
 import _R from "./src/Route.js";
 import _C from "./src/Mount.js";
 import Delay from "./src/Delay.js";
+import Tr from "./src/Tr.js";
 import { Ease, Clamp, Lerp } from "./src/Math.js";
 import { PrE } from "./src/Utils.js";
 
@@ -13,6 +14,7 @@ const Ardor = {
   Clamp,
   Lerp,
   Delay,
+  Tr,
   PrE,
   Has: (o, p) => window.hasOwnProperty.call(o, p),
 };
