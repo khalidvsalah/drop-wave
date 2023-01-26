@@ -31,6 +31,9 @@ const props = {
   opacity: (o) => {
     return (e) => `${o[1] * e}`;
   },
+  pointer: (e) => {
+    return () => e;
+  },
 };
 
 export default props;
