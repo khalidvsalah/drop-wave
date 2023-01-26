@@ -43,8 +43,11 @@ class _F {
             }
             this.items.splice(i, 1);
           }
-        } else {
+        } else if (this.items[i].d === -1) {
           this.items[i].cb(t);
+        } else {
+          this.items[i].cb(1);
+          this.items.splice(i, 1);
         }
       }
     }
