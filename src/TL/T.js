@@ -24,6 +24,7 @@ export default class T {
     this.cbO = {
       cb: this.run.bind(this),
       d: this.d,
+      completed: this.o.completed,
     };
 
     this.del = this.o.delay ? this.o.delay : 0;
