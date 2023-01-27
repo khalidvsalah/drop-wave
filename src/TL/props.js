@@ -1,40 +1,56 @@
 const props = {
-  transform: (x, y) => {
-    var xV = {
-      start: x[0],
-      end: x[1],
-      unit: x[2] ? x[2] : "%",
-      lerp: x[1] - x[0],
-    };
+  transform: (x, y, n) => {
+    var xV, yV;
+    var t = n.transform;
+    var tR = t !== "none" && t.match(/\((.+)\)$/)[1].split(", ");
 
-    var yV = {
-      start: y[0],
-      end: y[1],
-      unit: y[2] ? y[2] : "%",
-      lerp: y[1] - y[0],
-    };
+    if (tR) {
+      xV = {
+        s: +tR[4],
+        e: x ? x[1] : 0,
+      };
 
-    if (x && y) {
+      yV = {
+        s: +tR[5],
+        e: y ? y[1] : 0,
+      };
+    } else {
+      xV = {
+        s: x[0],
+        e: x[1],
+      };
+      yV = {
+        s: y[0],
+        e: y[1],
+      };
+    }
+
+    xV.lerp = xV.e - xV.s;
+    yV.lerp = yV.e - yV.s;
+    xV.unit = x[2] ? x[2] : "px";
+    yV.unit = y[2] ? y[2] : "px";
+
+    if ((x && y) || tR) {
       return (e) =>
         `translate3d(
-          ${xV.start + xV.lerp * e}${xV.unit}, 
-          ${yV.start + yV.lerp * e}${yV.unit},
+          ${xV.s + xV.lerp * e}${xV.unit}, 
+          ${yV.s + yV.lerp * e}${yV.unit},
           0)`;
     } else {
       if (x) {
-        return (e) => `translateX(${xV.start + xV.lerp * e}${xV.unit})`;
+        return (e) => `translateX(${xV.s + xV.lerp * e}${xV.unit})`;
       } else if (y) {
-        return (e) => `translateY(${yV.start + yV.lerp * e}${yV.unit})`;
+        return (e) => `translateY(${yV.s + yV.lerp * e}${yV.unit})`;
       }
     }
   },
   opacity: (o) => {
     var oV = {
-      start: o[0],
+      s: o[0],
       end: o[1],
       lerp: o[1] - o[0],
     };
-    return (e) => `${oV.start + oV.lerp * e}`;
+    return (e) => `${oV.s + oV.lerp * e}`;
   },
   pointer: (e) => {
     return () => e;
