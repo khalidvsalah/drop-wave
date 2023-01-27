@@ -29,7 +29,13 @@ const props = {
     }
   },
   opacity: (o) => {
-    return (e) => `${o[1] * e}`;
+    var oV = {
+      start: o[0],
+      end: o[1],
+      lerp: o[1] - o[0],
+    };
+    console.log(oV.lerp);
+    return (e) => `${oV.start + oV.lerp * e}`;
   },
   pointer: (e) => {
     return () => e;
