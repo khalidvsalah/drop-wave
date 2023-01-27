@@ -4,6 +4,13 @@ import checkProps from "./checkProps.js";
 
 export default class T {
   constructor(element, o) {
+    if (!element || !o) {
+      console.error(
+        !element ? "You need to pass Element" : "You need to pass Object"
+      );
+      return;
+    }
+
     this.element = element;
     this.o = o;
     this.selector = [];
@@ -11,7 +18,7 @@ export default class T {
   }
 
   to() {
-    if (!checkElement.call(this, this.element, this.o)) return;
+    checkElement.call(this, this.element);
 
     this.d = this.o.d ? this.o.d : 500;
     this.cbO = {

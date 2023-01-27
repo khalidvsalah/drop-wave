@@ -1,8 +1,4 @@
-export default function checkElement(element, o) {
-  if (!element || !o) {
-    return false;
-  }
-
+export default function checkElement(element) {
   if (typeof element === "string") {
     var els = document.querySelectorAll(element);
     if (els.length === 0) {
@@ -13,6 +9,4 @@ export default function checkElement(element, o) {
   } else if (element instanceof window.HTMLElement) {
     this.selector.push(element);
   }
-
-  return true;
 }
