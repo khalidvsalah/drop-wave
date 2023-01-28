@@ -33,13 +33,11 @@ const props = {
     yV.lerp = yV.e - yV.s;
 
     if ((x && y) || tR) {
-      return (e) => {
-        console.log(yV.e, yV.lerp);
-        return `translate3d(
+      return (e) =>
+        `translate3d(
           ${xV.s + xV.lerp * e}${xV.unit}, 
           ${yV.s + yV.lerp * e}${yV.unit},
           0)`;
-      };
     } else {
       if (x) {
         return (e) => `translateX(${xV.s + xV.lerp * e}${xV.unit})`;
@@ -48,12 +46,12 @@ const props = {
       }
     }
   },
-  opacity: (o) => {
+  opacity: (o, n) => {
     var oV = {
-      s: o[0],
+      s: n.opacity,
       end: o[1],
-      lerp: o[1] - o[0],
     };
+    oV.lerp = oV.e - oV.s;
     return (e) => `${oV.s + oV.lerp * e}`;
   },
   pointer: (e) => {
