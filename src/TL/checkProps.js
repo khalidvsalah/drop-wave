@@ -3,7 +3,7 @@ import props from "./props.js";
 
 export default function checkProps() {
   this.results = [];
-  var n = window.getComputedStyle(this.selector[0]);
+  var n = window.getComputedStyle(this.element);
 
   if (A.Has(this.props, "x") || A.Has(this.props, "y")) {
     var x = A.Has(this.props, "x") && this.props["x"];
