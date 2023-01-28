@@ -1,25 +1,14 @@
 import A from "../../index.js";
-import checkElement from "./Element.js";
 import checkProps from "./checkProps.js";
 
 export default class T {
   constructor(element, o) {
-    if (!element || !o) {
-      console.error(
-        !element ? "You need to pass Element" : "You need to pass Object"
-      );
-      return;
-    }
-
     this.element = element;
     this.o = o;
-    this.selector = [];
     this.to();
   }
 
   to() {
-    checkElement.call(this, this.element);
-
     this.d = this.o.d ? this.o.d : 500;
     this.cbO = {
       cb: this.run.bind(this),
@@ -58,9 +47,7 @@ export default class T {
     var e = this.ease(t);
 
     this.results.map((p) => {
-      this.selector.map((s) => {
-        s.style[p.name] = p.cb(e);
-      });
+      this.element.style[p.name] = p.cb(e);
     });
   }
 
