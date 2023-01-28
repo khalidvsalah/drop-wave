@@ -1,26 +1,42 @@
 import T from "./T.js";
+import checkElement from "./Element.js";
+
+function push() {
+  var prevTime =
+    this.items.length &&
+    this.items[this.items.length - 1].d + this.items[this.items.length - 1].del;
+  var curTime = this.o.delay + this.time;
+
+  checkElement.call(this, this.element);
+
+  this.selector.map((ele) => {
+    this.items.push(
+      new T(ele, {
+        ...this.o,
+        delay: prevTime ? prevTime : curTime,
+      })
+    );
+  });
+}
 
 class TL {
   constructor() {
-    this.count = 0;
     this.items = [];
+    this.selector = [];
   }
 
   to(element, o, time = 0) {
-    if (this.count === 0) {
-      this.items.push(new T(element, o));
-    } else {
-      this.items.push(
-        new T(element, {
-          ...o,
-          delay:
-            this.items[this.count - 1].del +
-            this.items[this.count - 1].d +
-            time,
-        })
+    if (!element || !o) {
+      console.error(
+        !element ? "You need to pass Element" : "You need to pass Object"
       );
+      return;
     }
-    ++this.count;
+    this.element = element;
+    this.o = o;
+    this.time = time;
+
+    push.call(this);
   }
 
   play() {
