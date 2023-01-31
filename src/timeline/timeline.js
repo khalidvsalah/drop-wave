@@ -7,8 +7,6 @@ function push() {
     this.items[this.items.length - 1].d + this.items[this.items.length - 1].del;
   var curTime = this.o.delay + this.time;
 
-  checkElement.call(this, this.element);
-
   this.selector.map((ele) => {
     this.items.push(
       new T(ele, {
@@ -36,6 +34,7 @@ class TL {
     this.o = o;
     this.time = time;
 
+    checkElement.call(this, this.element);
     push.call(this);
   }
 
