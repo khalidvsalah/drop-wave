@@ -10,6 +10,8 @@ function checkElement(element) {
     }
   } else if (element instanceof window.HTMLElement) {
     result.push(element);
+  } else if (typeof element === "object") {
+    result.push(element);
   }
 
   return result;
