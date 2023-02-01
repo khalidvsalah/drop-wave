@@ -49,7 +49,7 @@ const props = {
   opacity: (o, n) => {
     var oV = {
       s: n.opacity,
-      end: o[1],
+      e: o[1],
     };
     oV.lerp = oV.e - oV.s;
     return (e) => `${oV.s + oV.lerp * e}`;

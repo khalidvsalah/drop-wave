@@ -1,7 +1,7 @@
 import T from "./T.js";
 import checkElement from "./Element.js";
 
-function push() {
+function push(w) {
   var prevTime =
     this.items.length &&
     this.items[this.items.length - 1].d + this.items[this.items.length - 1].del;
@@ -9,10 +9,14 @@ function push() {
 
   this.selector.map((ele) => {
     this.items.push(
-      new T(ele, {
-        ...this.o,
-        delay: prevTime ? prevTime : curTime,
-      })
+      new T(
+        ele,
+        {
+          ...this.o,
+          delay: prevTime ? prevTime : curTime,
+        },
+        w
+      )
     );
   });
 }
@@ -33,9 +37,16 @@ class TL {
     this.element = element;
     this.o = o;
     this.time = time;
-
     checkElement.call(this, this.element);
     push.call(this);
+  }
+
+  wTo(element, o, time = 0) {
+    this.element = element;
+    this.o = o;
+    this.time = time;
+    checkElement.call(this, this.element);
+    push.call(this, true);
   }
 
   play() {
