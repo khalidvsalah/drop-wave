@@ -18,13 +18,32 @@ function push(w) {
         w
       )
     );
+
+    this.store.set(ele, this.items[this.items.length - 1]);
   });
+}
+
+function initTL(element, o, time, w) {
+  this.element = element;
+  this.o = o;
+  this.time = time;
+  checkElement.call(this, this.element);
+  push.call(this, w);
 }
 
 class TL {
   constructor() {
     this.items = [];
     this.selector = [];
+    this.store = new WeakMap();
+  }
+
+  init(element, o, time, w) {
+    this.element = element;
+    this.o = o;
+    this.time = time;
+    checkElement.call(this, this.element);
+    push.call(this, w);
   }
 
   to(element, o, time = 0) {
@@ -34,19 +53,21 @@ class TL {
       );
       return;
     }
-    this.element = element;
-    this.o = o;
-    this.time = time;
-    checkElement.call(this, this.element);
-    push.call(this);
+    initTL.call(this, element, o, time, false);
   }
 
   wTo(element, o, time = 0) {
-    this.element = element;
-    this.o = o;
-    this.time = time;
-    checkElement.call(this, this.element);
-    push.call(this, true);
+    initTL.call(this, element, o, time, true);
+  }
+
+  kill(element) {
+    var es = [...document.querySelectorAll(element)];
+    es.map((e) => {
+      var er = this.store.get(e);
+      if (er) {
+        er.stop = true;
+      }
+    });
   }
 
   play() {
