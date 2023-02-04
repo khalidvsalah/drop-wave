@@ -7,14 +7,14 @@ export default class Delay {
     this.played = false;
   }
 
-  kill() {
-    if (!this.played) {
-      console.warn("You need to play it before kill it.");
-      return;
-    }
-    Ardor._F.kill(this.index);
-    this.elapsed();
-  }
+  // kill() {
+  //   if (!this.played) {
+  //     console.warn("You need to play it before kill it.");
+  //     return;
+  //   }
+  //   Ardor._F.kill(this.index);
+  //   this.elapsed();
+  // }
 
   play() {
     this.played = true;
