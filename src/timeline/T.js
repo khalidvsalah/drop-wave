@@ -4,6 +4,7 @@ import checkProps from "./checkProps.js";
 export default class T {
   constructor(element, o, w) {
     this.element = element;
+    this.stop = false;
     this.o = o;
     if (w) {
       this.wTo();
@@ -26,27 +27,12 @@ export default class T {
 
     this.props = this.o.p;
     this.keys = Object.keys(this.props);
-
     checkProps.call(this);
   }
 
   wTo() {
     this.w = true;
-    this.d = this.o.d ? this.o.d : 500;
-    this.cbO = {
-      cb: this.run.bind(this),
-      d: this.d,
-      completed: this.o.completed,
-    };
-
-    this.del = this.o.delay ? this.o.delay : 0;
-    this.delay = new A.Delay({ delay: this.del, o: this.cbO });
-    this.ease = this.o.ease ? A.Ease[this.o.ease] : A.Ease["l"];
-
-    this.props = this.o.p;
-    this.keys = Object.keys(this.props);
-
-    checkProps.call(this, true);
+    this.to();
   }
 
   set(element, o) {
@@ -67,6 +53,7 @@ export default class T {
   }
 
   run(t) {
+    if (this.stop) return;
     var e = this.ease(t);
 
     this.results.map((p) => {
