@@ -36,6 +36,7 @@ class _F {
           if (this.items[i].cb) {
             var rm = this.items[i].cb(this.elapsed);
             rm && this.items.splice(i, 1);
+            continue;
           }
 
           if (this.elapsed >= 1) {
@@ -43,6 +44,7 @@ class _F {
               this.items[i].completed();
             }
             this.items.splice(i, 1);
+            continue;
           }
         } else if (this.items[i].d === -1) {
           this.items[i].cb(t);
