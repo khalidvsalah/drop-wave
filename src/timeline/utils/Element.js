@@ -20,7 +20,9 @@ function checkElement(element) {
 
 export default function Element() {
   if (Array.isArray(this.element)) {
-    this.selector = [...this.selector, ...checkElement(e)];
+    this.element.map((e) => {
+      this.selector.push(checkElement(e));
+    });
   } else {
     this.selector.push(checkElement(this.element));
   }
