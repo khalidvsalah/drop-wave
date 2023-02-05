@@ -66,7 +66,6 @@ export default class T {
   }
 
   play() {
-    this.played = true;
     this.delay.play();
   }
 }

@@ -27,6 +27,7 @@ function initTL(element, o, time, w) {
   this.time = time;
   checkElement.call(this, this.element);
   push.call(this, w);
+
   this.store.set(element, this.items[this.items.length - 1]);
 }
 
@@ -65,10 +66,11 @@ class TL {
 
   play() {
     this.items.map((t) => {
-      if (!t.played) {
-        t.play();
-      }
+      t.play();
     });
+
+    this.items = [];
+    this.selector = [];
   }
 }
 
