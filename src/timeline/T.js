@@ -1,5 +1,5 @@
 import A from "../../index.js";
-import checkProps from "./checkProps.js";
+import checkProps from "./utils/checkProps.js";
 
 export default class T {
   constructor(element, o, w) {
@@ -53,9 +53,7 @@ export default class T {
   }
 
   run(t) {
-    if (this.stop) return;
     var e = this.ease(t);
-
     this.results.map((p) => {
       if (!this.w) {
         this.element.style[p.name] = p.cb(e);

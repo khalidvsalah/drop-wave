@@ -1,5 +1,5 @@
 import T from "./T.js";
-import checkElement from "./Element.js";
+import checkElement from "./utils/Element.js";
 
 function push(w) {
   var prevTime =
@@ -38,14 +38,6 @@ class TL {
     this.store = new WeakMap();
   }
 
-  init(element, o, time, w) {
-    this.element = element;
-    this.o = o;
-    this.time = time;
-    checkElement.call(this, this.element);
-    push.call(this, w);
-  }
-
   to(element, o, time = 0) {
     if (!element || !o) {
       console.error(
@@ -53,11 +45,12 @@ class TL {
       );
       return;
     }
-    initTL.call(this, element, o, time, false);
-  }
 
-  wTo(element, o, time = 0) {
-    initTL.call(this, element, o, time, true);
+    if (typeof element === "object" && !Array.isArray(element)) {
+      initTL.call(this, element, o, time, true);
+    } else {
+      initTL.call(this, element, o, time, false);
+    }
   }
 
   kill(element) {
