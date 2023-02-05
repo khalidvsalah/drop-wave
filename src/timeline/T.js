@@ -54,16 +54,19 @@ export default class T {
 
   run(t) {
     var e = this.ease(t);
-    this.results.map((p, i) => {
+    this.results.map((p) => {
       if (!this.w) {
         p.element.style[p.name] = p.cb(e);
       } else {
         this.elements[p.name] = p.cb(e);
       }
     });
+
+    return this.stop;
   }
 
   play() {
+    this.played = true;
     this.delay.play();
   }
 }
