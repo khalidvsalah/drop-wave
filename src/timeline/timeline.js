@@ -18,8 +18,6 @@ function push(w) {
         w
       )
     );
-
-    this.store.set(ele, this.items[this.items.length - 1]);
   });
 }
 
@@ -29,13 +27,14 @@ function initTL(element, o, time, w) {
   this.time = time;
   checkElement.call(this, this.element);
   push.call(this, w);
+  this.store.set(element, this.items[this.items.length - 1]);
 }
 
 class TL {
   constructor() {
     this.items = [];
     this.selector = [];
-    this.store = new WeakMap();
+    this.store = new Map();
   }
 
   to(element, o, time = 0) {
@@ -53,19 +52,22 @@ class TL {
     }
   }
 
-  // kill(element) {
-  //   var es = [...document.querySelectorAll(element)];
-  //   es.map((e) => {
-  //     var er = this.store.get(e);
-  //     if (er) {
-  //       er.stop = true;
-  //     }
-  //   });
-  // }
+  kill(s) {
+    if (!s) {
+      console.error("enter vailed element");
+    } else {
+      var ei = this.store.get(s);
+      if (ei) {
+        ei.stop = true;
+      }
+    }
+  }
 
   play() {
     this.items.map((t) => {
-      t.play();
+      if (!t.played) {
+        t.play();
+      }
     });
   }
 }
