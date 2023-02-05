@@ -53,15 +53,15 @@ class TL {
     }
   }
 
-  kill(element) {
-    var es = [...document.querySelectorAll(element)];
-    es.map((e) => {
-      var er = this.store.get(e);
-      if (er) {
-        er.stop = true;
-      }
-    });
-  }
+  // kill(element) {
+  //   var es = [...document.querySelectorAll(element)];
+  //   es.map((e) => {
+  //     var er = this.store.get(e);
+  //     if (er) {
+  //       er.stop = true;
+  //     }
+  //   });
+  // }
 
   play() {
     this.items.map((t) => {

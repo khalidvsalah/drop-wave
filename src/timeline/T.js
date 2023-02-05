@@ -3,7 +3,7 @@ import checkProps from "./utils/checkProps.js";
 
 export default class T {
   constructor(element, o, w) {
-    this.element = element;
+    this.elements = element;
     this.stop = false;
     this.o = o;
     if (w) {
@@ -54,11 +54,11 @@ export default class T {
 
   run(t) {
     var e = this.ease(t);
-    this.results.map((p) => {
+    this.results.map((p, i) => {
       if (!this.w) {
-        this.element.style[p.name] = p.cb(e);
+        p.element.style[p.name] = p.cb(e);
       } else {
-        this.element[p.name] = p.cb(e);
+        this.elements[p.name] = p.cb(e);
       }
     });
   }

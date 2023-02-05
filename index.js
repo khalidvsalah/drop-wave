@@ -1,7 +1,7 @@
-import _F from "./src/frame/Frame.js";
+import _F from "./src/timeline/frame/Frame.js";
 import _R from "./src/route/Route.js";
 import _C from "./src/mount/Mount.js";
-import Delay from "./src/delay/Delay.js";
+import Delay from "./src/timeline/delay/Delay.js";
 import TL from "./src/timeline/timeline.js";
 import { Ease, Clamp, Lerp } from "./src/utils/Math.js";
 import { PrE } from "./src/utils/Utils.js";

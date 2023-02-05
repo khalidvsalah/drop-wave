@@ -4,31 +4,45 @@ import props from "./props.js";
 export default function checkProps(w) {
   this.results = [];
   if (!w) {
-    var n = window.getComputedStyle(this.element);
+    var x, y, o, p, d;
+    x = A.Has(this.props, "x") && this.props["x"];
+    y = A.Has(this.props, "y") && this.props["y"];
+    o = A.Has(this.props, "opacity") && this.props["opacity"];
+    p = A.Has(this.props, "pointer") && this.props["pointer"];
+    d = A.Has(this.props, "display") && this.props["display"];
 
-    if (A.Has(this.props, "x") || A.Has(this.props, "y")) {
-      var x = A.Has(this.props, "x") && this.props["x"];
-      var y = A.Has(this.props, "y") && this.props["y"];
-      this.results.push({
-        name: "transform",
-        cb: props["transform"](x, y, n),
-      });
-    }
+    this.elements.map((e) => {
+      var n = window.getComputedStyle(e);
 
-    if (A.Has(this.props, "opacity")) {
-      var o = this.props["opacity"];
-      this.results.push({ name: "opacity", cb: props["opacity"](o, n) });
-    }
+      if (x || y) {
+        this.results.push({
+          name: "transform",
+          element: e,
+          cb: props["transform"](x, y, n),
+        });
+      }
 
-    if (A.Has(this.props, "pointer")) {
-      var o = this.props["pointer"];
-      this.results.push({ name: "pointerEvents", cb: props["pointer"](o) });
-    }
+      o &&
+        this.results.push({
+          name: "opacity",
+          element: e,
+          cb: props["opacity"](o, n),
+        });
 
-    if (A.Has(this.props, "display")) {
-      var o = this.props["display"];
-      this.results.push({ name: "display", cb: props["display"](o) });
-    }
+      p &&
+        this.results.push({
+          name: "pointerEvents",
+          element: e,
+          cb: props["pointer"](p),
+        });
+
+      d &&
+        this.results.push({
+          name: "display",
+          element: e,
+          cb: props["display"](d),
+        });
+    });
   } else {
     for (let i = 0; i < this.keys.length; i++) {
       var ks = this.keys[i];

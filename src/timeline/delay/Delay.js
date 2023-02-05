@@ -1,4 +1,4 @@
-import Ardor from "../../index.js";
+import Ardor from "../../../index.js";
 
 export default class Delay {
   constructor({ delay, o }) {

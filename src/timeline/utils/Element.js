@@ -3,6 +3,7 @@ function checkElement(element) {
 
   if (typeof element === "string") {
     var els = document.querySelectorAll(element);
+
     if (els.length === 0) {
       console.error("Found no element");
     } else {
@@ -19,10 +20,8 @@ function checkElement(element) {
 
 export default function Element() {
   if (Array.isArray(this.element)) {
-    this.element.map((e) => {
-      this.selector = [...this.selector, ...checkElement(e)];
-    });
+    this.selector = [...this.selector, ...checkElement(e)];
   } else {
-    this.selector = checkElement(this.element);
+    this.selector.push(checkElement(this.element));
   }
 }
