@@ -34,7 +34,8 @@ class _F {
           );
 
           if (this.items[i].cb) {
-            this.items[i].cb(this.elapsed);
+            var rm = this.items[i].cb(this.elapsed);
+            rm && this.items.splice(i, 1);
           }
 
           if (this.elapsed >= 1) {
