@@ -3,10 +3,16 @@ import props from "./props.js";
 
 export default function checkProps(w) {
   this.results = [];
+
   if (!w) {
-    var x, y, o, p, d;
+    var x, y, o, p, d, sx, sy;
+
     x = A.Has(this.props, "x") && this.props["x"];
     y = A.Has(this.props, "y") && this.props["y"];
+
+    sx = A.Has(this.props, "sx") && this.props["sx"];
+    sy = A.Has(this.props, "sy") && this.props["sy"];
+
     o = A.Has(this.props, "opacity") && this.props["opacity"];
     p = A.Has(this.props, "pointer") && this.props["pointer"];
     d = A.Has(this.props, "display") && this.props["display"];
@@ -18,7 +24,7 @@ export default function checkProps(w) {
         this.results.push({
           name: "transform",
           element: e,
-          cb: props["transform"](x, y, n),
+          cb: props["transform"](x, y, sx, sy, n),
         });
       }
 
