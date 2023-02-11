@@ -14,6 +14,7 @@ export default class T {
   }
 
   to() {
+    // console.log("TO");
     this.d = this.o.d ? this.o.d : 500;
     this.cbO = {
       cb: this.run.bind(this),
@@ -27,12 +28,13 @@ export default class T {
 
     this.props = this.o.p;
     this.keys = Object.keys(this.props);
-    checkProps.call(this);
+    checkProps.call(this, this.w);
   }
 
   wTo() {
     this.w = true;
     this.to();
+    // console.log(this.w);
   }
 
   set(element, o) {
@@ -55,10 +57,10 @@ export default class T {
   run(t) {
     var e = this.ease(t);
     this.results.map((p) => {
-      if (!this.w) {
-        p.element.style[p.name] = p.cb(e);
-      } else {
+      if (this.w) {
         this.elements[p.name] = p.cb(e);
+      } else {
+        p.element.style[p.name] = p.cb(e);
       }
     });
 

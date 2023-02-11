@@ -1,7 +1,21 @@
 import A from "../../../index.js";
 import props from "./props.js";
 
+function storeO() {
+  const store = new Map();
+
+  return (name, o) => {
+    if (o) {
+      return store.get(name);
+    } else {
+      store.set(name, o);
+    }
+  };
+}
+
 export default function checkProps(w) {
+  // var store = storeO()();
+  console.log(this.element);
   this.results = [];
 
   if (!w) {
