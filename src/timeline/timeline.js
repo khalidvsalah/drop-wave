@@ -34,11 +34,12 @@ function initTL(element, o, time, w) {
 class TL {
   constructor() {
     this.items = [];
-    this.selector = [];
     this.store = new Map();
   }
 
   to(element, o, time = 0) {
+    this.selector = [];
+
     if (!element || !o) {
       console.error(
         !element ? "You need to pass Element" : "You need to pass Object"

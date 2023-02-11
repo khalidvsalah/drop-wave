@@ -14,7 +14,6 @@ export default class T {
   }
 
   to() {
-    // console.log("TO");
     this.d = this.o.d ? this.o.d : 500;
     this.cbO = {
       cb: this.run.bind(this),
@@ -34,7 +33,6 @@ export default class T {
   wTo() {
     this.w = true;
     this.to();
-    // console.log(this.w);
   }
 
   set(element, o) {

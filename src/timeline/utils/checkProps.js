@@ -1,21 +1,8 @@
 import A from "../../../index.js";
 import props from "./props.js";
-
-function storeO() {
-  const store = new Map();
-
-  return (name, o) => {
-    if (o) {
-      return store.get(name);
-    } else {
-      store.set(name, o);
-    }
-  };
-}
+import StoreO from "../store/StoreO.js";
 
 export default function checkProps(w) {
-  // var store = storeO()();
-  console.log(this.element);
   this.results = [];
 
   if (!w) {
@@ -64,16 +51,18 @@ export default function checkProps(w) {
         });
     });
   } else {
+    var store = StoreO(this.elements[0]);
+
     for (let i = 0; i < this.keys.length; i++) {
       var ks = this.keys[i];
       this.results.push({
         name: ks,
         cb: (() => {
           var V = {
-            s: this.props[ks][0],
+            s: store ? store[ks][0] : this.props[ks][0],
             e: this.props[ks][1],
-            lerp: this.props[ks][1] - this.props[ks][0],
           };
+          V.lerp = this.props[ks][1] - this.props[ks][0];
 
           return (e) => V.s + V.lerp * e;
         })(),
