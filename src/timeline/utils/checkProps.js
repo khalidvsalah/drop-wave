@@ -52,6 +52,7 @@ export default function checkProps(w) {
     });
   } else {
     var store = StoreO(this.elements[0]);
+    this.elements[0];
 
     for (let i = 0; i < this.keys.length; i++) {
       var ks = this.keys[i];

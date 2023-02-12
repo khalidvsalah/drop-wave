@@ -4,6 +4,7 @@ import checkProps from "./utils/checkProps.js";
 export default class T {
   constructor(element, o, w) {
     this.elements = element;
+
     this.stop = false;
     this.o = o;
     if (w) {
@@ -56,7 +57,7 @@ export default class T {
     var e = this.ease(t);
     this.results.map((p) => {
       if (this.w) {
-        this.elements[p.name] = p.cb(e);
+        this.elements[0][p.name] = p.cb(e);
       } else {
         p.element.style[p.name] = p.cb(e);
       }
