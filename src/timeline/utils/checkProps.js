@@ -1,6 +1,5 @@
 import A from "../../../index.js";
 import props from "./props.js";
-import StoreO from "../store/StoreO.js";
 
 export default function checkProps(w) {
   this.results = [];
@@ -51,16 +50,15 @@ export default function checkProps(w) {
         });
     });
   } else {
-    var store = StoreO(this.elements[0]);
-    this.elements[0];
-
     for (let i = 0; i < this.keys.length; i++) {
       var ks = this.keys[i];
+      var sP = +this.elements[0][this.keys[i]];
+
       this.results.push({
         name: ks,
         cb: (() => {
           var V = {
-            s: store ? store[ks][0] : this.props[ks][0],
+            s: sP ? sP : this.props[ks][0],
             e: this.props[ks][1],
           };
           V.lerp = this.props[ks][1] - this.props[ks][0];
