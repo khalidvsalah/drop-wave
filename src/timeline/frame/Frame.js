@@ -26,7 +26,9 @@ class _F {
           this.items[i].start();
         }
       } else {
-        if (this.items[i].d || typeof this.items[i].d === "number") {
+        if (this.items[i].d === -1) {
+          this.items[i].cb(t);
+        } else if (this.items[i].d || typeof this.items[i].d === "number") {
           var time = (t - this.items[i].st) / this.items[i].d;
           this.elapsed = Ardor.Clamp(0, 1, time);
 
@@ -41,8 +43,6 @@ class _F {
             }
             this.items.splice(i, 1);
           }
-        } else if (this.items[i].d === -1) {
-          this.items[i].cb(t);
         } else {
           this.items[i].cb(1);
           this.items.splice(i, 1);
