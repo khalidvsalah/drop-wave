@@ -1,4 +1,4 @@
-import A from "../../index.js";
+import A from "../index.js";
 import checkProps from "./utils/checkProps.js";
 
 export default class T {

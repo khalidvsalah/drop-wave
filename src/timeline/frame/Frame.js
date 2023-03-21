@@ -1,4 +1,4 @@
-import Ardor from "../../../index.js";
+import Ardor from "../../index.js";
 class _F {
   constructor() {
     this.items = [];
