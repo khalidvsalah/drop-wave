@@ -1,5 +1,6 @@
-import A from "../index.js";
-import checkProps from "./utils/checkProps.js";
+import A from "../../../../index.js";
+import { Ease } from "../../../Math/Math.js";
+import checkProps from "../props/checkProps";
 
 export default class T {
   constructor(element, o, w) {
@@ -24,7 +25,7 @@ export default class T {
 
     this.del = this.o.delay ? this.o.delay : 0;
     this.delay = new A.Delay({ delay: this.del, o: this.cbO });
-    this.ease = this.o.ease ? A.Ease[this.o.ease] : A.Ease["l"];
+    this.ease = this.o.ease ? Ease[this.o.ease] : Ease["l"];
 
     this.props = this.o.p;
     this.keys = Object.keys(this.props);
@@ -44,7 +45,7 @@ export default class T {
     };
 
     this.delay = new A.Delay({ delay: 0, o: cbO });
-    this.ease = A.Ease["l"];
+    this.ease = Ease["l"];
 
     this.props = o.p;
     this.keys = Object.keys(o.p);
@@ -58,6 +59,7 @@ export default class T {
     this.results.map((p) => {
       if (this.w) {
         this.elements[0][p.name] = p.cb(e);
+        console.log(this.elements[0], p.name);
       } else {
         p.element.style[p.name] = p.cb(e);
       }

@@ -12,30 +12,31 @@ export default class Delay {
   //     console.warn("You need to play it before kill it.");
   //     return;
   //   }
-  //   Ardor._F.kill(this.index);
+  //   Ardor.Raf.kill(this.index);
   //   this.elapsed();
   // }
 
   play() {
     this.played = true;
-    this.index = Ardor._F.push({
+    console.log(this.played, "===");
+    this.index = Ardor.Raf.push({
       completed: this.elapsed.bind(this),
       d: this.delay,
     });
-    if (!Ardor._F.on) {
-      Ardor._F.play();
+    if (!Ardor.Raf.on) {
+      Ardor.Raf.play();
     }
   }
 
   elapsed() {
-    Ardor._F.push(this.o);
+    Ardor.Raf.push(this.o);
 
-    if (!Ardor._F.on) {
-      Ardor._F.play();
+    if (!Ardor.Raf.on) {
+      Ardor.Raf.play();
     }
   }
 
   remove() {
-    Ardor._F.kill(this.index);
+    Ardor.Raf.kill(this.index);
   }
 }

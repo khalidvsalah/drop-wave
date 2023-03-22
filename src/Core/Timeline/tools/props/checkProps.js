@@ -1,4 +1,4 @@
-import A from "../../index.js";
+import A from "../../../../index";
 import props from "./props.js";
 
 export default function checkProps(w) {

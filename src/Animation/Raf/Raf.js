@@ -1,4 +1,4 @@
-import Ardor from "../../index.js";
+import { Clamp } from "../../Core/Math/Math.js";
 class _F {
   constructor() {
     this.items = [];
@@ -30,7 +30,7 @@ class _F {
           this.items[i].cb(t);
         } else if (this.items[i].d || typeof this.items[i].d === "number") {
           var time = (t - this.items[i].st) / this.items[i].d;
-          this.elapsed = Ardor.Clamp(0, 1, time);
+          this.elapsed = Clamp(0, 1, time);
 
           if (this.items[i].cb) {
             var rm = this.items[i].cb(this.elapsed);
