@@ -21,7 +21,7 @@ function checkDir(dir) {
 
 module.exports = (o) => {
   checkDir(o.output);
-  compileJs(o.js.eslint);
+  o.mode && compileJs();
 
   conf.entry.plugins = plugins;
   conf.entry.input = o.src + o.js.entry;
@@ -30,6 +30,6 @@ module.exports = (o) => {
   conf.output.format = "esm";
 
   rollup.rollup(conf.entry).then((bundle) => {
-    bundle.write(conf.output);
+    bundle.write(conf.output).then(o.cb);
   });
 };
