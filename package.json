@@ -1,5 +1,5 @@
 {
-  "name": "ardorrr",
+  "name": "@kh/ardor",
   "version": "0.0.52",
   "description": "Animation Library",
   "main": "./src/index.js",
@@ -18,6 +18,8 @@
   "devDependencies": {
     "@babel/core": "^7.20.12",
     "@babel/preset-env": "^7.20.2",
+    "browser-sync": "^2.29.0",
+    "colors": "^1.4.0",
     "rollup": "^3.20.0",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-uglify": "^6.0.4"
