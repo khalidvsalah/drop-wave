@@ -3,12 +3,14 @@ import { Ease } from "../../../Math/Math.js";
 import checkProps from "../props/checkProps";
 
 export default class T {
-  constructor(element, o, w) {
+  constructor(element, o, obj) {
     this.elements = element;
 
     this.stop = false;
     this.o = o;
-    if (w) {
+    this.obj = obj;
+
+    if (obj) {
       this.wTo();
     } else {
       this.to();
@@ -29,11 +31,11 @@ export default class T {
 
     this.props = this.o.p;
     this.keys = Object.keys(this.props);
-    checkProps.call(this, this.w);
+    checkProps.call(this, this.obj);
   }
 
   wTo() {
-    this.w = true;
+    this.obj = true;
     this.to();
   }
 
@@ -57,9 +59,8 @@ export default class T {
   run(t) {
     var e = this.ease(t);
     this.results.map((p) => {
-      if (this.w) {
+      if (this.obj) {
         this.elements[0][p.name] = p.cb(e);
-        console.log(this.elements[0], p.name);
       } else {
         p.element.style[p.name] = p.cb(e);
       }

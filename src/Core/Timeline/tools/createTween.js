@@ -1,7 +1,7 @@
 import Tween from "./Tween/Tween.js";
 import checkElement from "./elements/checkEle";
 
-function pushTween(w) {
+function pushTween(obj) {
   var prevTime =
     this.items.length &&
     this.items[this.items.length - 1].d + this.items[this.items.length - 1].del;
@@ -15,27 +15,19 @@ function pushTween(w) {
           ...this.o,
           delay: prevTime ? prevTime : curTime,
         },
-        w
+        obj
       )
     );
   });
 }
 
 function createTween(element, o, time) {
-  var webgl = false;
+  var obj = false;
 
-  if (element instanceof HTMLElement) {
-    webgl = false;
-  } else if (Array.isArray(element)) {
-    element.map(() => {
-      if (element instanceof HTMLElement) {
-        webgl = false;
-      } else {
-        webgl = true;
-      }
-    });
+  if (typeof element === "object" && !Array.isArray(element)) {
+    obj = true;
   } else {
-    webgl = true;
+    obj = false;
   }
 
   this.element = element;
@@ -43,7 +35,7 @@ function createTween(element, o, time) {
   this.time = time;
 
   checkElement.call(this, this.element);
-  pushTween.call(this, webgl);
+  pushTween.call(this, obj);
 
   this.store.set(element, this.items[this.items.length - 1]);
 }

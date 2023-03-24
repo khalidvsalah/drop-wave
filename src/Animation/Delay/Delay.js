@@ -18,7 +18,6 @@ export default class Delay {
 
   play() {
     this.played = true;
-    console.log(this.played, "===");
     this.index = Ardor.Raf.push({
       completed: this.elapsed.bind(this),
       d: this.delay,
