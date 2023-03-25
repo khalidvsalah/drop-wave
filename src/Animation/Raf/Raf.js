@@ -28,7 +28,7 @@ class _F {
       } else {
         if (this.items[i].d === -1) {
           this.items[i].cb(t);
-        } else if (this.items[i].d || typeof this.items[i].d === "number") {
+        } else if (this.items[i].d > 0) {
           var time = (t - this.items[i].st) / this.items[i].d;
           this.elapsed = Clamp(0, 1, time);
 
@@ -37,15 +37,12 @@ class _F {
             rm && this.items.splice(i, 1);
           }
 
-          if (this.elapsed >= 1) {
+          if (this.elapsed === 1) {
             if (this.items[i].completed) {
               this.items[i].completed();
             }
             this.items.splice(i, 1);
           }
-        } else {
-          this.items[i].cb(1);
-          this.items.splice(i, 1);
         }
       }
     }
