@@ -1,4 +1,4 @@
-import Ardor from "../../index.js";
+import Raf from "../Raf/Raf.js";
 
 export default class Delay {
   constructor({ delay, o }) {
@@ -12,30 +12,30 @@ export default class Delay {
   //     console.warn("You need to play it before kill it.");
   //     return;
   //   }
-  //   Ardor.Raf.kill(this.index);
+  //   Raf.kill(this.index);
   //   this.elapsed();
   // }
 
   play() {
     this.played = true;
-    this.index = Ardor.Raf.push({
+    this.index = Raf.push({
       completed: this.elapsed.bind(this),
       d: this.delay,
     });
-    if (!Ardor.Raf.on) {
-      Ardor.Raf.play();
+    if (!Raf.on) {
+      Raf.play();
     }
   }
 
   elapsed() {
-    Ardor.Raf.push(this.o);
+    Raf.push(this.o);
 
-    if (!Ardor.Raf.on) {
-      Ardor.Raf.play();
+    if (!Raf.on) {
+      Raf.play();
     }
   }
 
   remove() {
-    Ardor.Raf.kill(this.index);
+    Raf.kill(this.index);
   }
 }
