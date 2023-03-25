@@ -21,12 +21,12 @@ export default class T {
     this.d = this.o.d ? this.o.d : 500;
     this.cbO = {
       cb: this.run.bind(this),
-      d: this.d,
+      d: this.d * 1000,
       completed: this.o.completed,
     };
 
     this.del = this.o.delay ? this.o.delay : 0;
-    this.delay = new A.Delay({ delay: this.del, o: this.cbO });
+    this.delay = new A.Delay({ delay: this.del * 1000, o: this.cbO });
     this.ease = this.o.ease ? Ease[this.o.ease] : Ease["l"];
 
     this.props = this.o.p;
