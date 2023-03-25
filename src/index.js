@@ -10,7 +10,7 @@ import Events from "./Dom/Events/Events";
 import { Round, Lerp, Clamp } from "./Core/Math/Math";
 
 const Has = (o, p) => window.hasOwnProperty.call(o, p);
-const ardor = {
+window.ardor = {
   Raf,
   Events,
   Delay,
