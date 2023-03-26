@@ -11,26 +11,39 @@ class Events {
   constructor() {
     this.id = -1;
     this.o = {
-      wheel: { items: {}, length: 0, o: false },
-      keydown: { items: {}, length: 0, o: false },
-      resize: { items: {}, length: 0, o: false },
-      mousedown: { items: {}, length: 0, o: false },
-      mouseleave: { items: {}, length: 0, o: false },
-      mousemove: { items: {}, length: 0, o: false },
+      wheel: { items: {}, o: false },
+      keydown: { items: {}, o: false },
+      resize: { items: {}, o: false },
+      mousedown: { items: {}, o: false },
+      mouseleave: { items: {}, o: false },
+      mousemove: { items: {}, o: false },
     };
   }
 
   subAdd(e, cb) {
+    if (!e || !cb) {
+      console.warn("You need to event type & id");
+      return;
+    }
     ++this.id;
-    this.o[e].items[this.id] = cb;
-    ++this.o[e].length;
+    var event = this.o[e];
+    event.items[this.id] = cb;
+
+    if (!event.fired) {
+      this.fire();
+    }
     return this.id;
   }
 
   subRemove(e, id) {
+    if (!id || !e) {
+      console.warn("You need to event type & id");
+      return;
+    }
     var ev = this.o[e];
-    --this.o[e].length;
-    delete ev.items[id];
+    if (ev.items[id]) {
+      delete ev.items[id];
+    }
   }
 
   add(ele, eType, cb, o = false) {
@@ -54,8 +67,10 @@ class Events {
     var props = Object.entries(this.o);
     for (let i = 0; i < props.length; i++) {
       var prop = props[i];
+      var items = Object.values(props[i][1].items);
 
-      if (prop[1].length) {
+      if (items.length && !prop[1].fired) {
+        prop[1].fired = true;
         window.addEventListener(prop[0], callCbs.bind(this), prop[1].o);
       }
     }
