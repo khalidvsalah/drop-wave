@@ -20,17 +20,25 @@ class Events {
     };
   }
 
-  add(e, cb) {
+  subAdd(e, cb) {
     ++this.id;
     this.o[e].items[this.id] = cb;
     ++this.o[e].length;
     return this.id;
   }
 
-  remove(e, id) {
+  subRemove(e, id) {
     var ev = this.o[e];
     --this.o[e].length;
     delete ev.items[id];
+  }
+
+  add(ele, eType, cb, o = false) {
+    ele.addEventListener(eType, cb, o);
+  }
+
+  remove(ele, eType, cb) {
+    ele.removeEventListener(eType, cb);
   }
 
   changeO(e, o = false) {
