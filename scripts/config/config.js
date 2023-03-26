@@ -1,6 +1,6 @@
 module.exports = {
   src: "src/",
-  dest: "./../package-test/dist/",
+  dest: "../package-test/dist/",
   js: {
     entry: "index.js",
     watch: [
@@ -11,4 +11,5 @@ module.exports = {
     ],
     dest: "main.js",
   },
+  mode: "DEV",
 };
