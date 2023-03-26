@@ -4,21 +4,23 @@ const esbuild = require("esbuild");
 const uglify = require("uglify-js");
 
 async function Bundle(dir, output, mode) {
-  await esbuild.build({
-    entryPoints: [dir],
+  var o = {
+    entryPoints: dir,
     bundle: true,
+    format: "esm",
     outfile: output,
-  });
+  };
+
+  await esbuild.build(o);
 
   var file = fs.readFileSync(output, "utf-8");
-  var src = await esbuild.transform(file, {
-    format: "",
-  });
-  file = uglify.minify(src.code).code;
-
-  fs.writeFileSync(output, mode ? file : src.code, "utf-8");
+  file = mode ? uglify.minify(file).code : file;
+  fs.writeFileSync(output, file, "utf-8");
 }
 
 module.exports = (o) => {
-  Bundle(o.src + o.js.entry, o.output + o.js.dest, o.mode).then(o.cb);
+  var entry = [o.src + o.js.entry];
+  var output = o.output + o.js.dest;
+
+  Bundle(entry, output, o.mode).then(o.cb);
 };
