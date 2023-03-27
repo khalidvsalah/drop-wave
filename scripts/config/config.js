@@ -1,8 +1,16 @@
 module.exports = {
   src: "src/",
-  dest: "../package-test/dist/",
+  dest: "dist/",
   js: {
-    entry: "index.js",
+    entry: [
+      "Animation/Raf/Raf.js",
+      "Animation/Delay/Delay.js",
+      "Core/Route/Route.js",
+      "Core/Timeline/Timeline.js",
+      "Dom/Mount/Mount.js",
+      "Dom/Events/Events.js",
+      "Core/Math/Math.js",
+    ],
     watch: [
       "src/index.js",
       "src/**/**/*",
@@ -11,5 +19,5 @@ module.exports = {
     ],
     dest: "main.js",
   },
-  mode: "DEV",
+  mode: "PROD",
 };
