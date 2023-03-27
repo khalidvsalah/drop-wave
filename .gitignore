@@ -1,8 +1,8 @@
 node_modules
 .eslintcache
 coverage
-./dist
 .sass-cache
 .DS_Store
 .env
 functions
+.gitignore
