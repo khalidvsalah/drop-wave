@@ -23,14 +23,14 @@ function create(element) {
       setProps(node, element.props);
     }
 
-    if (element.children) {
+    if (element.content) {
       if (
-        typeof element.children === "string" ||
-        typeof element.children === "number"
+        typeof element.content === "string" ||
+        typeof element.content === "number"
       ) {
-        node.appendChild(create(element.children));
+        node.appendChild(create(element.content));
       } else {
-        element.children.map(create).forEach(node.appendChild.bind(node));
+        element.content.map(create).forEach(node.appendChild.bind(node));
       }
     }
   }
@@ -38,7 +38,12 @@ function create(element) {
   return node;
 }
 
-function _C(root, element) {
+/**
+ * @param  {HTMLElement} - entry point
+ * @param  {object} - options
+ * @return {HTMLElement}
+ */
+function _C(root, element = {}) {
   return root.appendChild(create(element));
 }
 
