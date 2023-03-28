@@ -1,6 +1,6 @@
 module.exports = {
   src: "src/",
-  dest: "dist/",
+  dest: "../package-test/dist/",
   js: {
     entry: [
       "Animation/Raf/Raf.js",
@@ -19,5 +19,5 @@ module.exports = {
     ],
     dest: "main.js",
   },
-  mode: "PROD",
+  mode: "DEV",
 };

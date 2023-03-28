@@ -9,7 +9,7 @@ async function Bundle(src, dir, output, mode) {
 
   var out = {
     entryPoints: [e],
-    bundle: true,
+    bundle: mode ? true : false,
     format: "esm",
     outfile: o,
   };
@@ -22,7 +22,8 @@ async function Bundle(src, dir, output, mode) {
 }
 
 module.exports = (o) => {
-  o.js.entry.map((file) => {
-    Bundle(o.src, file, o.output, o.mode).then(o.cb);
+  var arr = o.js.entry.map((file) => {
+    return Bundle(o.src, file, o.output, o.mode);
   });
+  arr[arr.length - 1].then(o.cb);
 };
