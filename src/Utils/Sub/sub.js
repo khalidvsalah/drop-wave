@@ -4,17 +4,21 @@ class Subscribe {
   }
 
   subF(name) {
-    this.subs[name] = { cb: null, items: [] };
-    this.subs[name].cb = function () {
-      var args = Array.prototype.slice.call(arguments);
+    if (!this.subs[name]) {
+      this.subs[name] = { cb: null, items: [] };
+      this.subs[name].cb = function () {
+        var args = Array.prototype.slice.call(arguments);
 
-      for (let i = 0; i < this.items.length; i++) {
-        var o = this.items[i];
-        o.cb(...args);
-      }
-    }.bind(this.subs[name]);
+        for (let i = 0; i < this.items.length; i++) {
+          var o = this.items[i];
+          o.cb(...args);
+        }
+      }.bind(this.subs[name]);
 
-    return this.subs[name].cb;
+      return this.subs[name].cb;
+    } else {
+      return true;
+    }
   }
 
   subC(name, cb) {
