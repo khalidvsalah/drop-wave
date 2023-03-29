@@ -3,13 +3,13 @@ module.exports = {
   dest: "../package-test/dist/",
   js: {
     entry: [
-      "Animation/Raf/Raf.js",
-      "Animation/Delay/Delay.js",
-      "Core/Route/Route.js",
-      "Core/Timeline/Timeline.js",
-      "Dom/Mount/Mount.js",
-      "Dom/Events/Events.js",
-      "Core/Math/Math.js",
+      "Animation/Raf/raf.js",
+      "Animation/Delay/delay.js",
+      "Core/Route/route.js",
+      "Core/Timeline/timeline.js",
+      "Core/Math/math.js",
+      "Dom/Mount/mount.js",
+      "Utils/Sub/sub.js",
     ],
     watch: [
       "src/index.js",
