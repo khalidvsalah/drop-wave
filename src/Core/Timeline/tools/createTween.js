@@ -22,9 +22,14 @@ function pushTween(obj) {
 }
 
 function createTween(element, o, time) {
+  console.log();
   var obj = false;
 
-  if (typeof element === "object" && !Array.isArray(element)) {
+  if (
+    typeof element === "object" &&
+    !Array.isArray(element) &&
+    !(element instanceof HTMLElement)
+  ) {
     obj = true;
   } else {
     obj = false;

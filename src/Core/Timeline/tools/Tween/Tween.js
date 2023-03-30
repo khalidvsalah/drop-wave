@@ -1,9 +1,10 @@
-import A from "../../../../index.js";
-import { Ease } from "../../../Math/Math.js";
+import Delay from "../../../../Animation/Delay/delay.js";
+import { Ease } from "../../../Math/math.js";
 import checkProps from "../props/checkProps";
 
-export default class T {
+export default class Tween {
   constructor(element, o, obj) {
+    console.log(element, o, obj);
     this.elements = element;
 
     this.stop = false;
@@ -26,7 +27,7 @@ export default class T {
     };
 
     this.del = this.o.delay ? this.o.delay : 0;
-    this.delay = new A.Delay({ delay: this.del * 1000, o: this.cbO });
+    this.delay = new Delay({ delay: this.del * 1000, o: this.cbO });
     this.ease = this.o.ease ? Ease[this.o.ease] : Ease["l"];
 
     this.props = this.o.p;
@@ -46,7 +47,7 @@ export default class T {
       cb: this.run.bind(this),
     };
 
-    this.delay = new A.Delay({ delay: 0, o: cbO });
+    this.delay = new Delay({ delay: 0, o: cbO });
     this.ease = Ease["l"];
 
     this.props = o.p;
@@ -58,6 +59,7 @@ export default class T {
 
   run(t) {
     var e = this.ease(t);
+
     this.results.map((p) => {
       if (this.obj) {
         this.elements[0][p.name] = p.cb(e);

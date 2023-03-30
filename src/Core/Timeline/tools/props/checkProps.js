@@ -20,7 +20,7 @@ export default function checkProps(w) {
     this.elements.map((e) => {
       var n = window.getComputedStyle(e);
 
-      if (x || y) {
+      if (x || y || sx || sy) {
         this.results.push({
           name: "transform",
           element: e,
