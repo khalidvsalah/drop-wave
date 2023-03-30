@@ -8,8 +8,10 @@ module.exports = {
       "Core/Route/route.js",
       "Core/Timeline/timeline.js",
       "Core/Math/math.js",
+      "Core/Scroll/scroll.js",
       "Dom/Mount/mount.js",
       "Utils/Sub/sub.js",
+      "Utils/Methods/methods.js",
     ],
     watch: [
       "src/index.js",
