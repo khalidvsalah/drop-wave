@@ -9,7 +9,7 @@ async function Bundle(src, dir, output, mode) {
 
   var out = {
     entryPoints: [e],
-    bundle: mode ? true : false,
+    bundle: true,
     format: "esm",
     outfile: o,
   };
