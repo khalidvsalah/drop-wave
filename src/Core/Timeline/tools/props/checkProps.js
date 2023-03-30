@@ -1,4 +1,4 @@
-import A from "../../../../index";
+import { Has } from "../../../../Utils/Methods/methods.js";
 import props from "./props.js";
 
 export default function checkProps(w) {
@@ -7,15 +7,15 @@ export default function checkProps(w) {
   if (!w) {
     var x, y, o, p, d, sx, sy;
 
-    x = A.Has(this.props, "x") && this.props["x"];
-    y = A.Has(this.props, "y") && this.props["y"];
+    x = Has(this.props, "x") && this.props["x"];
+    y = Has(this.props, "y") && this.props["y"];
 
-    sx = A.Has(this.props, "sx") && this.props["sx"];
-    sy = A.Has(this.props, "sy") && this.props["sy"];
+    sx = Has(this.props, "sx") && this.props["sx"];
+    sy = Has(this.props, "sy") && this.props["sy"];
 
-    o = A.Has(this.props, "opacity") && this.props["opacity"];
-    p = A.Has(this.props, "pointer") && this.props["pointer"];
-    d = A.Has(this.props, "display") && this.props["display"];
+    o = Has(this.props, "opacity") && this.props["opacity"];
+    p = Has(this.props, "pointer") && this.props["pointer"];
+    d = Has(this.props, "display") && this.props["display"];
 
     this.elements.map((e) => {
       var n = window.getComputedStyle(e);
