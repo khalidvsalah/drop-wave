@@ -14,7 +14,7 @@ class Subscribe {
       }
     }.bind(this.subs[name]);
 
-    return this.subs[name].cb;
+    return { cb: this.subs[name].cb, name };
   }
 
   subC(name, cb) {
