@@ -47,9 +47,8 @@ class Scroll {
     if (Array.isArray(ele)) this.elements = ele;
     else this.elements = [ele];
 
-    this.props = o.p;
     var bounds = Bounds(ele);
-    var ps = { p: o.p, d: o.d, ease: o.ease, delay: o.delay ? o.delay : 0 };
+    var ps = o.tw;
 
     var id = sub.subC(this.rafId.name, (e) => {
       var y = e.y + window.innerHeight;
