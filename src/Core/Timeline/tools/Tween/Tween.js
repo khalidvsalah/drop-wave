@@ -3,8 +3,7 @@ import { Ease } from "../../../Math/math.js";
 import checkProps from "../props/checkProps";
 
 export default class Tween {
-  constructor(element, o, obj) {
-    console.log(element, o, obj);
+  constructor(element, o, obj = false) {
     this.elements = element;
 
     this.stop = false;
@@ -71,7 +70,19 @@ export default class Tween {
     return this.stop;
   }
 
+  pause() {
+    this.delay.o.pause = true;
+  }
+
+  resume() {
+    this.delay.o.pause = false;
+  }
+
   play() {
     this.delay.play();
   }
 }
+
+/*
+  ! Fix timline class ( mark called tween); 
+*/
