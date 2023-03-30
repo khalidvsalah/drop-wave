@@ -20,29 +20,23 @@ class _F {
 
   update(t) {
     for (let i = 0; i < this.items.length; i++) {
-      if (!this.items[i].st) {
+      if (!this.items[i].st && this.items[i].d !== -1) {
         this.items[i].st = t;
-        if (this.items[i].start) {
-          this.items[i].start();
+        if (this.items[i].start) this.items[i].start();
+      } else if (this.items[i].d === -1) {
+        this.items[i].cb(t);
+      } else if (this.items[i].d > 0) {
+        var time = (t - this.items[i].st) / this.items[i].d;
+        this.elapsed = Clamp(0, 1, time);
+
+        if (this.items[i].cb) {
+          var rm = this.items[i].cb(this.elapsed);
+          rm && this.items.splice(i, 1);
         }
-      } else {
-        if (this.items[i].d === -1) {
-          this.items[i].cb(t);
-        } else if (this.items[i].d > 0) {
-          var time = (t - this.items[i].st) / this.items[i].d;
-          this.elapsed = Clamp(0, 1, time);
 
-          if (this.items[i].cb) {
-            var rm = this.items[i].cb(this.elapsed);
-            rm && this.items.splice(i, 1);
-          }
-
-          if (this.elapsed === 1) {
-            if (this.items[i].completed) {
-              this.items[i].completed();
-            }
-            this.items.splice(i, 1);
-          }
+        if (this.elapsed === 1) {
+          if (this.items[i].completed) this.items[i].completed();
+          this.items.splice(i, 1);
         }
       }
     }
