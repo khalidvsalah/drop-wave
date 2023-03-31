@@ -1,9 +1,4 @@
-import sub from "../../Utils/Sub/sub.js";
-import Timeline from "../Timeline/timeline.js";
-import Raf from "../../Animation/Raf/raf.js";
-
-import { Bounds } from "../../Utils/Methods/methods.js";
-import { Clamp, Lerp } from "../Math/math.js";
+import { Sub, TL, Raf, Bounds, Clamp, Lerp } from "../../index";
 
 class Scroll {
   constructor(ele, { ease = 0.1, lerp = 0.1, drag = true }) {
@@ -13,31 +8,31 @@ class Scroll {
     this.mouse = { x: 0, y: 0, lerp };
     this.drag = { s: 0, e: 0, sp: 0, ep: 0, lerp: lerp * 0.1, on: false };
 
-    if (!sub.subCheck("wheel")) {
-      window.addEventListener("wheel", sub.subF("wheel").cb);
+    if (!Sub.subCheck("wheel")) {
+      window.addEventListener("wheel", Sub.subF("wheel").cb);
     }
-    this.wId = sub.subC("wheel", this.onWheel.bind(this));
+    this.wId = Sub.subC("wheel", this.onWheel.bind(this));
 
     if (drag) {
-      if (!sub.subCheck("mousedown")) {
-        window.addEventListener("mousedown", sub.subF("mousedown").cb);
+      if (!Sub.subCheck("mousedown")) {
+        window.addEventListener("mousedown", Sub.subF("mousedown").cb);
       }
-      if (!sub.subCheck("mousemove")) {
-        window.addEventListener("mousemove", sub.subF("mousemove").cb);
+      if (!Sub.subCheck("mousemove")) {
+        window.addEventListener("mousemove", Sub.subF("mousemove").cb);
       }
-      if (!sub.subCheck("mouseup")) {
-        window.addEventListener("mouseup", sub.subF("mouseup").cb);
+      if (!Sub.subCheck("mouseup")) {
+        window.addEventListener("mouseup", Sub.subF("mouseup").cb);
       }
 
-      this.mdId = sub.subC("mousedown", this.onMDown.bind(this));
-      this.mmId = sub.subC("mousemove", this.onMM.bind(this));
-      this.muId = sub.subC("mouseup", this.onMU.bind(this));
+      this.mdId = Sub.subC("mousedown", this.onMDown.bind(this));
+      this.mmId = Sub.subC("mousemove", this.onMM.bind(this));
+      this.muId = Sub.subC("mouseup", this.onMU.bind(this));
     }
 
     this.bounds();
     Raf.push({ d: -1, cb: this.raf.bind(this) });
     !Raf.on && Raf.play();
-    this.rafId = sub.subF("scrollRaf");
+    this.rafId = Sub.subF("scroll");
   }
 
   bounds() {
@@ -97,19 +92,19 @@ class Scroll {
     var bounds = Bounds(ele);
     var ps = o.tw;
 
-    var id = sub.subC(this.rafId.name, (e) => {
+    var id = Sub.subC(this.rafId.name, (e) => {
       var y = e.y + window.innerHeight;
       var pr = (o.s / 100) * window.innerHeight;
 
       if (pr + bounds.top <= y) {
-        var tl = new Timeline();
+        var tl = new TL();
 
         this.elements.map((ele) => {
           tl.to(ele, ps);
           tl.play();
         });
 
-        sub.subCR(this.rafId.name, id);
+        Sub.subCR(this.rafId.name, id);
       }
     });
 
@@ -125,10 +120,10 @@ class Scroll {
   }
 
   destroy() {
-    sub.subCR("wheel", this.wId.name);
-    sub.subCR("mousedown", this.mdId);
-    sub.subCR("mousemove", this.mmId);
-    sub.subCR("mouseup", this.muId);
+    Sub.subCR("wheel", this.wId.name);
+    Sub.subCR("mousedown", this.mdId);
+    Sub.subCR("mousemove", this.mmId);
+    Sub.subCR("mouseup", this.muId);
   }
 }
 
