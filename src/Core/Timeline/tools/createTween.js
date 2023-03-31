@@ -2,24 +2,16 @@ import Tween from "./Tween/Tween.js";
 import checkElement from "./elements/checkEle";
 
 function pushTween(obj) {
-  var d = this.items.length && this.items[this.items.length - 1].tween.d;
-  var del = this.items.length && this.items[this.items.length - 1].tween.del;
+  var pD = this.items.length && this.items[this.items.length - 1].tween.d;
+  var pDel = this.items.length && this.items[this.items.length - 1].tween.del;
 
-  var prevTime = d + del;
-  var curTime = (this.o.delay ? this.o.delay : 0) + this.time;
+  var pT = pD + pDel + (this.o.delay ? this.o.delay : 0);
+  var cT = (this.o.delay ? this.o.delay : 0) + this.time;
+
+  var o = { ...this.o, delay: pT ? pT : cT };
 
   this.selector.map((ele) => {
-    this.items.push({
-      tween: new Tween(
-        ele,
-        {
-          ...this.o,
-          delay: prevTime ? prevTime : curTime,
-        },
-        obj
-      ),
-      called: false,
-    });
+    this.items.push({ tween: new Tween(ele, o, obj), called: false });
   });
 }
 
