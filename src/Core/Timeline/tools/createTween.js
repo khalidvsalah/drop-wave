@@ -6,9 +6,9 @@ function pushTween(obj) {
   var pDel = this.items.length && this.items[this.items.length - 1].tween.del;
 
   var pT = pD + pDel + (this.o.delay ? this.o.delay : 0);
-  var cT = (this.o.delay ? this.o.delay : 0) + this.time;
+  var cT = this.o.delay ? this.o.delay : 0;
 
-  var o = { ...this.o, delay: pT ? pT : cT };
+  var o = { ...this.o, delay: (pT ? pT : cT) + +this.time };
 
   this.selector.map((ele) => {
     this.items.push({ tween: new Tween(ele, o, obj), called: false });

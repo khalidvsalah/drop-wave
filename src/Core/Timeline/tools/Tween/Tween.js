@@ -60,6 +60,7 @@ export default class Tween {
     var e = this.ease(t);
 
     this.results.map((p) => {
+      console.log(p);
       if (this.obj) {
         this.elements[0][p.name] = p.cb(e);
       } else {
@@ -82,7 +83,3 @@ export default class Tween {
     this.delay.play();
   }
 }
-
-/*
-  ! Fix timline class ( mark called tween); 
-*/
