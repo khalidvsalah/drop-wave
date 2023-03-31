@@ -1,7 +1,9 @@
-import { Clamp } from "../../Core/Math/Math.js";
+import { Clamp } from "../../Core/Math/math.js";
+
 class _F {
   constructor() {
     this.items = [];
+    this.on = false;
   }
 
   push(o) {
@@ -20,24 +22,33 @@ class _F {
 
   update(t) {
     for (let i = 0; i < this.items.length; i++) {
-      if (!this.items[i].st && this.items[i].d !== -1) {
-        this.items[i].st = t;
-        if (this.items[i].start) this.items[i].start();
-      } else if (this.items[i].d === -1) {
-        this.items[i].cb(t);
-      } else if (this.items[i].d > 0) {
-        var time = (t - this.items[i].st) / this.items[i].d;
-        this.elapsed = Clamp(0, 1, time);
+      var item = this.items[i];
+      if (item.pause) {
+        item.elapsed = item.elapsed ? 1 - item.elapsed : 1;
+        item.d = !item.paused ? item.elapsed * item.d : item.d;
+        item.st = t - item.d * item.elapsed;
+        item.paused = true;
+      } else if (!item.st && item.d !== -1) {
+        item.st = t;
+        if (item.start) item.start();
+      } else if (item.d === -1) {
+        item.cb(t);
+      } else if (item.d > 0) {
+        var time = (t - item.st) / item.d;
+        item.elapsed = Clamp(0, 1, time);
 
-        if (this.items[i].cb) {
-          var rm = this.items[i].cb(this.elapsed);
+        if (item.cb) {
+          var rm = item.cb(item.elapsed);
           rm && this.items.splice(i, 1);
         }
 
-        if (this.elapsed === 1) {
-          if (this.items[i].completed) this.items[i].completed();
+        if (item.elapsed === 1) {
+          if (item.completed) item.completed();
           this.items.splice(i, 1);
         }
+      } else if (item.d === 0) {
+        item.completed && item.completed();
+        this.items.splice(i, 1);
       }
     }
 
@@ -63,7 +74,7 @@ class _F {
   }
 
   play() {
-    if (this.items.length === !1) {
+    if (this.items.length === 0) {
       this.on = false;
       return;
     }

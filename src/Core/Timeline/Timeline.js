@@ -1,9 +1,10 @@
-import Tween from "./tools/createTween";
+import createTween from "./tools/createTween";
 
 class TL {
   constructor() {
     this.items = [];
     this.store = new Map();
+    this.played = false;
   }
 
   to(element, o, time = 0) {
@@ -18,7 +19,21 @@ class TL {
       return;
     }
 
-    Tween.call(this, element, o, time);
+    createTween.call(this, element, o, time);
+    return this;
+  }
+
+  pause() {
+    if (!this.played) return;
+    this.items.map((t) => {
+      t.tween.pause();
+    });
+  }
+
+  resume() {
+    this.items.map((t) => {
+      t.tween.resume();
+    });
   }
 
   kill(s) {
@@ -33,11 +48,13 @@ class TL {
   }
 
   play() {
+    this.played = true;
     this.items.map((t) => {
-      t.play();
+      if (!t.called) {
+        t.tween.play();
+        t.tween.called = true;
+      }
     });
-
-    this.items = [];
     this.selector = [];
   }
 }
