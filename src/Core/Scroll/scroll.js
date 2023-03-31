@@ -6,15 +6,33 @@ import { Bounds } from "../../Utils/Methods/methods.js";
 import { Clamp, Lerp } from "../Math/math.js";
 
 class Scroll {
-  constructor(ele, { ease = 0.1, lerp = 0.1 } = {}) {
+  constructor(ele, { ease = 0.1, lerp = 0.1, drag = true }) {
     this.ele = ele;
     this.e = { x: 0, y: 0, lerp: ease };
+
     this.mouse = { x: 0, y: 0, lerp };
+    this.drag = { s: 0, e: 0, sp: 0, ep: 0, lerp: lerp * 0.1, on: false };
 
     if (!sub.subCheck("wheel")) {
       window.addEventListener("wheel", sub.subF("wheel").cb);
     }
-    this.id = sub.subC("wheel", this.event.bind(this));
+    this.wId = sub.subC("wheel", this.onWheel.bind(this));
+
+    if (drag) {
+      if (!sub.subCheck("mousedown")) {
+        window.addEventListener("mousedown", sub.subF("mousedown").cb);
+      }
+      if (!sub.subCheck("mousemove")) {
+        window.addEventListener("mousemove", sub.subF("mousemove").cb);
+      }
+      if (!sub.subCheck("mouseup")) {
+        window.addEventListener("mouseup", sub.subF("mouseup").cb);
+      }
+
+      this.mdId = sub.subC("mousedown", this.onMDown.bind(this));
+      this.mmId = sub.subC("mousemove", this.onMM.bind(this));
+      this.muId = sub.subC("mouseup", this.onMU.bind(this));
+    }
 
     this.bounds();
     Raf.push({ d: -1, cb: this.raf.bind(this) });
@@ -33,12 +51,41 @@ class Scroll {
     };
   }
 
-  event(e) {
+  onWheel(e) {
     this.e.x += e.deltaX * this.e.lerp;
     this.e.y += e.deltaY * this.e.lerp;
 
     this.e.x = Clamp(0, this.coord.w, this.e.x);
     this.e.y = Clamp(0, this.coord.h - window.innerHeight, this.e.y);
+  }
+
+  onMDown(e) {
+    this.drag.on = true;
+    this.drag.s = e.pageY;
+  }
+
+  onMM(e) {
+    if (this.drag.on) {
+      this.drag.prev = this.drag.e;
+      if (this.drag.d === 1) this.drag.sp = this.drag.e;
+      if (this.drag.d === -1) this.drag.ep = this.drag.e;
+
+      this.drag.e = e.pageY;
+
+      var diff = this.drag.e - this.drag.s;
+      this.drag.d = Math.sign(this.drag.prev - this.drag.e) * -1;
+
+      var diff;
+      if (this.drag.d === -1) diff = this.drag.e - this.drag.sp;
+      if (this.drag.d === 1) diff = this.drag.e - this.drag.ep;
+
+      this.e.y = diff * -1 * this.drag.lerp + this.e.y;
+      this.e.y = Clamp(0, this.coord.h - window.innerHeight, this.e.y);
+    }
+  }
+
+  onMU() {
+    this.drag.on = false;
   }
 
   add(ele, o) {
@@ -78,7 +125,10 @@ class Scroll {
   }
 
   destroy() {
-    sub.subCR("wheel", this.id);
+    sub.subCR("wheel", this.wId.name);
+    sub.subCR("mousedown", this.mdId);
+    sub.subCR("mousemove", this.mmId);
+    sub.subCR("mouseup", this.muId);
   }
 }
 
