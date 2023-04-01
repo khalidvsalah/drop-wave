@@ -12,6 +12,7 @@ async function Bundle(src, dir, output, mode) {
     bundle: true,
     format: "esm",
     outfile: o,
+    minify: mode,
   };
 
   await esbuild.build(out);
