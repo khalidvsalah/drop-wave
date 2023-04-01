@@ -1,5 +1,4 @@
-import Delay from "../../../../Animation/Delay/delay.js";
-import { Ease } from "../../../Math/math.js";
+import { Delay, Ease } from "../../../../index";
 import checkProps from "../props/checkProps";
 
 export default class Tween {
@@ -60,7 +59,6 @@ export default class Tween {
     var e = this.ease(t);
 
     this.results.map((p) => {
-      console.log(p);
       if (this.obj) {
         this.elements[0][p.name] = p.cb(e);
       } else {

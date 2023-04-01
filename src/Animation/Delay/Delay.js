@@ -1,4 +1,4 @@
-import Raf from "../Raf/raf.js";
+import { Raf } from "../../index";
 
 export default class Delay {
   constructor({ delay, o }) {

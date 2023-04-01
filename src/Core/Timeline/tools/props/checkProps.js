@@ -1,4 +1,4 @@
-import { Has } from "../../../../Utils/Methods/methods.js";
+import { Has } from "../../../../index";
 import props from "./props.js";
 
 export default function checkProps(w) {

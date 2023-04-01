@@ -1,4 +1,4 @@
-import { Clamp } from "../../Core/Math/math.js";
+import { Clamp } from "../../index";
 
 class _F {
   constructor() {
