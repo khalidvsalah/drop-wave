@@ -2,17 +2,7 @@ module.exports = {
   src: "src/",
   dest: "../package-test/dist/",
   js: {
-    entry: [
-      "Animation/Raf/raf.js",
-      "Animation/Delay/delay.js",
-      "Core/Route/route.js",
-      "Core/Timeline/timeline.js",
-      "Core/Math/math.js",
-      "Core/Scroll/scroll.js",
-      "Dom/Mount/mount.js",
-      "Utils/Sub/sub.js",
-      "Utils/Methods/methods.js",
-    ],
+    entry: ["index.js"],
     watch: [
       "src/index.js",
       "src/**/**/*",
