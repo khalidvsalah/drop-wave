@@ -46,22 +46,34 @@ const props = {
     sY.lerp = sY.e - sY.s;
 
     if ((x && y) || tR) {
-      return (e) =>
-        `translate3d(
-          ${xV.s + xV.lerp * e}${xV.unit}, 
-          ${yV.s + yV.lerp * e}${yV.unit},
-          0) scale(${sX.s + sX.lerp * e}, ${sY.s + sY.lerp * e})`;
+      return (e) => {
+        var rX = `${xV.s + xV.lerp * e}${xV.unit}`;
+        var rY = `${yV.s + yV.lerp * e}${yV.unit}`;
+
+        var rSX = `${sX.s + sX.lerp * e}`;
+        var rSY = `${sY.s + sY.lerp * e}`;
+
+        return `translate3d(${rX}, ${rY},0) scale(${rSX}, ${rSY})`;
+      };
     } else {
       if (x) {
-        return (e) =>
-          `translateX(${xV.s + xV.lerp * e}${xV.unit}) scale(${
-            sX.s + sX.lerp * e
-          }, ${sY.s + sY.lerp * e})`;
+        return (e) => {
+          var rX = `${xV.s + xV.lerp * e}${xV.unit}`;
+
+          var rSX = `${sX.s + sX.lerp * e}`;
+          var rSY = `${sY.s + sY.lerp * e}`;
+
+          return `translateX(${rX}) scale(${rSX}, ${rSY})`;
+        };
       } else if (y) {
-        return (e) =>
-          `translateY(${yV.s + yV.lerp * e}${yV.unit}) scale(${
-            sX.s + sX.lerp * e
-          }, ${sY.s + sY.lerp * e})`;
+        return (e) => {
+          var rY = `${yV.s + yV.lerp * e}${yV.unit}`;
+
+          var rSX = `${sX.s + sX.lerp * e}`;
+          var rSY = `${sY.s + sY.lerp * e}`;
+
+          return `translateY(${rY}) scale(${rSX}, ${rSY})`;
+        };
       }
     }
   },
