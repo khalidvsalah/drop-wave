@@ -1,18 +1,17 @@
 const props = {
   transform: (x, y, sx, sy, n) => {
-    var xV, yV, sX, sY;
-    var t = n.transform;
-    var tR = t !== "none" && t.match(/\((.+)\)$/)[1].split(", ");
+    var xV, yV, sXV, sYV;
+    var transform = n !== "none" && n.match(/\((.+)\)$/)[1].split(", ");
 
-    if (tR) {
+    if (transform) {
       xV = {
-        s: +tR[4],
+        s: +transform[4],
         e: x ? (x[2] === "px" ? x[1] : (x[1] / 100) * parseFloat(n.width)) : 0,
         unit: "px",
       };
 
       yV = {
-        s: +tR[5],
+        s: +transform[5],
         e: y ? (y[2] === "px" ? y[1] : (y[1] / 100) * parseFloat(n.height)) : 0,
         unit: "px",
       };
@@ -22,6 +21,7 @@ const props = {
         e: x[1],
         unit: x[2] ? x[2] : "px",
       };
+
       yV = {
         s: y[0],
         e: y[1],
@@ -29,29 +29,29 @@ const props = {
       };
     }
 
-    sX = {
-      s: tR ? +tR[0] : sx[0] ? sx[0] : 1,
+    sXV = {
+      s: transform ? +transform[0] : sx[0] ? sx[0] : 1,
       e: sx[1] ? sx[1] : 1,
     };
 
-    sY = {
-      s: tR ? +tR[3] : sy[0] ? sy[0] : 1,
+    sYV = {
+      s: transform ? +transform[3] : sy[0] ? sy[0] : 1,
       e: sy[1] ? sy[1] : 1,
     };
 
     xV.lerp = xV.e - xV.s;
     yV.lerp = yV.e - yV.s;
 
-    sX.lerp = sX.e - sX.s;
-    sY.lerp = sY.e - sY.s;
+    sXV.lerp = sXV.e - sXV.s;
+    sYV.lerp = sYV.e - sYV.s;
 
-    if ((x && y) || tR) {
+    if ((x && y) || transform) {
       return (e) => {
         var rX = `${xV.s + xV.lerp * e}${xV.unit}`;
         var rY = `${yV.s + yV.lerp * e}${yV.unit}`;
 
-        var rSX = `${sX.s + sX.lerp * e}`;
-        var rSY = `${sY.s + sY.lerp * e}`;
+        var rSX = `${sXV.s + sXV.lerp * e}`;
+        var rSY = `${sYV.s + sYV.lerp * e}`;
 
         return `translate3d(${rX}, ${rY},0) scale(${rSX}, ${rSY})`;
       };
@@ -60,8 +60,8 @@ const props = {
         return (e) => {
           var rX = `${xV.s + xV.lerp * e}${xV.unit}`;
 
-          var rSX = `${sX.s + sX.lerp * e}`;
-          var rSY = `${sY.s + sY.lerp * e}`;
+          var rSX = `${sXV.s + sXV.lerp * e}`;
+          var rSY = `${sYV.s + sYV.lerp * e}`;
 
           return `translateX(${rX}) scale(${rSX}, ${rSY})`;
         };
@@ -69,8 +69,8 @@ const props = {
         return (e) => {
           var rY = `${yV.s + yV.lerp * e}${yV.unit}`;
 
-          var rSX = `${sX.s + sX.lerp * e}`;
-          var rSY = `${sY.s + sY.lerp * e}`;
+          var rSX = `${sXV.s + sXV.lerp * e}`;
+          var rSY = `${sYV.s + sYV.lerp * e}`;
 
           return `translateY(${rY}) scale(${rSX}, ${rSY})`;
         };

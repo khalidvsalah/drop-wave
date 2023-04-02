@@ -24,7 +24,7 @@ export default function checkProps(w) {
         this.results.push({
           name: "transform",
           element: e,
-          cb: props["transform"](x, y, sx, sy, n),
+          cb: props["transform"](x, y, sx, sy, n.transform),
         });
       }
 
@@ -32,7 +32,7 @@ export default function checkProps(w) {
         this.results.push({
           name: "opacity",
           element: e,
-          cb: props["opacity"](o, n),
+          cb: props["opacity"](o, n.opacity),
         });
 
       p &&
