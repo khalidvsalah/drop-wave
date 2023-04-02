@@ -52,7 +52,7 @@ class _F {
       }
     }
 
-    this.play();
+    this.loop();
   }
 
   kill(n) {
@@ -73,13 +73,18 @@ class _F {
     }
   }
 
-  play() {
+  loop() {
     if (this.items.length === 0) {
       this.on = false;
-      return;
     }
     this.on = true;
     window.requestAnimationFrame(this.update.bind(this));
+  }
+
+  play() {
+    if (!this.on) {
+      this.loop();
+    }
   }
 }
 
