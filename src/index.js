@@ -1,17 +1,21 @@
 import { Lerp, Clamp, Ease, Round } from "./Core/Math/math";
-import Route from "./Core/Route/route";
-import Scroll from "./Core/Scroll/scroll";
-import TL from "./Core/Timeline/timeline";
+
+import { Has, Bounds } from "./Utils/Methods/methods";
+import Store from "./Utils/Store/Store";
+import Sub from "./Utils/Sub/sub";
 
 import Delay from "./Animation/Delay/delay";
 import Raf from "./Animation/Raf/raf";
 
-import { Has, Bounds } from "./Utils/Methods/methods";
-import Sub from "./Utils/Sub/sub";
-
+import Route from "./Core/Route/route";
 import Mount from "./Dom/Mount/mount";
 
+import Tween from "./Core/Timeline/tools/Tween/Tween";
+import TL from "./Core/Timeline/timeline";
+import Scroll from "./Core/Scroll/scroll";
+
 export {
+  Store,
   Lerp,
   Clamp,
   Route,
@@ -25,4 +29,5 @@ export {
   Mount,
   Ease,
   Round,
+  Tween,
 };
