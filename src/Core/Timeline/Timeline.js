@@ -42,7 +42,7 @@ class TL {
     } else {
       var ei = this.store.get(s);
       if (ei) {
-        ei.stop = true;
+        ei.kill();
       }
     }
   }
