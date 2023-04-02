@@ -1,22 +1,20 @@
-import { Delay, Ease } from "../../../../index";
+import { Delay, Ease, Store } from "../../../../index";
 import checkProps from "../props/checkProps";
 
-export default class Tween {
-  constructor(element, o, obj = false) {
-    this.elements = element;
-
-    this.stop = false;
-    this.o = o;
-    this.obj = obj;
-
-    if (obj) {
-      this.wTo();
-    } else {
-      this.to();
-    }
+const S = new Store();
+class Tween {
+  constructor() {
+    this.store = S;
   }
 
-  to() {
+  to(element, o) {
+    this.store.set(element, this);
+    this.stop = false;
+    this.obj = this.webO ? true : false;
+
+    this.elements = Array.isArray(element) ? element : [element];
+    this.o = o;
+
     this.d = this.o.d ? this.o.d : 500;
     this.cbO = {
       cb: this.run.bind(this),
@@ -31,11 +29,13 @@ export default class Tween {
     this.props = this.o.p;
     this.keys = Object.keys(this.props);
     checkProps.call(this, this.obj);
+
+    return this;
   }
 
-  wTo() {
-    this.obj = true;
-    this.to();
+  webgl(element, o) {
+    this.webO = true;
+    return this.to(element, o);
   }
 
   set(element, o) {
@@ -57,6 +57,7 @@ export default class Tween {
 
   run(t) {
     var e = this.ease(t);
+    this.running = true;
 
     this.results.map((p) => {
       if (this.obj) {
@@ -66,7 +67,26 @@ export default class Tween {
       }
     });
 
+    if (t === 1) this.running = false;
+
     return this.stop;
+  }
+
+  reverse(v) {
+    if (v) {
+      for (let i = 0; i < this.keys.length; i++) {
+        var key = this.keys[i];
+        this.props[key][0] = [
+          this.props[key][1],
+          (this.props[key][1] = this.props[key][0]),
+        ][0];
+      }
+    }
+
+    this.stop = true;
+    checkProps.call(this, this.obj);
+    this.play();
+    this.stop = false;
   }
 
   pause() {
@@ -77,7 +97,20 @@ export default class Tween {
     this.delay.o.pause = false;
   }
 
+  kill(ele) {
+    if (!ele) {
+      this.stop = true;
+      return;
+    }
+
+    var re = this.store.get(ele);
+    if (re) re.kill();
+  }
+
   play() {
     this.delay.play();
+    return this;
   }
 }
+
+export default Tween;
