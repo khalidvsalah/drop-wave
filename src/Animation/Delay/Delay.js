@@ -14,13 +14,13 @@ export default class Delay {
       d: this.delay,
     });
 
-    if (!Raf.on) Raf.play();
+    Raf.play();
   }
 
   elapsed() {
     Raf.push(this.o);
 
-    if (!Raf.on) Raf.play();
+    Raf.play();
   }
 
   remove() {
