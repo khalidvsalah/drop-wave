@@ -1,7 +1,8 @@
 const props = {
   transform: (x, y, sx, sy, n) => {
     var xV, yV, sXV, sYV;
-    var transform = n !== "none" && n.match(/\((.+)\)$/)[1].split(", ");
+    var transform =
+      n.transform !== "none" && n.transform.match(/\((.+)\)$/)[1].split(", ");
 
     if (transform) {
       xV = {
@@ -47,13 +48,13 @@ const props = {
 
     if ((x && y) || transform) {
       return (e) => {
-        var rX = `${xV.s + xV.lerp * e}${xV.unit}`;
-        var rY = `${yV.s + yV.lerp * e}${yV.unit}`;
+        var rX = x ? `${xV.s + xV.lerp * e}${xV.unit}` : xV.s + xV.lerp;
+        var rY = y ? `${yV.s + yV.lerp * e}${yV.unit}` : yV.s + yV.lerp;
 
         var rSX = `${sXV.s + sXV.lerp * e}`;
         var rSY = `${sYV.s + sYV.lerp * e}`;
 
-        return `translate3d(${rX}, ${rY},0) scale(${rSX}, ${rSY})`;
+        return `translate3d(${rX}, ${rY}, 0) scale(${rSX}, ${rSY})`;
       };
     } else {
       if (x) {
