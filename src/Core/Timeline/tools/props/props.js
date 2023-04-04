@@ -48,8 +48,8 @@ const props = {
 
     if ((x && y) || transform) {
       return (e) => {
-        var rX = x ? `${xV.s + xV.lerp * e}${xV.unit}` : xV.s + xV.lerp;
-        var rY = y ? `${yV.s + yV.lerp * e}${yV.unit}` : yV.s + yV.lerp;
+        var rX = x ? `${xV.s + xV.lerp * e}${xV.unit}` : xV.s + xV.unit;
+        var rY = y ? `${yV.s + yV.lerp * e}${yV.unit}` : yV.s + yV.unit;
 
         var rSX = `${sXV.s + sXV.lerp * e}`;
         var rSY = `${sYV.s + sYV.lerp * e}`;
