@@ -3,6 +3,7 @@ import { Lerp, Clamp, Ease, Round } from "./Core/Math/math";
 import { Has, Bounds } from "./Utils/Methods/methods";
 import Store from "./Utils/Store/Store";
 import Sub from "./Utils/Sub/sub";
+import Throttle from "./Utils/Throttle/throttle";
 
 import Delay from "./Animation/Delay/delay";
 import Raf from "./Animation/Raf/raf";
@@ -17,6 +18,7 @@ import Scroll from "./Core/Scroll/scroll";
 export {
   Store,
   Lerp,
+  Throttle,
   Clamp,
   Route,
   Scroll,
