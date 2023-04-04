@@ -1,7 +1,7 @@
-import { Sub, TL, Bounds, Clamp, Lerp } from "../../index";
+import { Sub, TL, Bounds, Clamp, Lerp, Raf } from "../../index";
 
 class Scroll {
-  constructor(ele, { ease = 0.1, lerp = 0.1, drag = true }) {
+  constructor(ele, { ease = 0.1, lerp = 0.1, drag = true } = {}) {
     this.ele = ele;
     this.e = { x: 0, y: 0, lerp: ease };
 
@@ -30,7 +30,11 @@ class Scroll {
     }
 
     this.bounds();
-    Sub.subCheck("raf") && Sub.subC("raf", this.raf.bind(this));
+    if (!Sub.subCheck("raf")) {
+      Raf.push({ d: -1, cb: Sub.subF("raf").cb });
+      Raf.play();
+    }
+    Sub.subC("raf", this.raf.bind(this));
     this.rafId = Sub.subF("scroll");
   }
 
