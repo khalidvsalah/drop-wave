@@ -11,11 +11,7 @@ function pushTween(obj) {
   var o = { ...this.o, delay: (pT ? pT : cT) + +this.time };
 
   this.selector.map((ele) => {
-    if (obj) {
-      this.items.push({ tween: new Tween.webgl(ele, o), called: false });
-    } else {
-      this.items.push({ tween: new Tween.to(ele, o), called: false });
-    }
+    this.items.push({ tween: new Tween(ele, o, obj), called: false });
   });
 }
 
