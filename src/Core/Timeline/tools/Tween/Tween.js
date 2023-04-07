@@ -3,14 +3,15 @@ import checkProps from "../props/checkProps";
 
 const S = new Store();
 class Tween {
-  constructor() {
+  constructor(element, o, obj) {
     this.store = S;
+    this.obj = obj;
+    this.to(element, o, obj);
   }
 
   to(element, o) {
     this.store.set(element, this);
     this.stop = false;
-    this.obj = this.webO ? true : false;
 
     this.elements = Array.isArray(element) ? element : [element];
     this.o = o;
@@ -22,20 +23,18 @@ class Tween {
       completed: this.o.completed,
     };
 
-    this.del = this.o.delay ? this.o.delay : 0;
-    this.delay = new Delay({ delay: this.del * 1000, o: this.cbO });
     this.ease = this.o.ease ? Ease[this.o.ease] : Ease["l"];
 
     this.props = this.o.p;
     this.keys = Object.keys(this.props);
-    checkProps.call(this, this.obj);
+    this.del = this.o.delay ? this.o.delay : 0;
+    this.delay = new Delay({
+      delay: this.del * 1000,
+      o: this.cbO,
+      elapsed: () => checkProps.call(this, this.obj),
+    });
 
     return this;
-  }
-
-  webgl(element, o) {
-    this.webO = true;
-    return this.to(element, o);
   }
 
   set(element, o) {
