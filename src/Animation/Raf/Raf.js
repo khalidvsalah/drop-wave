@@ -34,7 +34,7 @@ class _F {
       } else if (item.d === -1) {
         item.cb(t);
       } else if (item.d > 0) {
-        var time = (t - item.st) / item.d;
+        var time = (t - item.st) / (item.d * 1000);
         item.elapsed = Clamp(0, 1, time);
 
         if (item.cb) {
