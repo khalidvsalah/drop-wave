@@ -1,35 +1,40 @@
 import { Delay, Ease, Store } from "../../../../index";
+
 import checkProps from "../props/checkProps";
+import checkEle from "../elements/checkEle";
 
 const S = new Store();
+
 class Tween {
-  constructor(element, o, obj) {
+  constructor() {
     this.store = S;
-    this.obj = obj;
-    this.to(element, o, obj);
   }
 
-  to(element, o) {
-    this.store.set(element, this);
-    this.stop = false;
+  to(element, o, obj) {
+    this.control(element, this);
+    this.obj = obj;
 
-    this.elements = Array.isArray(element) ? element : [element];
+    let ele = checkEle(element);
+
+    this.elements = Array.isArray(ele) ? ele : [ele];
+
     this.o = o;
 
-    this.d = this.o.d ? this.o.d : 500;
+    this.d = this.o.d ? this.o.d : 0.5;
+    this.del = this.o.delay ? this.o.delay : 0;
+
     this.cbO = {
       cb: this.run.bind(this),
-      d: this.d * 1000,
+      d: this.d,
       completed: this.o.completed,
     };
 
     this.ease = this.o.ease ? Ease[this.o.ease] : Ease["l"];
-
     this.props = this.o.p;
     this.keys = Object.keys(this.props);
-    this.del = this.o.delay ? this.o.delay : 0;
+
     this.delay = new Delay({
-      delay: this.del * 1000,
+      delay: this.del,
       o: this.cbO,
       elapsed: () => checkProps.call(this, this.obj),
     });
@@ -37,44 +42,50 @@ class Tween {
     return this;
   }
 
-  set(element, o) {
-    checkElement.call(this, element, o);
-
-    var cbO = {
-      cb: this.run.bind(this),
-    };
-
-    this.delay = new Delay({ delay: 0, o: cbO });
-    this.ease = Ease["l"];
-
-    this.props = o.p;
-    this.keys = Object.keys(o.p);
-
-    checkProps.call(this);
-    this.play();
+  control(ele, g) {
+    let o = this.store.get(ele);
+    if (o) {
+      o.gO.pause();
+      this.store.set(ele, { ele, gO: g, called: false });
+      this.stop = false;
+    } else {
+      this.store.set(ele, { ele, gO: g, called: false });
+      this.stop = false;
+    }
   }
 
+  // set(element, o) {
+  //   checkElement.call(this, element, o);
+
+  //   let cbO = {
+  //     cb: this.run.bind(this),
+  //   };
+
+  //   this.delay = new Delay({ delay: 0, o: cbO });
+  //   this.ease = Ease["l"];
+
+  //   this.props = o.p;
+  //   this.keys = Object.keys(o.p);
+
+  //   checkProps.call(this);
+  //   this.play();
+  // }
+
   run(t) {
-    var e = this.ease(t);
-    this.running = true;
+    if (this.stop) return true;
+
+    let e = this.ease(t);
 
     this.results.map((p) => {
-      if (this.obj) {
-        this.elements[0][p.name] = p.cb(e);
-      } else {
-        p.element.style[p.name] = p.cb(e);
-      }
+      if (this.obj) this.elements[0][p.name] = p.cb(e);
+      else p.element.style[p.name] = p.cb(e);
     });
-
-    if (t === 1) this.running = false;
-
-    return this.stop;
   }
 
   reverse(v) {
     if (v) {
       for (let i = 0; i < this.keys.length; i++) {
-        var key = this.keys[i];
+        let key = this.keys[i];
         this.props[key][0] = [
           this.props[key][1],
           (this.props[key][1] = this.props[key][0]),
@@ -96,19 +107,12 @@ class Tween {
     this.delay.o.pause = false;
   }
 
-  kill(ele) {
-    if (!ele) {
-      this.stop = true;
-      return;
-    }
-
-    var re = this.store.get(ele);
-    if (re) re.kill();
+  kill() {
+    this.stop = true;
   }
 
   play() {
     this.delay.play();
-    return this;
   }
 }
 
