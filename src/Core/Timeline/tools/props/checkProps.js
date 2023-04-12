@@ -5,7 +5,7 @@ export default function checkProps(w) {
   this.results = [];
 
   if (!w) {
-    var x, y, o, p, d, sx, sy;
+    let x, y, o, p, d, sx, sy, t, l, b, r;
 
     x = Has(this.props, "x") && this.props["x"];
     y = Has(this.props, "y") && this.props["y"];
@@ -13,12 +13,22 @@ export default function checkProps(w) {
     sx = Has(this.props, "sx") && this.props["sx"];
     sy = Has(this.props, "sy") && this.props["sy"];
 
+    t = Has(this.props, "t") && this.props["t"];
+    // l = Has(this.props, "l") && this.props["l"];
+
+    // b = Has(this.props, "b") && this.props["b"];
+    // r = Has(this.props, "r") && this.props["r"];
+
     o = Has(this.props, "opacity") && this.props["opacity"];
     p = Has(this.props, "pointer") && this.props["pointer"];
     d = Has(this.props, "display") && this.props["display"];
 
     this.elements.map((e) => {
       var n = window.getComputedStyle(e);
+      // var eH = e.clientHeight;
+      // var eW = e.clientWidth;
+      var pH = e.parentNode.clientHeight;
+      // var pW = e.parentNode.clientWidth;
 
       if (x || y || sx || sy) {
         this.results.push({
@@ -28,12 +38,33 @@ export default function checkProps(w) {
         });
       }
 
-      o &&
+      t &&
         this.results.push({
-          name: "opacity",
+          name: "top",
           element: e,
-          cb: props["opacity"](o, n),
+          cb: props["top"](t, n, pH),
         });
+
+      // b &&
+      //   this.results.push({
+      //     name: "bottom",
+      //     element: e,
+      //     cb: props["bottom"](b, n, pH),
+      //   });
+
+      // l &&
+      //   this.results.push({
+      //     name: "left",
+      //     element: e,
+      //     cb: props["left"](l, n, pW),
+      //   });
+
+      // r &&
+      //   this.results.push({
+      //     name: "right",
+      //     element: e,
+      //     cb: props["right"](r, n, pW),
+      //   });
 
       p &&
         this.results.push({
@@ -47,6 +78,13 @@ export default function checkProps(w) {
           name: "display",
           element: e,
           cb: props["display"](d),
+        });
+
+      o &&
+        this.results.push({
+          name: "opacity",
+          element: e,
+          cb: props["opacity"](o, n),
         });
     });
   } else {

@@ -6,15 +6,21 @@ const props = {
 
     if (transform) {
       xV = {
-        s: +transform[4],
-        e: x ? (x[2] === "px" ? x[1] : (x[1] / 100) * parseFloat(n.width)) : 0,
-        unit: "px",
+        s:
+          x[2] === "px"
+            ? +transform[4]
+            : (+transform[4] / parseFloat(n.width)) * 100,
+        e: x ? (x[2] === "px" ? x[1] : x[1]) : 0,
+        unit: y[2],
       };
 
       yV = {
-        s: +transform[5],
-        e: y ? (y[2] === "px" ? y[1] : (y[1] / 100) * parseFloat(n.height)) : 0,
-        unit: "px",
+        s:
+          y[2] === "px"
+            ? +transform[5]
+            : (+transform[5] / parseFloat(n.height)) * 100,
+        e: y ? (y[2] === "px" ? y[1] : y[1]) : 0,
+        unit: y[2],
       };
     } else {
       xV = {
@@ -80,7 +86,7 @@ const props = {
   },
   opacity: (o, n) => {
     var oV = {
-      s: n.opacity,
+      s: +n.opacity,
       e: o[1],
     };
     oV.lerp = oV.e - oV.s;
@@ -92,6 +98,25 @@ const props = {
   display: (e) => {
     return () => e;
   },
+  top: (t, n, pH) => {
+    var tV = {
+      s: t[2] === "px" ? parseFloat(n.top) : (parseFloat(n.top) / pH) * 100,
+      e: t[1],
+    };
+
+    tV.lerp = tV.e - tV.s;
+    return (e) => `${tV.s + tV.lerp * e}${t[2]}`;
+  },
+  // bottom: (b, n, pH) => {
+  //   var bV = {
+  //     s: parseFloat(n.bottom),
+  //     e: (b[1] / 100) * pH,
+  //   };
+
+  //   console.log(bV.s);
+  //   bV.lerp = bV.e - bV.s;
+  //   return (e) => `${bV.s + bV.lerp * e}px`;
+  // },
 };
 
 export default props;
