@@ -46,6 +46,7 @@ class Tween {
     let o = this.store.get(ele);
     if (o) {
       o.gO.pause();
+      o.gO.d = 0;
       this.store.set(ele, { ele, gO: g, called: false });
       this.stop = false;
     } else {
