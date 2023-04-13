@@ -23,6 +23,10 @@ class _F {
   update(t) {
     for (let i = 0; i < this.items.length; i++) {
       var item = this.items[i];
+      if (item.d === 0) {
+        item.completed && item.completed();
+        this.items.splice(i, 1);
+      }
       if (item.pause) {
         item.elapsed = item.elapsed ? 1 - item.elapsed : 1;
         item.d = !item.paused ? item.elapsed * item.d : item.d;
@@ -46,9 +50,6 @@ class _F {
           if (item.completed) item.completed();
           this.items.splice(i, 1);
         }
-      } else if (item.d === 0) {
-        item.completed && item.completed();
-        this.items.splice(i, 1);
       }
     }
 
