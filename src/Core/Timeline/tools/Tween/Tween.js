@@ -11,7 +11,7 @@ class Tween {
   }
 
   to(element, o, obj) {
-    this.control(element, this);
+    this.control(element, o);
     this.obj = obj;
 
     let ele = checkEle(element);
@@ -43,14 +43,21 @@ class Tween {
   }
 
   control(ele, g) {
-    let o = this.store.get(ele);
-    if (o) {
-      o.gO.pause();
-      o.gO.d = 0;
-      this.store.set(ele, { ele, gO: g, called: false });
-      this.stop = false;
+    let re = this.store.get(ele);
+
+    if (re) {
+      if (JSON.stringify(re.o) === JSON.stringify(this.o)) {
+        this.store.set(ele, { ele, o: g });
+        this.stop = false;
+      } else {
+        console.log("Hi");
+        o.gO.pause();
+        o.gO.d = 0;
+        this.store.set(ele, { ele, gO: g, called: false });
+        this.stop = false;
+      }
     } else {
-      this.store.set(ele, { ele, gO: g, called: false });
+      this.store.set(ele, { ele, o: g });
       this.stop = false;
     }
   }
@@ -78,8 +85,11 @@ class Tween {
     let e = this.ease(t);
 
     this.results.map((p) => {
-      if (this.obj) this.elements[0][p.name] = p.cb(e);
-      else p.element.style[p.name] = p.cb(e);
+      if (this.obj) {
+        this.elements[0][p.name] = p.cb(e);
+      } else {
+        p.element.style[p.name] = p.cb(e);
+      }
     });
   }
 
