@@ -1,4 +1,4 @@
-function checkElement(element) {
+export default function checkElement(element) {
   var result = [];
 
   if (typeof element === "string") {
@@ -16,14 +16,4 @@ function checkElement(element) {
   }
 
   return result;
-}
-
-export default function Element(element) {
-  if (Array.isArray(element)) {
-    this.element.map((e) => {
-      this.selector.push(checkElement(e));
-    });
-  } else {
-    this.selector.push(checkElement(element));
-  }
 }
