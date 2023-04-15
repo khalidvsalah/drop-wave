@@ -11,7 +11,8 @@ function pushTween(obj) {
   var o = { ...this.o, delay: (pT ? pT : cT) + +this.time };
 
   this.selector.map((ele) => {
-    this.items.push({ tween: new Tween(ele, o, obj), called: false });
+    let tween = new Tween();
+    this.items.push({ tween: tween.to(ele, o, obj), called: false });
   });
 }
 
