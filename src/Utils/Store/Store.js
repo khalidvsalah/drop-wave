@@ -1,6 +1,6 @@
 class Store {
   constructor() {
-    this.store = new WeakMap();
+    this.store = new Map();
   }
 
   set(key, value) {
