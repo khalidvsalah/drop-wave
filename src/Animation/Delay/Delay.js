@@ -20,8 +20,8 @@ export default class Delay {
 
   Elapsed() {
     this.elapsed();
-    Raf.push(this.o);
-    Raf.play();
+    this.o && Raf.push(this.o);
+    this.o && Raf.play();
   }
 
   remove() {
