@@ -44,22 +44,20 @@ class Tween {
 
   control(ele, g) {
     let re = this.store.get(ele);
-
     if (re) {
-      if (JSON.stringify(re.o) === JSON.stringify(this.o)) {
-        this.store.set(ele, { ele, o: g });
-        this.stop = false;
+      if (JSON.stringify(g) === JSON.stringify(re.o)) {
+        this.played = true;
+        return;
       } else {
-        console.log("Hi");
-        o.gO.pause();
-        o.gO.d = 0;
-        this.store.set(ele, { ele, gO: g, called: false });
-        this.stop = false;
+        re.o.d = 0;
+        re.o.pause = true;
+        this.store.set(ele, { ele, o: g });
       }
     } else {
       this.store.set(ele, { ele, o: g });
-      this.stop = false;
     }
+
+    this.stop = false;
   }
 
   // set(element, o) {
@@ -91,6 +89,8 @@ class Tween {
         p.element.style[p.name] = p.cb(e);
       }
     });
+
+    if (t === 1) this.stop = true;
   }
 
   reverse(v) {
@@ -123,6 +123,7 @@ class Tween {
   }
 
   play() {
+    if (this.played) return;
     this.delay.play();
   }
 }
