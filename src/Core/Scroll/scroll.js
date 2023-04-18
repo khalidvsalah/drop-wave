@@ -8,53 +8,42 @@ class Scroll {
     this.mouse = { x: 0, y: 0, lerp };
     this.drag = { s: 0, e: 0, sp: 0, ep: 0, lerp: lerp * 0.1, on: false };
 
-    if (!Sub.subCheck("wheel")) {
+    if (!Sub.subCheck("wheel"))
       window.addEventListener("wheel", Sub.subF("wheel").cb);
-    }
     this.wId = Sub.subC("wheel", this.onWheel.bind(this));
 
     if (drag) {
-      if (!Sub.subCheck("mousedown")) {
+      if (!Sub.subCheck("mousedown"))
         window.addEventListener("mousedown", Sub.subF("mousedown").cb);
-      }
-      if (!Sub.subCheck("mousemove")) {
+      if (!Sub.subCheck("mousemove"))
         window.addEventListener("mousemove", Sub.subF("mousemove").cb);
-      }
-      if (!Sub.subCheck("mouseup")) {
+      if (!Sub.subCheck("mouseup"))
         window.addEventListener("mouseup", Sub.subF("mouseup").cb);
-      }
 
       this.mdId = Sub.subC("mousedown", this.onMDown.bind(this));
       this.mmId = Sub.subC("mousemove", this.onMM.bind(this));
       this.muId = Sub.subC("mouseup", this.onMU.bind(this));
     }
 
-    this.bounds();
+    this.Bounds();
     if (!Sub.subCheck("raf")) {
       Raf.push({ d: -1, cb: Sub.subF("raf").cb });
       Raf.play();
     }
-    Sub.subC("raf", this.raf.bind(this));
+    this.raf = Sub.subC("raf", this.raf.bind(this));
     this.rafId = Sub.subF("scroll");
   }
 
-  bounds() {
-    var bounds = Bounds(this.ele);
-
-    this.coord = {
-      h: bounds.height,
-      w: bounds.width,
-      t: bounds.top,
-      b: bounds.bottom,
-    };
+  Bounds() {
+    this.bounds = Bounds(this.ele);
   }
 
   onWheel(e) {
     this.e.x += e.deltaX * this.e.lerp;
     this.e.y += e.deltaY * this.e.lerp;
 
-    this.e.x = Clamp(0, this.coord.w, this.e.x);
-    this.e.y = Clamp(0, this.coord.h - window.innerHeight, this.e.y);
+    this.e.x = Clamp(0, this.bounds.width, this.e.x);
+    this.e.y = Clamp(0, this.bounds.height - window.innerHeight, this.e.y);
   }
 
   onMDown(e) {
@@ -73,12 +62,12 @@ class Scroll {
       var diff = this.drag.e - this.drag.s;
       this.drag.d = Math.sign(this.drag.prev - this.drag.e) * -1;
 
-      var diff;
+      diff;
       if (this.drag.d === -1) diff = this.drag.e - this.drag.sp;
       if (this.drag.d === 1) diff = this.drag.e - this.drag.ep;
 
       this.e.y = diff * -1 * this.drag.lerp + this.e.y;
-      this.e.y = Clamp(0, this.coord.h - window.innerHeight, this.e.y);
+      this.e.y = Clamp(0, this.bounds.height - window.innerHeight, this.e.y);
     }
   }
 
@@ -123,10 +112,11 @@ class Scroll {
   }
 
   destroy() {
-    Sub.subCR("wheel", this.wId.name);
+    Sub.subCR("wheel", this.wId);
     Sub.subCR("mousedown", this.mdId);
     Sub.subCR("mousemove", this.mmId);
     Sub.subCR("mouseup", this.muId);
+    Sub.subCR("raf", this.raf);
   }
 }
 
