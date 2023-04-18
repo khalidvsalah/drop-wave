@@ -105,7 +105,7 @@ const props = {
     };
 
     tV.lerp = tV.e - tV.s;
-    return (e) => `${tV.s + tV.lerp * e}${t[2]}`;
+    return (e) => `${tV.s + tV.lerp * e}${t[1]}`;
   },
 };
 
