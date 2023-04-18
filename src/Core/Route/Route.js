@@ -3,6 +3,10 @@ class _R {
     this.cache = new Map();
   }
 
+  match(url) {
+    url.match(/(?:\w+:)?\/\/[^\/]+([^?#]+)/);
+  }
+
   async xhr({ url, push, post, isText, compile }) {
     if (!this.cache.get(url)) {
       try {
@@ -23,7 +27,7 @@ class _R {
         }
 
         push && window.history.pushState({}, "", url);
-        const match = url.match(/(?:\w+:)?\/\/[^\/]+([^?#]+)/);
+        const match = this.match(url);
 
         const res = {
           url: match ? match[1] : url,
@@ -40,6 +44,18 @@ class _R {
       push && window.history.pushState({}, "", url);
       return { ...this.cache.get(url), stored: true };
     }
+  }
+
+  store(url, text) {
+    const match = this.match(url);
+
+    const res = {
+      url: match ? match[1] : url,
+      data: text,
+      stored: true,
+    };
+
+    this.cache.set(url, res);
   }
 }
 
