@@ -4,7 +4,7 @@ class _R {
   }
 
   match(url) {
-    url.match(/(?:\w+:)?\/\/[^\/]+([^?#]+)/);
+    return url.match(/(?:\w+:)?\/\/[^\/]+([^?#]+)/);
   }
 
   async xhr({ url, push, post, isText, compile }) {
