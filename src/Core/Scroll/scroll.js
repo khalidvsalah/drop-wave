@@ -41,9 +41,6 @@ class Scroll {
   onWheel(e) {
     this.e.x += e.deltaX * this.e.lerp;
     this.e.y += e.deltaY * this.e.lerp;
-
-    this.e.x = Clamp(0, this.bounds.width, this.e.x);
-    this.e.y = Clamp(0, this.bounds.height - window.innerHeight, this.e.y);
   }
 
   onMDown(e) {
@@ -67,7 +64,6 @@ class Scroll {
       if (this.drag.d === 1) diff = this.drag.e - this.drag.ep;
 
       this.e.y = diff * -1 * this.drag.lerp + this.e.y;
-      this.e.y = Clamp(0, this.bounds.height - window.innerHeight, this.e.y);
     }
   }
 
@@ -104,6 +100,9 @@ class Scroll {
   }
 
   raf() {
+    this.e.x = Clamp(0, this.bounds.width, this.e.x);
+    this.e.y = Clamp(0, this.bounds.height - window.innerHeight, this.e.y);
+
     this.mouse.x = Lerp(this.mouse.x, this.e.x, this.mouse.lerp);
     this.mouse.y = Lerp(this.mouse.y, this.e.y, this.mouse.lerp);
 
