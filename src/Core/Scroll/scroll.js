@@ -1,4 +1,4 @@
-import { Sub, TL, Bounds, Clamp, Lerp, Raf } from "../../index";
+import { Sub, TL, Bounds, Clamp, Lerp, Raf, Throttle } from "../../index";
 
 class Scroll {
   constructor(ele, { ease = 0.1, lerp = 0.1, drag = true } = {}) {
@@ -6,7 +6,7 @@ class Scroll {
     this.e = { x: 0, y: 0, lerp: ease };
 
     this.mouse = { x: 0, y: 0, lerp };
-    this.drag = { s: 0, e: 0, sp: 0, ep: 0, lerp: lerp * 0.1, on: false };
+    this.drag = { s: 0, e: 0, sp: 0, ep: 0, lerp: ease * 0.1, on: false };
 
     if (!Sub.subCheck("wheel"))
       window.addEventListener("wheel", Sub.subF("wheel").cb);
@@ -30,8 +30,24 @@ class Scroll {
       Raf.push({ d: -1, cb: Sub.subF("raf").cb });
       Raf.play();
     }
-    this.raf = Sub.subC("raf", this.raf.bind(this));
-    this.rafId = Sub.subF("scroll");
+    this.rafId = Sub.subC("raf", this.raf.bind(this));
+    this.ScrollId = Sub.subF("scroll");
+
+    this.all = document.getElementById("all");
+
+    if (!this.all) {
+      this.all = document.createElement("div");
+      this.all.id = "all";
+      document.body.appendChild(this.all);
+    }
+
+    this.thr = new Throttle({
+      delay: 0.3,
+      cb: () => {
+        console.log(this.all);
+        this.all.style.pointerEvents = "none";
+      },
+    });
   }
 
   Bounds() {
@@ -41,6 +57,8 @@ class Scroll {
   onWheel(e) {
     this.e.x += e.deltaX * this.e.lerp;
     this.e.y += e.deltaY * this.e.lerp;
+    this.all.style.pointerEvents = "all";
+    this.thr.run();
   }
 
   onMDown(e) {
@@ -80,7 +98,7 @@ class Scroll {
     var bounds = Bounds(ele);
     var ps = o.tw;
 
-    var id = Sub.subC(this.rafId.name, (e) => {
+    var id = Sub.subC(this.ScrollId.name, (e) => {
       var y = e.y + window.innerHeight;
       var pr = (o.s / 100) * window.innerHeight;
 
@@ -92,7 +110,7 @@ class Scroll {
           tl.play();
         });
 
-        Sub.subCR(this.rafId.name, id);
+        Sub.subCR(this.ScrollId.name, id);
       }
     });
 
@@ -107,7 +125,7 @@ class Scroll {
     this.mouse.y = Lerp(this.mouse.y, this.e.y, this.mouse.lerp);
 
     this.ele.style.transform = `translateY(${-this.mouse.y}px)`;
-    this.rafId.cb(this.mouse);
+    this.ScrollId.cb(this.mouse);
   }
 
   destroy() {
@@ -115,7 +133,7 @@ class Scroll {
     Sub.subCR("mousedown", this.mdId);
     Sub.subCR("mousemove", this.mmId);
     Sub.subCR("mouseup", this.muId);
-    Sub.subCR("raf", this.raf);
+    Sub.subCR("raf", this.rafId);
   }
 }
 
