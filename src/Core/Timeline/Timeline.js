@@ -24,7 +24,6 @@ class TL {
   }
 
   pause() {
-    if (!this.played) return;
     this.items.map((t) => {
       t.tween.pause();
     });
@@ -36,26 +35,25 @@ class TL {
     });
   }
 
-  kill(s) {
-    if (!s) {
-      console.error("enter vailed element");
-    } else {
-      var ei = this.store.get(s);
-      if (ei) {
-        ei.kill();
-      }
-    }
+  reverse() {
+    this.itemsReverse.reverse().map((t) => {
+      t.tween.reverse();
+    });
   }
 
+  kill() {}
+
   play() {
-    this.played = true;
     this.items.map((t) => {
       if (!t.called) {
         t.tween.play();
         t.tween.called = true;
       }
     });
+
     this.selector = [];
+    this.itemsReverse = this.items;
+    this.items = [];
   }
 }
 

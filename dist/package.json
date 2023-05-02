@@ -1,0 +1,18 @@
+{
+  "name": "ardo",
+  "version": "0.0.88",
+  "description": "Animation Library",
+  "author": "khalid_salah",
+  "main": "index.js",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/khalidsalahh/Ardor"
+  },
+  "scripts": {
+    "build": "node ./scripts/index.js"
+  },
+  "bugs": {
+    "url": "https://github.com/khalidsalahh/Ardor/issues"
+  }
+}

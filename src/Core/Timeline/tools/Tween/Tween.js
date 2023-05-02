@@ -5,14 +5,29 @@ import checkEle from "../elements/checkEle";
 
 const S = new Store();
 
+function Control(ele, g) {
+  let re = S.get(ele);
+  if (re) {
+    if (JSON.stringify(re.o.p) === JSON.stringify(g.o.p)) {
+      g.played = true;
+    } else {
+      re.kill();
+      S.set(ele, g);
+    }
+  } else {
+    S.set(ele, g);
+  }
+}
+
 class Tween {
   constructor() {
-    this.store = S;
+    this.stop = false;
+    this.played = false;
   }
 
   to(element, o, obj) {
-    this.control(element, o);
     this.obj = obj;
+    this.element = element;
 
     let ele = checkEle(element);
 
@@ -36,78 +51,30 @@ class Tween {
     this.delay = new Delay({
       delay: this.del,
       o: this.cbO,
-      elapsed: () => checkProps.call(this, this.obj),
     });
 
+    Control(element, this);
     return this;
   }
 
-  control(ele, g) {
-    let re = this.store.get(ele);
-    if (re) {
-      if (JSON.stringify(g) === JSON.stringify(re.o)) {
-        this.played = true;
-        return;
-      } else {
-        re.o.d = 0;
-        re.o.pause = true;
-        this.store.set(ele, { ele, o: g });
-      }
-    } else {
-      this.store.set(ele, { ele, o: g });
-    }
-
-    this.stop = false;
-  }
-
-  // set(element, o) {
-  //   checkElement.call(this, element, o);
-
-  //   let cbO = {
-  //     cb: this.run.bind(this),
-  //   };
-
-  //   this.delay = new Delay({ delay: 0, o: cbO });
-  //   this.ease = Ease["l"];
-
-  //   this.props = o.p;
-  //   this.keys = Object.keys(o.p);
-
-  //   checkProps.call(this);
-  //   this.play();
-  // }
-
   run(t) {
-    if (this.stop) return true;
-
-    let e = this.ease(t);
+    this.e = Math.abs(this.ease(t) - this.reEase);
 
     this.results.map((p) => {
-      if (this.obj) {
-        this.elements[0][p.name] = p.cb(e);
-      } else {
-        p.element.style[p.name] = p.cb(e);
-      }
+      if (this.obj) this.elements[0][p.name] = p.cb(this.e);
+      else p.element.style[p.name] = p.cb(this.e);
     });
 
     if (t === 1) this.stop = true;
+    return this.stop;
   }
 
-  reverse(v) {
-    if (v) {
-      for (let i = 0; i < this.keys.length; i++) {
-        let key = this.keys[i];
-        this.props[key][0] = [
-          this.props[key][1],
-          (this.props[key][1] = this.props[key][0]),
-        ][0];
-      }
-    }
-
-    this.stop = true;
-    checkProps.call(this, this.obj);
-    this.play();
+  reverse() {
+    this.played = false;
     this.stop = false;
+
+    this.o.p = {};
+    this.play("r");
   }
 
   pause() {
@@ -122,9 +89,17 @@ class Tween {
     this.stop = true;
   }
 
-  play() {
-    if (this.played) return;
-    this.delay.play();
+  play(r) {
+    this.delay.o.st = null;
+    if (r === "r") {
+      this.reEase = 1;
+      this.delay.elapsed = null;
+    } else {
+      this.reEase = 0;
+      this.delay.elapsed = () => checkProps.call(this, this.obj);
+    }
+
+    !this.played && this.delay.play();
   }
 }
 

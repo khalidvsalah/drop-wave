@@ -42,9 +42,8 @@ class Scroll {
     }
 
     this.thr = new Throttle({
-      delay: 0.3,
+      delay: 0.4,
       cb: () => {
-        console.log(this.all);
         this.all.style.pointerEvents = "none";
       },
     });
@@ -67,12 +66,12 @@ class Scroll {
   }
 
   onMM(e) {
+    this.drag.prev = this.drag.e;
+    this.drag.e = e.pageY;
+
     if (this.drag.on) {
-      this.drag.prev = this.drag.e;
       if (this.drag.d === 1) this.drag.sp = this.drag.e;
       if (this.drag.d === -1) this.drag.ep = this.drag.e;
-
-      this.drag.e = e.pageY;
 
       var diff = this.drag.e - this.drag.s;
       this.drag.d = Math.sign(this.drag.prev - this.drag.e) * -1;
@@ -82,6 +81,9 @@ class Scroll {
       if (this.drag.d === 1) diff = this.drag.e - this.drag.ep;
 
       this.e.y = diff * -1 * this.drag.lerp + this.e.y;
+
+      this.all.style.pointerEvents = "all";
+      this.thr.run();
     }
   }
 
@@ -130,9 +132,9 @@ class Scroll {
 
   destroy() {
     Sub.subCR("wheel", this.wId);
-    Sub.subCR("mousedown", this.mdId);
-    Sub.subCR("mousemove", this.mmId);
-    Sub.subCR("mouseup", this.muId);
+    this.mdId && Sub.subCR("mousedown", this.mdId);
+    this.mmId && Sub.subCR("mousemove", this.mmId);
+    this.muId && Sub.subCR("mouseup", this.muId);
     Sub.subCR("raf", this.rafId);
   }
 }

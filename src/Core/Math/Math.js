@@ -7,6 +7,7 @@ export const Ease = {
   o2: (x) => 1 - (1 - x) * (1 - x),
   io2: (x) => (x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2),
   i3: (x) => Math.pow(x, 3),
+  o3: (x) => 1 - Math.pow(1 - x, 3),
   io3: (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2),
   i4: (x) => Math.pow(x, 4),
   o4: (x) => 1 - Math.pow(1 - x, 4),

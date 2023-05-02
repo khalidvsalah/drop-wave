@@ -22,28 +22,32 @@ class _F {
 
   update(t) {
     for (let i = 0; i < this.items.length; i++) {
-      var item = this.items[i];
+      let item = this.items[i];
+
+      if (!item.st && item.d !== -1) {
+        item.st = t;
+        if (item.start) item.start();
+      }
+
       if (item.d === 0) {
         item.completed && item.completed();
         this.items.splice(i, 1);
       }
+
       if (item.pause) {
         item.elapsed = item.elapsed ? 1 - item.elapsed : 1;
         item.d = !item.paused ? item.elapsed * item.d : item.d;
         item.st = t - item.d * item.elapsed;
         item.paused = true;
-      } else if (!item.st && item.d !== -1) {
-        item.st = t;
-        if (item.start) item.start();
       } else if (item.d === -1) {
         item.cb(t);
       } else if (item.d > 0) {
-        var time = (t - item.st) / (item.d * 1000);
+        let time = (t - item.st) / (item.d * 1000);
         item.elapsed = Clamp(0, 1, time);
 
         if (item.cb) {
-          var rm = item.cb(item.elapsed);
-          rm && this.items.splice(i, 1);
+          let rm = item.cb(item.elapsed);
+          rm && (item.elapsed = 1);
         }
 
         if (item.elapsed === 1) {
@@ -77,9 +81,11 @@ class _F {
   loop() {
     if (this.items.length === 0) {
       this.on = false;
+      window.cancelAnimationFrame(this.raf);
+    } else {
+      this.on = true;
+      this.raf = window.requestAnimationFrame(this.update.bind(this));
     }
-    this.on = true;
-    window.requestAnimationFrame(this.update.bind(this));
   }
 
   play() {

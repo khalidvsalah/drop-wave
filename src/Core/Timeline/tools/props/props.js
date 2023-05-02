@@ -1,7 +1,7 @@
 const props = {
   transform: (x, y, sx, sy, n) => {
-    var xV, yV, sXV, sYV;
-    var transform =
+    let xV, yV, sXV, sYV;
+    let transform =
       n.transform !== "none" && n.transform.match(/\((.+)\)$/)[1].split(", ");
 
     if (transform) {
@@ -52,32 +52,32 @@ const props = {
     sXV.lerp = sXV.e - sXV.s;
     sYV.lerp = sYV.e - sYV.s;
 
-    if ((x && y) || transform) {
+    if ((x && y) || (x.lerp && x.lerp)) {
       return (e) => {
-        var rX = x ? `${xV.s + xV.lerp * e}${xV.unit}` : xV.s + xV.unit;
-        var rY = y ? `${yV.s + yV.lerp * e}${yV.unit}` : yV.s + yV.unit;
+        let rX = x ? `${xV.s + xV.lerp * e}${xV.unit}` : xV.s + xV.unit;
+        let rY = y ? `${yV.s + yV.lerp * e}${yV.unit}` : yV.s + yV.unit;
 
-        var rSX = `${sXV.s + sXV.lerp * e}`;
-        var rSY = `${sYV.s + sYV.lerp * e}`;
+        let rSX = `${sXV.s + sXV.lerp * e}`;
+        let rSY = `${sYV.s + sYV.lerp * e}`;
 
         return `translate3d(${rX}, ${rY}, 0) scale(${rSX}, ${rSY})`;
       };
     } else {
       if (x) {
         return (e) => {
-          var rX = `${xV.s + xV.lerp * e}${xV.unit}`;
+          let rX = `${xV.s + xV.lerp * e}${xV.unit}`;
 
-          var rSX = `${sXV.s + sXV.lerp * e}`;
-          var rSY = `${sYV.s + sYV.lerp * e}`;
+          let rSX = `${sXV.s + sXV.lerp * e}`;
+          let rSY = `${sYV.s + sYV.lerp * e}`;
 
           return `translateX(${rX}) scale(${rSX}, ${rSY})`;
         };
       } else if (y) {
         return (e) => {
-          var rY = `${yV.s + yV.lerp * e}${yV.unit}`;
+          let rY = `${yV.s + yV.lerp * e}${yV.unit}`;
 
-          var rSX = `${sXV.s + sXV.lerp * e}`;
-          var rSY = `${sYV.s + sYV.lerp * e}`;
+          let rSX = `${sXV.s + sXV.lerp * e}`;
+          let rSY = `${sYV.s + sYV.lerp * e}`;
 
           return `translateY(${rY}) scale(${rSX}, ${rSY})`;
         };
@@ -85,7 +85,7 @@ const props = {
     }
   },
   opacity: (o, n) => {
-    var oV = {
+    let oV = {
       s: +n.opacity,
       e: o[0],
     };
@@ -99,7 +99,7 @@ const props = {
     return () => e;
   },
   top: (t, n, pH) => {
-    var tV = {
+    let tV = {
       s: t[1] === "px" ? parseFloat(n.top) : (parseFloat(n.top) / pH) * 100,
       e: t[0],
     };
