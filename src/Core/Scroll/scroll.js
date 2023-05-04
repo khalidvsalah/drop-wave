@@ -2,14 +2,16 @@ import { Sub, TL, Bounds, Clamp, Lerp, Raf, Throttle } from "../../index";
 
 class Scroll {
   constructor(ele, { ease = 0.1, lerp = 0.1, drag = true } = {}) {
+    history.scrollRestoration = "manual";
     this.ele = ele;
     this.e = { x: 0, y: 0, lerp: ease };
 
     this.mouse = { x: 0, y: 0, lerp };
     this.drag = { s: 0, e: 0, sp: 0, ep: 0, lerp: ease * 0.1, on: false };
 
-    if (!Sub.subCheck("wheel"))
+    if (!Sub.subCheck("wheel")) {
       window.addEventListener("wheel", Sub.subF("wheel").cb);
+    }
     this.wId = Sub.subC("wheel", this.onWheel.bind(this));
 
     if (drag) {
@@ -26,10 +28,12 @@ class Scroll {
     }
 
     this.Bounds();
+
     if (!Sub.subCheck("raf")) {
       Raf.push({ d: -1, cb: Sub.subF("raf").cb });
       Raf.play();
     }
+
     this.rafId = Sub.subC("raf", this.raf.bind(this));
     this.ScrollId = Sub.subF("scroll");
 
@@ -66,10 +70,9 @@ class Scroll {
   }
 
   onMM(e) {
-    this.drag.prev = this.drag.e;
-    this.drag.e = e.pageY;
-
     if (this.drag.on) {
+      this.drag.prev = this.drag.e;
+
       if (this.drag.d === 1) this.drag.sp = this.drag.e;
       if (this.drag.d === -1) this.drag.ep = this.drag.e;
 
@@ -85,6 +88,8 @@ class Scroll {
       this.all.style.pointerEvents = "all";
       this.thr.run();
     }
+
+    this.drag.e = e.pageY;
   }
 
   onMU() {
