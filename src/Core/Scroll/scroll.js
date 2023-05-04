@@ -1,18 +1,21 @@
 import { Sub, TL, Bounds, Clamp, Lerp, Raf, Throttle } from "../../index";
 
 class Scroll {
-  constructor(ele, { ease = 0.1, lerp = 0.1, drag = true } = {}) {
+  constructor(
+    ele,
+    { ease = 0.1, wheelLerp = 0.1, drag = true, dragLerp = 0.05 } = {}
+  ) {
     history.scrollRestoration = "manual";
-    this.ele = ele;
-    this.e = { x: 0, y: 0, lerp: ease };
 
-    this.mouse = { x: 0, y: 0, lerp };
-    this.drag = { s: 0, e: 0, sp: 0, ep: 0, lerp: ease * 0.1, on: false };
+    this.ele = ele;
+    this.lerp = { x: 0, y: 0, lerp: ease };
+
+    this.wheel = { x: 0, y: 0, lerp: wheelLerp };
+    this.drag = { s: 0, e: 0, sp: 0, ep: 0, lerp: dragLerp, on: false };
 
     if (!Sub.subCheck("wheel")) {
       window.addEventListener("wheel", Sub.subF("wheel").cb);
     }
-    this.wId = Sub.subC("wheel", this.onWheel.bind(this));
 
     if (drag) {
       if (!Sub.subCheck("mousedown"))
@@ -34,14 +37,15 @@ class Scroll {
       Raf.play();
     }
 
+    this.wId = Sub.subC("wheel", this.onWheel.bind(this));
     this.rafId = Sub.subC("raf", this.raf.bind(this));
     this.ScrollId = Sub.subF("scroll");
 
     this.all = document.getElementById("all");
-
     if (!this.all) {
       this.all = document.createElement("div");
       this.all.id = "all";
+
       document.body.appendChild(this.all);
     }
 
@@ -58,20 +62,24 @@ class Scroll {
   }
 
   onWheel(e) {
-    this.e.x += e.deltaX * this.e.lerp;
-    this.e.y += e.deltaY * this.e.lerp;
+    this.lerp.x += e.deltaX * this.lerp.lerp;
+    this.lerp.y += e.deltaY * this.lerp.lerp;
+
     this.all.style.pointerEvents = "all";
     this.thr.run();
   }
 
   onMDown(e) {
-    this.drag.on = true;
     this.drag.s = e.pageY;
+    this.drag.on = true;
+
+    console.log("Clicked");
   }
 
   onMM(e) {
     if (this.drag.on) {
       this.drag.prev = this.drag.e;
+      this.drag.e = e.pageY;
 
       if (this.drag.d === 1) this.drag.sp = this.drag.e;
       if (this.drag.d === -1) this.drag.ep = this.drag.e;
@@ -79,17 +87,14 @@ class Scroll {
       var diff = this.drag.e - this.drag.s;
       this.drag.d = Math.sign(this.drag.prev - this.drag.e) * -1;
 
-      diff;
       if (this.drag.d === -1) diff = this.drag.e - this.drag.sp;
       if (this.drag.d === 1) diff = this.drag.e - this.drag.ep;
 
-      this.e.y = diff * -1 * this.drag.lerp + this.e.y;
+      this.lerp.y = diff * -1 * this.drag.lerp + this.lerp.y;
 
       this.all.style.pointerEvents = "all";
       this.thr.run();
     }
-
-    this.drag.e = e.pageY;
   }
 
   onMU() {
@@ -125,14 +130,18 @@ class Scroll {
   }
 
   raf() {
-    this.e.x = Clamp(0, this.bounds.width, this.e.x);
-    this.e.y = Clamp(0, this.bounds.height - window.innerHeight, this.e.y);
+    this.lerp.x = Clamp(0, this.bounds.width, this.lerp.x);
+    this.lerp.y = Clamp(
+      0,
+      this.bounds.height - window.innerHeight,
+      this.lerp.y
+    );
 
-    this.mouse.x = Lerp(this.mouse.x, this.e.x, this.mouse.lerp);
-    this.mouse.y = Lerp(this.mouse.y, this.e.y, this.mouse.lerp);
+    this.wheel.x = Lerp(this.wheel.x, this.lerp.x, this.wheel.lerp);
+    this.wheel.y = Lerp(this.wheel.y, this.lerp.y, this.wheel.lerp);
 
-    this.ele.style.transform = `translateY(${-this.mouse.y}px)`;
-    this.ScrollId.cb(this.mouse);
+    this.ele.style.transform = `translateY(${-this.wheel.y}px)`;
+    this.ScrollId.cb(this.wheel);
   }
 
   destroy() {
