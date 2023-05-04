@@ -7,33 +7,45 @@ const S = new Store();
 
 function Control(ele, g) {
   let re = S.get(ele);
+
   if (re) {
-    if (JSON.stringify(re.o.p) === JSON.stringify(g.o.p)) {
-      g.played = true;
-    } else {
-      re.kill();
-      S.set(ele, g);
+    if (JSON.stringify(re.o.p) !== JSON.stringify(g.p)) {
+      re.destroy();
+
+      const tw = new Tween(ele, g);
+      S.set(ele, tw);
+
+      tw.play();
     }
   } else {
-    S.set(ele, g);
+    const tw = new Tween(ele, g);
+    S.set(ele, tw);
+
+    tw.play();
   }
+
+  return {
+    reverse: () => {},
+    pause: () => {},
+    resume: () => {},
+  };
 }
 
 class Tween {
-  constructor() {
-    this.stop = false;
-    this.played = false;
-  }
-
-  to(element, o, obj) {
+  constructor(element, o, obj = false) {
     this.obj = obj;
     this.element = element;
-
-    let ele = checkEle(element);
-
-    this.elements = Array.isArray(ele) ? ele : [ele];
-
     this.o = o;
+
+    this.stop = false;
+    this.played = false;
+
+    this.to();
+  }
+
+  to() {
+    let ele = checkEle(this.element);
+    this.elements = Array.isArray(ele) ? ele : [ele];
 
     this.d = this.o.d ? this.o.d : 0.5;
     this.del = this.o.delay ? this.o.delay : 0;
@@ -53,7 +65,6 @@ class Tween {
       o: this.cbO,
     });
 
-    Control(element, this);
     return this;
   }
 
@@ -85,12 +96,13 @@ class Tween {
     this.delay.o.pause = false;
   }
 
-  kill() {
+  destroy() {
     this.stop = true;
   }
 
   play(r) {
     this.delay.o.st = null;
+
     if (r === "r") {
       this.reEase = 1;
       this.delay.elapsed = null;
@@ -100,7 +112,8 @@ class Tween {
     }
 
     !this.played && this.delay.play();
+    this.played = true;
   }
 }
 
-export default Tween;
+export default Control;
