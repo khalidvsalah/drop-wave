@@ -3,13 +3,13 @@ import createTween from "./tools/createTween";
 class TL {
   constructor() {
     this.items = [];
-    this.store = new Map();
+    this.reverseItems = [];
+    this.selector = [];
+
     this.played = false;
   }
 
   to(element, o, time = 0) {
-    this.selector = [];
-
     if (!element || !o) {
       var err = !element
         ? "You need to pass Element"
@@ -24,36 +24,21 @@ class TL {
   }
 
   pause() {
-    this.items.map((t) => {
-      t.tween.pause();
+    this.items.map((tw) => {
+      tw.tween.pause();
     });
   }
 
   resume() {
-    this.items.map((t) => {
-      t.tween.resume();
+    this.items.map((tw) => {
+      tw.tween.resume();
     });
   }
 
   reverse() {
-    this.itemsReverse.reverse().map((t) => {
-      t.tween.reverse();
+    this.items.reverse().map((tw) => {
+      tw.tween.reverse();
     });
-  }
-
-  kill() {}
-
-  play() {
-    this.items.map((t) => {
-      if (!t.called) {
-        t.tween.play();
-        t.tween.called = true;
-      }
-    });
-
-    this.selector = [];
-    this.itemsReverse = this.items;
-    this.items = [];
   }
 }
 

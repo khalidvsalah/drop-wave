@@ -3,6 +3,7 @@ import props from "./props.js";
 
 export default function checkProps(w) {
   this.results = [];
+  this.startPoint = this.props;
 
   if (!w) {
     let x, y, o, p, d, sx, sy, t, l, b, r;
@@ -34,7 +35,7 @@ export default function checkProps(w) {
         this.results.push({
           name: "transform",
           element: e,
-          cb: props["transform"](x, y, sx, sy, n),
+          cb: props["transform"](x, y, sx, sy, n, this.startPoint),
         });
       }
 
@@ -42,7 +43,7 @@ export default function checkProps(w) {
         this.results.push({
           name: "top",
           element: e,
-          cb: props["top"](t, n, pH),
+          cb: props["top"](t, n, pH, this.startPoint),
         });
 
       // b &&
@@ -84,7 +85,7 @@ export default function checkProps(w) {
         this.results.push({
           name: "opacity",
           element: e,
-          cb: props["opacity"](o, n),
+          cb: props["opacity"](o, n, this.startPoint),
         });
     });
   } else {

@@ -4,7 +4,7 @@ function pushTween(obj) {
   this.selector.map(({ element, o, time = 0 }, i, arr) => {
     if (i === 0) {
       let tween = Tween(element, o, obj);
-      this.items.push({ tween, o, ele: element });
+      this.items.push({ tween, o });
     } else {
       let delay, duration, stagger, add;
 
@@ -15,7 +15,7 @@ function pushTween(obj) {
 
       let o2 = { ...o, delay: add };
       let tween = Tween(element, o2, obj);
-      this.items.push({ tween, o: o2, ele: element });
+      this.items.push({ tween, o: o2 });
     }
   });
 }

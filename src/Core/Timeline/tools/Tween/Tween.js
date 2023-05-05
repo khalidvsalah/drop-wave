@@ -7,27 +7,35 @@ const S = new Store();
 
 function Control(ele, g) {
   let re = S.get(ele);
+  let tw = re ? re : null;
 
   if (re) {
     if (JSON.stringify(re.o.p) !== JSON.stringify(g.p)) {
       re.destroy();
 
-      const tw = new Tween(ele, g);
+      tw = new Tween(ele, g);
       S.set(ele, tw);
 
       tw.play();
     }
   } else {
-    const tw = new Tween(ele, g);
+    tw = new Tween(ele, g);
     S.set(ele, tw);
 
     tw.play();
   }
 
   return {
-    reverse: () => {},
-    pause: () => {},
-    resume: () => {},
+    reverse: () => {
+      tw.reverse();
+    },
+    pause: () => {
+      tw.pause();
+    },
+    resume: () => {
+      tw.resume();
+    },
+    ele,
   };
 }
 
@@ -72,8 +80,9 @@ class Tween {
     this.e = Math.abs(this.ease(t) - this.reEase);
 
     this.results.map((p) => {
-      if (this.obj) this.elements[0][p.name] = p.cb(this.e);
-      else p.element.style[p.name] = p.cb(this.e);
+      let cb = p.cb(this.e);
+      if (this.obj) this.elements[0][p.name] = cb;
+      else p.element.style[p.name] = cb;
     });
 
     if (t === 1) this.stop = true;
@@ -84,8 +93,8 @@ class Tween {
     this.played = false;
     this.stop = false;
 
-    this.o.p = {};
-    this.play("r");
+    console.log(this.startPoint);
+    // this.play("r");
   }
 
   pause() {
