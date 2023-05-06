@@ -10,7 +10,7 @@ function Control(ele, g) {
   let tw = re ? re : null;
 
   if (re) {
-    if (JSON.stringify(re.o.p) !== JSON.stringify(g.p)) {
+    if (JSON.stringify(re.o.props) !== JSON.stringify(g.p)) {
       re.destroy();
 
       tw = new Tween(ele, g);
@@ -40,7 +40,7 @@ function Control(ele, g) {
 }
 
 class Tween {
-  constructor(element, o, obj = false) {
+  constructor(element, o, obj) {
     this.obj = obj;
     this.element = element;
     this.o = o;
@@ -53,7 +53,7 @@ class Tween {
 
   to() {
     let ele = checkEle(this.element);
-    this.elements = Array.isArray(ele) ? ele : [ele];
+    this.elements = ele[0];
 
     this.d = this.o.d ? this.o.d : 0.5;
     this.del = this.o.delay ? this.o.delay : 0;
@@ -65,22 +65,24 @@ class Tween {
     };
 
     this.ease = this.o.ease ? Ease[this.o.ease] : Ease["l"];
-    this.props = this.o.p;
-    this.keys = Object.keys(this.props);
+    this.props = JSON.parse(JSON.stringify(this.o.p));
+    this.keys = Object.entries(this.props);
 
     this.delay = new Delay({
       delay: this.del,
       o: this.cbO,
+      elapsed: () => checkProps.call(this, this.obj),
     });
 
-    return this;
+    this.play();
   }
 
   run(t) {
-    this.e = Math.abs(this.ease(t) - this.reEase);
+    this.e = this.ease(t);
 
     this.results.map((p) => {
       let cb = p.cb(this.e);
+
       if (this.obj) this.elements[0][p.name] = cb;
       else p.element.style[p.name] = cb;
     });
@@ -90,11 +92,17 @@ class Tween {
   }
 
   reverse() {
-    this.played = false;
-    this.stop = false;
+    for (let i = 0; i < this.keys.length; i++) {
+      this.props[this.keys[i][0]] = [
+        this.startPoint[this.keys[i][0]],
+        this.keys[i][1][1],
+      ];
+    }
 
-    console.log(this.startPoint);
-    // this.play("r");
+    this.delay.o.st = null;
+
+    if (this.e === 1) this.stop = false;
+    this.delay.play();
   }
 
   pause() {
@@ -109,19 +117,13 @@ class Tween {
     this.stop = true;
   }
 
-  play(r) {
+  play(f) {
+    this.props = JSON.parse(JSON.stringify(this.o.p));
+
     this.delay.o.st = null;
+    this.stop = false;
 
-    if (r === "r") {
-      this.reEase = 1;
-      this.delay.elapsed = null;
-    } else {
-      this.reEase = 0;
-      this.delay.elapsed = () => checkProps.call(this, this.obj);
-    }
-
-    !this.played && this.delay.play();
-    this.played = true;
+    this.delay.play();
   }
 }
 
