@@ -52,10 +52,12 @@ const props = {
     sXV.lerp = sXV.e - sXV.s;
     sYV.lerp = sYV.e - sYV.s;
 
-    store["y"] = yV.s;
-    store["x"] = xV.s;
-    store["sy"] = sXV.s;
-    store["sx"] = sYV.s;
+    if (store) {
+      store["y"] = yV.s;
+      store["x"] = xV.s;
+      store["sy"] = sXV.s;
+      store["sx"] = sYV.s;
+    }
 
     if ((x && y) || (x.lerp && y.lerp)) {
       return (e) => {
@@ -94,8 +96,10 @@ const props = {
       s: +n.opacity,
       e: o[0],
     };
+
     oV.lerp = oV.e - oV.s;
-    store["opacity"] = oV.s;
+    if (store) store["opacity"] = oV.s;
+
     return (e) => `${oV.s + oV.lerp * e}`;
   },
   pointer: (e) => {
@@ -110,8 +114,10 @@ const props = {
       e: t[0],
     };
 
-    store["top"] = oV.s;
     tV.lerp = tV.e - tV.s;
+    store["top"] = tV.s;
+    if (store) store["top"] = tV.s;
+
     return (e) => `${tV.s + tV.lerp * e}${t[1]}`;
   },
 };

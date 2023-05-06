@@ -13,9 +13,6 @@ function Control(ele, g) {
     if (JSON.stringify(re.o.props) !== JSON.stringify(g.p)) {
       re.destroy();
 
-      tw = new Tween(ele, g);
-      S.set(ele, tw);
-
       tw.play();
     }
   } else {
@@ -47,6 +44,7 @@ class Tween {
 
     this.stop = false;
     this.played = false;
+    this.startPoint = {};
 
     this.to();
   }
@@ -100,6 +98,7 @@ class Tween {
     }
 
     this.delay.o.st = null;
+    this.reverseOn = true;
 
     if (this.e === 1) this.stop = false;
     this.delay.play();
@@ -117,7 +116,7 @@ class Tween {
     this.stop = true;
   }
 
-  play(f) {
+  play() {
     this.props = JSON.parse(JSON.stringify(this.o.p));
 
     this.delay.o.st = null;

@@ -3,10 +3,10 @@ import props from "./props.js";
 
 export default function checkProps(w) {
   this.results = [];
-  this.startPoint = {};
 
   if (!w) {
     let x, y, o, p, d, sx, sy, t, l, b, r;
+    let point = this.reverseOn ? false : this.startPoint;
 
     x = Has(this.props, "x") && this.props["x"];
     y = Has(this.props, "y") && this.props["y"];
@@ -35,7 +35,7 @@ export default function checkProps(w) {
       this.results.push({
         name: "transform",
         element: element,
-        cb: props["transform"](x, y, sx, sy, n, this.startPoint),
+        cb: props["transform"](x, y, sx, sy, n, point),
       });
     }
 
@@ -43,7 +43,28 @@ export default function checkProps(w) {
       this.results.push({
         name: "top",
         element: element,
-        cb: props["top"](t, n, pH, this.startPoint),
+        cb: props["top"](t, n, pH, point),
+      });
+
+    p &&
+      this.results.push({
+        name: "pointerEvents",
+        element: element,
+        cb: props["pointer"](p),
+      });
+
+    d &&
+      this.results.push({
+        name: "display",
+        element: element,
+        cb: props["display"](d),
+      });
+
+    o &&
+      this.results.push({
+        name: "opacity",
+        element: element,
+        cb: props["opacity"](o, n, point),
       });
 
     // b &&
@@ -66,27 +87,6 @@ export default function checkProps(w) {
     //     element: e,
     //     cb: props["right"](r, n, pW),
     //   });
-
-    p &&
-      this.results.push({
-        name: "pointerEvents",
-        element: element,
-        cb: props["pointer"](p),
-      });
-
-    d &&
-      this.results.push({
-        name: "display",
-        element: element,
-        cb: props["display"](d),
-      });
-
-    o &&
-      this.results.push({
-        name: "opacity",
-        element: element,
-        cb: props["opacity"](o, n, this.startPoint),
-      });
   } else {
     for (let i = 0; i < this.keys.length; i++) {
       let ks = this.keys[i];
