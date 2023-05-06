@@ -13,11 +13,11 @@ export default class Delay {
       d: this.delay,
     });
 
+    this.elapsed && this.elapsed();
     Raf.play();
   }
 
   Elapsed() {
-    this.elapsed && this.elapsed();
     this.o && Raf.push(this.o);
     Raf.play();
   }
