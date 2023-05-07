@@ -15,7 +15,11 @@ async function Bundle(src, dir, output, mode) {
     minify: mode,
   };
 
-  await esbuild.build(out);
+  try {
+    await esbuild.build(out);
+  } catch {
+    console.error("JS error");
+  }
 
   var file = fs.readFileSync(o, "utf-8");
   file = mode ? uglify.minify(file).code : file;
