@@ -9,21 +9,14 @@ export default class Delay {
   }
 
   play() {
-    this.remove();
-
     this.index = Raf.push({
       completed: this.Elapsed.bind(this),
       d: this.delay,
     });
-
-    this.elapsed && this.elapsed();
   }
 
   Elapsed() {
+    this.elapsed && this.elapsed();
     this.o && (this.id = Raf.push(this.o));
-  }
-
-  remove() {
-    if (this.id) Raf.kill(this.index);
   }
 }
