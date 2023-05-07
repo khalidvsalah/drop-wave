@@ -47,7 +47,7 @@ class Tween {
   }
 
   to() {
-    this.elements = ele = checkEle(this.element);
+    this.elements = checkEle(this.element);
 
     this.d = this.o.d ? this.o.d : 0.5;
     this.del = this.o.delay ? this.o.delay : 0;
