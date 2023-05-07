@@ -42,8 +42,8 @@ class Tween {
     this.element = element;
     this.o = o;
 
-    this.stop = false;
     this.played = false;
+    this.mode = false;
     this.startPoint = {};
 
     this.to();
@@ -71,8 +71,6 @@ class Tween {
       o: this.cbO,
       elapsed: () => checkProps.call(this, this.obj),
     });
-
-    this.play();
   }
 
   run(t) {
@@ -84,9 +82,6 @@ class Tween {
       if (this.obj) this.elements[0][p.name] = cb;
       else p.element.style[p.name] = cb;
     });
-
-    if (t === 1) this.stop = true;
-    return this.stop;
   }
 
   reverse() {
@@ -97,11 +92,12 @@ class Tween {
       ];
     }
 
-    this.delay.o.st = null;
     this.reverseOn = true;
 
-    if (this.e === 1) this.stop = false;
-    this.delay.play();
+    if (this.mode !== "reverse") {
+      this.mode = "reverse";
+      this.delay.play();
+    }
   }
 
   pause() {
@@ -113,16 +109,16 @@ class Tween {
   }
 
   destroy() {
-    this.stop = true;
+    this.delay.remove();
   }
 
   play() {
     this.props = JSON.parse(JSON.stringify(this.o.p));
 
-    this.delay.o.st = null;
-    this.stop = false;
-
-    this.delay.play();
+    if (this.mode !== "play") {
+      this.delay.play();
+      this.mode = "play";
+    }
   }
 }
 
