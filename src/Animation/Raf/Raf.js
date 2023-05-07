@@ -9,11 +9,13 @@ class _F {
   push(o) {
     if (Array.isArray(o)) {
       return o.map((obj) => {
-        this.items.push(obj);
+        this.items.push({ ...obj, id: this.items.length - 1 });
+        !this.on && this.play();
         return this.items.length - 1;
       });
     } else if (typeof o === "object") {
-      this.items.push(o);
+      this.items.push({ ...o, id: this.items.length - 1 });
+      !this.on && this.play();
       return this.items.length - 1;
     } else {
       console.error("Failed To Push Object");
@@ -26,12 +28,14 @@ class _F {
 
       if (!item.st && item.d !== -1) {
         item.st = t;
+
         if (item.start) item.start();
       }
 
       if (item.d === 0) {
         item.completed && item.completed();
         this.items.splice(i, 1);
+        item.st = 0;
       }
 
       if (item.pause) {
@@ -45,13 +49,11 @@ class _F {
         let time = (t - item.st) / (item.d * 1000);
         item.elapsed = Clamp(0, 1, time);
 
-        if (item.cb) {
-          let rm = item.cb(item.elapsed);
-          rm && (item.elapsed = 1);
-        }
+        if (item.cb) item.cb(item.elapsed);
 
         if (item.elapsed === 1) {
           if (item.completed) item.completed();
+          item.st = 0;
           this.items.splice(i, 1);
         }
       }
@@ -69,10 +71,13 @@ class _F {
         this.items.splice(i, 1);
       });
     } else if (typeof n === "number") {
-      if (this.items[n].cb) {
-        this.items[n].cb(this.elapsed);
-      }
-      this.items.splice(n, 1);
+      this.items.map((item) => {
+        if (item.id === n) {
+          if (item.cb) item.cb(item.elapsed);
+          item.st = 0;
+          this.items.splice(n, 1);
+        }
+      });
     } else {
       console.error("You Need To Pass Array or Number");
     }

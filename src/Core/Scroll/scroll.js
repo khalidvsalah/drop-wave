@@ -34,7 +34,6 @@ class Scroll {
 
     if (!Sub.subCheck("raf")) {
       Raf.push({ d: -1, cb: Sub.subF("raf").cb });
-      Raf.play();
     }
 
     this.wId = Sub.subC("wheel", this.onWheel.bind(this));

@@ -4,25 +4,26 @@ export default class Delay {
   constructor({ delay, o, elapsed }) {
     this.delay = delay;
     this.o = o;
+    this.id;
     this.elapsed = elapsed;
   }
 
   play() {
+    this.remove();
+
     this.index = Raf.push({
       completed: this.Elapsed.bind(this),
       d: this.delay,
     });
 
     this.elapsed && this.elapsed();
-    Raf.play();
   }
 
   Elapsed() {
-    this.o && Raf.push(this.o);
-    Raf.play();
+    this.o && (this.id = Raf.push(this.o));
   }
 
   remove() {
-    Raf.kill(this.index);
+    if (this.id) Raf.kill(this.index);
   }
 }
