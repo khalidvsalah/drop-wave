@@ -4,19 +4,20 @@ class _F {
   constructor() {
     this.items = [];
     this.on = false;
+    this.id = -1;
   }
 
   push(o) {
-    if (Array.isArray(o)) {
-      return o.map((obj) => {
-        this.items.push({ ...obj, id: this.items.length - 1 });
-        !this.on && this.play();
-        return this.items.length - 1;
-      });
-    } else if (typeof o === "object") {
-      this.items.push({ ...o, id: this.items.length - 1 });
-      !this.on && this.play();
-      return this.items.length - 1;
+    if (typeof o.id === "number") this.kill(o.id);
+
+    if (typeof o === "object") {
+      let item = o;
+
+      item.id = ++this.id;
+      this.items.push(item);
+
+      !this.on && this.loop();
+      return item.id;
     } else {
       console.error("Failed To Push Object");
     }
@@ -26,16 +27,11 @@ class _F {
     for (let i = 0; i < this.items.length; i++) {
       let item = this.items[i];
 
+      if (item.d === 0) this.kill(item.id);
+
       if (!item.st && item.d !== -1) {
         item.st = t;
-
         if (item.start) item.start();
-      }
-
-      if (item.d === 0) {
-        item.completed && item.completed();
-        this.items.splice(i, 1);
-        item.st = 0;
       }
 
       if (item.pause) {
@@ -47,15 +43,11 @@ class _F {
         item.cb(t);
       } else if (item.d > 0) {
         let time = (t - item.st) / (item.d * 1000);
-        item.elapsed = Clamp(0, 1, time);
 
+        item.elapsed = Clamp(0, 1, time);
         if (item.cb) item.cb(item.elapsed);
 
-        if (item.elapsed === 1) {
-          if (item.completed) item.completed();
-          item.st = 0;
-          this.items.splice(i, 1);
-        }
+        if (item.elapsed === 1) this.kill(item.id);
       }
     }
 
@@ -63,23 +55,20 @@ class _F {
   }
 
   kill(n) {
-    if (Array.isArray(n)) {
-      n.map((i) => {
-        if (this.items[i].cb) {
-          this.items[i].cb(this.elapsed);
-        }
-        this.items.splice(i, 1);
-      });
-    } else if (typeof n === "number") {
+    if (typeof n === "number") {
       this.items.map((item) => {
         if (item.id === n) {
           if (item.cb) item.cb(item.elapsed);
+          if (item.completed) item.completed();
+
           item.st = 0;
-          this.items.splice(n, 1);
+          item.id = null;
+
+          this.items.splice(item.id, 1);
         }
       });
     } else {
-      console.error("You Need To Pass Array or Number");
+      console.error("You Need To Pass Number", n);
     }
   }
 
@@ -90,12 +79,6 @@ class _F {
     } else {
       this.on = true;
       this.raf = window.requestAnimationFrame(this.update.bind(this));
-    }
-  }
-
-  play() {
-    if (!this.on) {
-      this.loop();
     }
   }
 }
