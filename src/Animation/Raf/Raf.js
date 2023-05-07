@@ -16,6 +16,10 @@ class _F {
       item.id = ++this.id;
       this.items.push(item);
 
+      if (item.d === 0) {
+        item.completed && item.completed();
+      }
+
       !this.on && this.loop();
       return item.id;
     } else {
@@ -26,8 +30,6 @@ class _F {
   update(t) {
     for (let i = 0; i < this.items.length; i++) {
       let item = this.items[i];
-
-      if (item.d === 0) this.kill(item.id);
 
       if (!item.st && item.d !== -1) {
         item.st = t;
@@ -47,16 +49,16 @@ class _F {
         item.elapsed = Clamp(0, 1, time);
         if (item.cb) item.cb(item.elapsed);
 
-        if (item.elapsed === 1) this.kill(item.id);
+        if (item.elapsed === 1) this.kill(item.id, "elapsed");
       }
     }
 
     this.loop();
   }
 
-  kill(n) {
+  kill(n, me) {
     if (typeof n === "number") {
-      this.items.map((item) => {
+      this.items.map((item, i) => {
         if (item.id === n) {
           if (item.cb) item.cb(item.elapsed);
           if (item.completed) item.completed();
@@ -64,11 +66,11 @@ class _F {
           item.st = 0;
           item.id = null;
 
-          this.items.splice(item.id, 1);
+          this.items.splice(i, 1);
         }
       });
     } else {
-      console.error("You Need To Pass Number", n);
+      console.error("You Need To Pass Number", me);
     }
   }
 
