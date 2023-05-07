@@ -1,18 +1,12 @@
 export default function checkElement(element) {
-  var result = [];
+  let result;
 
   if (typeof element === "string") {
-    var els = document.querySelectorAll(element);
-
-    if (els.length === 0) {
-      console.error("Found no element");
-    } else {
-      result = new Array(...els);
-    }
+    return document.querySelector(element);
   } else if (element instanceof window.HTMLElement) {
-    result.push(element);
+    return element;
   } else if (typeof element === "object") {
-    result.push(element);
+    return element;
   }
 
   return result;
