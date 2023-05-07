@@ -1,21 +1,22 @@
 import Tween from "./Tween/Tween.js";
 
 function pushTween(obj) {
-  this.selector.map(({ element, o, time = 0 }, i, arr) => {
+  this.selector.map(({ element, o, time = 0 }, i) => {
     if (i === 0) {
       let tween = Tween(element, o, obj);
       this.items.push({ tween, o });
     } else {
       let delay, duration, stagger, add;
 
-      stagger = arr[i - 1].o.stagger || 0;
-      duration = arr[i - 1].o.d || 0;
-      delay = arr[i - 1].o.delay || 0;
+      stagger = this.items[i - 1].o.stagger || 0;
+      duration = this.items[i - 1].o.d || 0;
+      delay = this.items[i - 1].o.delay || 0;
       add = delay + stagger + duration + (o.delay || 0) + time;
 
-      let o2 = { ...o, delay: add };
-      let tween = Tween(element, o2, obj);
-      this.items.push({ tween, o: o2 });
+      let copy = { ...o, delay: add };
+      let tween = Tween(element, copy, obj);
+
+      this.items.push({ tween, o: copy });
     }
   });
 }
