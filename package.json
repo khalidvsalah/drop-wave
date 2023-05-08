@@ -10,7 +10,7 @@
     "url": "https://github.com/khalidsalahh/Ardor"
   },
   "scripts": {
-    "build": "node ./scripts/index.js",
+    "prod": "node ./scripts/index.js",
     "dev": "node ./scripts/dev.js",
     "test": "jest"
   },
