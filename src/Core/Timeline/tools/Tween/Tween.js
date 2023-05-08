@@ -5,32 +5,76 @@ import checkEle from "../elements/checkEle";
 
 const S = new Store();
 
-function Control(ele, g) {
-  let re = S.get(ele);
-  let tw = re ? re : null;
+function Control(items, g) {
+  if (items.length) {
+    [...items].map((item) => {
+      let re = S.get(item);
+      let tw = re ? re : null;
 
-  if (re) {
-    if (JSON.stringify(re.o.props) !== JSON.stringify(g.p)) {
+      if (re) {
+        if (JSON.stringify(re.props) !== JSON.stringify(g.p)) {
+          tw.mode = undefined;
+
+          tw.delay.delay = g.delay || re.del;
+          tw.ease = Ease[g.ease] || re.ease;
+          tw.d = g.d || re.d;
+          tw.completed = g.completed || re.completed;
+
+          tw.play(g.p);
+        }
+      } else {
+        tw = new Tween(item, g);
+        S.set(item, tw);
+        tw.play();
+      }
+
+      return {
+        reverse: () => {
+          tw.reverse();
+        },
+        pause: () => {
+          tw.pause();
+        },
+        resume: () => {
+          tw.resume();
+        },
+        item,
+      };
+    });
+  } else {
+    let re = S.get(items);
+    let tw = re ? re : null;
+
+    if (re) {
+      if (JSON.stringify(re.props) !== JSON.stringify(g.p)) {
+        tw.mode = undefined;
+
+        tw.delay.delay = g.delay || re.del;
+        tw.ease = Ease[g.ease] || re.ease;
+        tw.d = g.d || re.d;
+        tw.completed = g.completed || re.completed;
+
+        tw.play(g.p);
+      }
+    } else {
+      tw = new Tween(items, g);
+      S.set(items, tw);
       tw.play();
     }
-  } else {
-    tw = new Tween(ele, g);
-    S.set(ele, tw);
-    tw.play();
-  }
 
-  return {
-    reverse: () => {
-      tw.reverse();
-    },
-    pause: () => {
-      tw.pause();
-    },
-    resume: () => {
-      tw.resume();
-    },
-    ele,
-  };
+    return {
+      reverse: () => {
+        tw.reverse();
+      },
+      pause: () => {
+        tw.pause();
+      },
+      resume: () => {
+        tw.resume();
+      },
+      items,
+    };
+  }
 }
 
 class Tween {
@@ -51,11 +95,12 @@ class Tween {
 
     this.d = this.o.d ? this.o.d : 0.5;
     this.del = this.o.delay ? this.o.delay : 0;
+    this.completed = this.o.completed || 0;
 
     this.cbO = {
       cb: this.run.bind(this),
       d: this.d,
-      completed: this.o.completed,
+      completed: this.completed,
     };
 
     this.ease = this.o.ease ? Ease[this.o.ease] : Ease["l"];
@@ -106,8 +151,12 @@ class Tween {
 
   destroy() {}
 
-  play() {
-    this.props = JSON.parse(JSON.stringify(this.o.p));
+  play(newO) {
+    this.props = JSON.parse(JSON.stringify(newO || this.o.p));
+
+    this.delay.o.cb = this.run.bind(this);
+    this.delay.o.d = this.d;
+    this.delay.o.completed = this.completed;
 
     if (this.mode !== "play") {
       this.delay.play();

@@ -4,13 +4,12 @@ class TL {
   constructor() {
     this.items = [];
     this.reverseItems = [];
+    this.selector = [];
 
     this.played = false;
   }
 
   to(element, o, time = 0) {
-    this.selector = [];
-
     if (!element || !o) {
       var err = !element
         ? "You need to pass Element"
@@ -38,10 +37,7 @@ class TL {
 
   reverse() {
     this.items.reverse().map((tw) => {
-      if (!tw.reverse) {
-        tw.tween.reverse();
-        tw.reverse = true;
-      }
+      tw.tween.reverse();
     });
 
     this.items = [];

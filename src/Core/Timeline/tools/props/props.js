@@ -37,13 +37,13 @@ const props = {
     }
 
     sXV = {
-      s: transform ? +transform[0] : sx[0] ? sx[0] : 1,
-      e: sx[1] ? sx[1] : 1,
+      s: transform ? +transform[0] : 1,
+      e: sx ? sx[0] : 1,
     };
 
     sYV = {
-      s: transform ? +transform[3] : sy[0] ? sy[0] : 1,
-      e: sy[1] ? sy[1] : 1,
+      s: transform ? +transform[3] : 1,
+      e: sy ? sy[0] : 1,
     };
 
     xV.lerp = xV.e - xV.s;

@@ -71,8 +71,6 @@ class Scroll {
   onMDown(e) {
     this.drag.s = e.pageY;
     this.drag.on = true;
-
-    console.log("Clicked");
   }
 
   onMM(e) {

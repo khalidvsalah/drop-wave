@@ -2,27 +2,42 @@ import Tween from "./Tween/Tween.js";
 
 function pushTween(obj) {
   this.selector.map(({ element, o, time = 0 }, i) => {
-    if (i === 0) {
-      let tween = Tween(element, o, obj);
-      this.items.push({ tween, o });
+    if (element.length) {
+      [...element].map((ele, k) => {
+        if (k === 0) {
+          let tween = Tween(ele, o, obj);
+          this.items.push({ tween, o });
+        } else {
+          let delay = o.delay || 0;
+          let add = delay + (o.stagger || 0) * k;
+
+          let tween = Tween(ele, { ...o, delay: add }, obj);
+
+          this.items.push({ tween, o });
+        }
+      });
     } else {
-      let delay, duration, stagger, add;
+      if (i === 0) {
+        let tween = Tween(element, o, obj);
+        this.items.push({ tween, o });
+      } else {
+        let delay, duration, add;
 
-      stagger = this.items[i - 1].o.stagger || 0;
-      duration = this.items[i - 1].o.d || 0;
-      delay = this.items[i - 1].o.delay || 0;
-      add = delay + stagger + duration + (o.delay || 0) + time;
+        duration = this.items[i - 1].o.d || 0;
+        delay = this.items[i - 1].o.delay || 0;
+        add = delay + duration + (o.delay || 0) + time;
 
-      let copy = { ...o, delay: add };
-      let tween = Tween(element, copy, obj);
+        let copy = { ...o, delay: add };
+        let tween = Tween(element, copy, obj);
 
-      this.items.push({ tween, o: copy });
+        this.items.push({ tween, o: copy });
+      }
     }
   });
 }
 
 function createTween(element, o, time) {
-  var obj = false;
+  let obj = false;
 
   if (
     typeof element === "object" &&
@@ -33,14 +48,7 @@ function createTween(element, o, time) {
     this.selector.push({ element, o, time });
   } else {
     obj = false;
-    if (element.length) {
-      const array = [...element];
-      array.map((ele) => {
-        this.selector.push({ element: ele, o, time });
-      });
-    } else {
-      this.selector.push({ element, o, time });
-    }
+    this.selector.push({ element, o, time });
   }
 
   pushTween.call(this, obj);
