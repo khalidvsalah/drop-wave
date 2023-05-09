@@ -1,6 +1,6 @@
 {
   "name": "ardo",
-  "version": "0.0.88",
+  "version": "0.0.16",
   "description": "Animation Library",
   "author": "khalid_salah",
   "main": "index.js",
