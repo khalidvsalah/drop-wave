@@ -5,18 +5,9 @@ function pushTween(element, o, time, obj) {
   this.del += o.delay + time + (duration ? duration.o.d : 0);
 
   if (element.length) {
-    [...element].map((ele, k) => {
-      if (k === 0) {
-        let tween = Tween(ele, o, obj);
-        this.items.push({ tween, o });
-      } else {
-        let delay = o.delay || 0;
-        let add = delay + (o.stagger || 0) * k;
-
-        let tween = Tween(ele, { ...o, delay: add }, obj);
-
-        this.items.push({ tween, o, origin: o, time });
-      }
+    let tweens = Tween(element, o, obj);
+    tweens.map((tween) => {
+      this.items.push({ tween, o, origin: o, time });
     });
   } else {
     if (this.id === 0) {

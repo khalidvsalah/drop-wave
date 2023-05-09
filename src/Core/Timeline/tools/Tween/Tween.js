@@ -44,7 +44,16 @@ function tweenController(item, g) {
 
 function Control(items, g) {
   if (items.length) {
-    return [...items].map((item) => tweenController(item, g));
+    return [...items].map((item, k) => {
+      if (k === 0) {
+        return tweenController(item, g);
+      } else {
+        let delay = g.delay || 0;
+        let add = delay + (g.stagger || 0) * k;
+
+        return tweenController(item, { ...g, delay: add });
+      }
+    });
   } else {
     return tweenController(items, g);
   }
