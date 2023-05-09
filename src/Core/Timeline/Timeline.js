@@ -39,10 +39,11 @@ class TL {
 
   reverse() {
     this.id = -1;
+    this.del = 0;
 
-    this.items.map((tw, i, arr) =>
-      tw.tween.reverse(arr[arr.length - 1 - i].tween.tw.del)
-    );
+    this.items.map((tw, i, arr) => {
+      tw.tween.reverse(arr[arr.length - 1 - i].tween.tw.del);
+    });
 
     this.items = [];
   }
