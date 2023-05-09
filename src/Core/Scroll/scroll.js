@@ -1,4 +1,4 @@
-import { Sub, TL, Bounds, Clamp, Lerp, Raf, Throttle } from "../../index";
+import { Sub, Tween, Bounds, Clamp, Lerp, Raf, Throttle } from "../../index";
 
 class Scroll {
   constructor(
@@ -38,7 +38,7 @@ class Scroll {
 
     this.wId = Sub.subC("wheel", this.onWheel.bind(this));
     this.rafId = Sub.subC("raf", this.raf.bind(this));
-    this.ScrollId = Sub.subF("scroll");
+    this.scrollId = Sub.subF("scroll");
 
     this.all = document.getElementById("all");
     if (!this.all) {
@@ -49,7 +49,7 @@ class Scroll {
     }
 
     this.thr = new Throttle({
-      delay: 0.4,
+      delay: 0.3,
       cb: () => {
         this.all.style.pointerEvents = "none";
       },
@@ -75,6 +75,9 @@ class Scroll {
 
   onMM(e) {
     if (this.drag.on) {
+      this.all.style.pointerEvents = "all";
+      this.thr.run();
+
       this.drag.prev = this.drag.e;
       this.drag.e = e.pageY;
 
@@ -88,38 +91,29 @@ class Scroll {
       if (this.drag.d === 1) diff = this.drag.e - this.drag.ep;
 
       this.lerp.y = diff * -1 * this.drag.lerp + this.lerp.y;
-
-      this.all.style.pointerEvents = "all";
-      this.thr.run();
     }
   }
 
-  onMU() {
+  onMU(e) {
     this.drag.on = false;
   }
 
   add(ele, o) {
     if (!ele || !o) console.error("You need to provide a ele and o");
 
-    if (Array.isArray(ele)) this.elements = ele;
-    else this.elements = [ele];
+    let bounds;
 
-    var bounds = Bounds(ele);
-    var ps = o.tw;
+    if (ele.length) bounds = Bounds(ele[0]);
+    else bounds = Bounds(ele);
 
-    var id = Sub.subC(this.ScrollId.name, (e) => {
-      var y = e.y + window.innerHeight;
-      var pr = (o.s / 100) * window.innerHeight;
+    let id = Sub.subC(this.scrollId.name, (e) => {
+      let y = e.y + window.innerHeight;
+      let pr = (o.s / 100) * window.innerHeight;
 
       if (pr + bounds.top <= y) {
-        var tl = new TL();
-
-        this.elements.map((ele) => {
-          tl.to(ele, ps);
-          tl.play();
-        });
-
-        Sub.subCR(this.ScrollId.name, id);
+        o.o && Tween(ele, o.o);
+        o.cb && o.cb();
+        Sub.subCR(this.scrollId.name, id);
       }
     });
 
@@ -138,7 +132,7 @@ class Scroll {
     this.wheel.y = Lerp(this.wheel.y, this.lerp.y, this.wheel.lerp);
 
     this.ele.style.transform = `translateY(${-this.wheel.y}px)`;
-    this.ScrollId.cb(this.wheel);
+    this.scrollId.cb(this.wheel);
   }
 
   destroy() {
@@ -149,5 +143,9 @@ class Scroll {
     Sub.subCR("raf", this.rafId);
   }
 }
+
+/*
+ * scroll.add(ele, {s: 10%, o: {...tw}})
+ */
 
 export default Scroll;
