@@ -23,10 +23,10 @@ function pushTween(element, o, time, obj) {
       let tween = Tween(element, o, obj);
       this.items.push({ tween, o, origin: o, time });
     } else {
-      let dela = { ...o, delay: this.del };
-      let tween = Tween(element, dela, obj);
+      let delay = { ...o, delay: this.del };
+      let tween = Tween(element, delay, obj);
 
-      this.items.push({ tween, o: dela, origin: o, time });
+      this.items.push({ tween, o: delay, origin: o, time });
     }
   }
 }

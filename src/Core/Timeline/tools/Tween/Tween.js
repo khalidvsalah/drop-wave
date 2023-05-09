@@ -5,80 +5,48 @@ import checkEle from "../elements/checkEle";
 
 const S = new Store();
 
+function tweenController(item, g) {
+  let re = S.get(item);
+  let tw = re ? re : null;
+
+  if (re) {
+    if (JSON.stringify(re.props) !== JSON.stringify(g.p)) {
+      tw.mode = undefined;
+
+      tw.delay.delay = typeof g.delay === "number" ? g.delay : re.del;
+      tw.ease = Ease[g.ease] || re.ease;
+      tw.d = typeof g.d === "number" ? g.d : re.d;
+      tw.completed = g.completed || re.completed;
+
+      tw.play(g.p);
+    }
+  } else {
+    tw = new Tween(item, g);
+    S.set(item, tw);
+    tw.play();
+  }
+
+  return {
+    reverse: (delay) => {
+      tw.delay.delay = typeof delay === "number" ? delay : tw.del;
+      tw.reverse();
+    },
+    pause: () => {
+      tw.pause();
+    },
+    resume: () => {
+      tw.resume();
+    },
+    item,
+    tw,
+  };
+}
+
 function Control(items, g) {
   if (items.length) {
-    return [...items].map((item) => {
-      let re = S.get(item);
-      let tw = re ? re : null;
-
-      if (re) {
-        if (JSON.stringify(re.props) !== JSON.stringify(g.p)) {
-          tw.mode = undefined;
-
-          tw.delay.delay = g.delay || re.del;
-          tw.ease = Ease[g.ease] || re.ease;
-          tw.d = g.d || re.d;
-          tw.completed = g.completed || re.completed;
-
-          tw.play(g.p);
-        }
-      } else {
-        tw = new Tween(item, g);
-        S.set(item, tw);
-        tw.play();
-      }
-
-      return {
-        reverse: (delay) => {
-          tw.delay.delay = delay || re.del;
-
-          tw.reverse();
-        },
-        pause: () => {
-          tw.pause();
-        },
-        resume: () => {
-          tw.resume();
-        },
-        item,
-        tw,
-      };
-    });
+    return [...items].map((item) => tweenController(item, g));
   } else {
-    let re = S.get(items);
-    let tw = re ? re : null;
-
-    if (re) {
-      if (JSON.stringify(re.props) !== JSON.stringify(g.p)) {
-        tw.mode = undefined;
-
-        tw.delay.delay = g.delay || re.del;
-        tw.ease = Ease[g.ease] || re.ease;
-        tw.d = g.d || re.d;
-        tw.completed = g.completed || re.completed;
-
-        tw.play(g.p);
-      }
-    } else {
-      tw = new Tween(items, g);
-      S.set(items, tw);
-      tw.play();
-    }
-
-    return {
-      reverse: (delay) => {
-        tw.delay.delay = delay || re.del;
-        tw.reverse();
-      },
-      pause: () => {
-        tw.pause();
-      },
-      resume: () => {
-        tw.resume();
-      },
-      items,
-      tw,
-    };
+    return tweenController(items, g);
   }
 }
 
@@ -121,6 +89,7 @@ class Tween {
 
   run(t) {
     this.ran = true;
+    this.running = true;
     this.e = this.ease(t);
 
     this.results.map((p) => {
@@ -129,6 +98,8 @@ class Tween {
       if (this.obj) this.elements[0][p.name] = cb;
       else p.element.style[p.name] = cb;
     });
+
+    if (t === 1) this.running = false;
   }
 
   reverse() {

@@ -42,7 +42,14 @@ class TL {
     this.del = 0;
 
     this.items.map((tw, i, arr) => {
-      tw.tween.reverse(arr[arr.length - 1 - i].tween.tw.del);
+      if (tw.tween.tw.running) {
+        tw.tween.reverse(0);
+      } else {
+        let previous = arr[arr.length - 1 - i].tween.tw;
+
+        if (previous.running) tw.tween.reverse(previous.del);
+        else tw.tween.reverse(tw.tween.tw.del);
+      }
     });
 
     this.items = [];
