@@ -6,6 +6,7 @@ class TL {
     this.reverseItems = [];
     this.selector = [];
     this.id = -1;
+    this.del = 0;
 
     this.played = false;
   }
@@ -39,9 +40,9 @@ class TL {
   reverse() {
     this.id = -1;
 
-    this.items.reverse().map((tw) => {
-      tw.tween.reverse();
-    });
+    this.items.map((tw, i, arr) =>
+      tw.tween.reverse(arr[arr.length - 1 - i].tween.tw.del)
+    );
 
     this.items = [];
   }

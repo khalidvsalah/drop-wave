@@ -1,6 +1,9 @@
 import Tween from "./Tween/Tween.js";
 
 function pushTween(element, o, time, obj) {
+  let duration = this.items[this.id - 1];
+  this.del += o.delay + time + (duration ? duration.o.d : 0);
+
   if (element.length) {
     [...element].map((ele, k) => {
       if (k === 0) {
@@ -12,24 +15,18 @@ function pushTween(element, o, time, obj) {
 
         let tween = Tween(ele, { ...o, delay: add }, obj);
 
-        this.items.push({ tween, o });
+        this.items.push({ tween, o, origin: o, time });
       }
     });
   } else {
     if (this.id === 0) {
       let tween = Tween(element, o, obj);
-      this.items.push({ tween, o });
+      this.items.push({ tween, o, origin: o, time });
     } else {
-      let delay, duration, add;
+      let dela = { ...o, delay: this.del };
+      let tween = Tween(element, dela, obj);
 
-      duration = this.items[this.id - 1].o.d || 0;
-      delay = this.items[this.id - 1].o.delay || 0;
-      add = delay + duration + (o.delay || 0) + time;
-
-      let copy = { ...o, delay: add };
-      let tween = Tween(element, copy, obj);
-
-      this.items.push({ tween, o: copy });
+      this.items.push({ tween, o: dela, origin: o, time });
     }
   }
 }

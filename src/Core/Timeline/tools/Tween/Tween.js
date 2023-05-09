@@ -7,7 +7,7 @@ const S = new Store();
 
 function Control(items, g) {
   if (items.length) {
-    [...items].map((item) => {
+    return [...items].map((item) => {
       let re = S.get(item);
       let tw = re ? re : null;
 
@@ -29,7 +29,9 @@ function Control(items, g) {
       }
 
       return {
-        reverse: () => {
+        reverse: (delay) => {
+          tw.delay.delay = delay || re.del;
+
           tw.reverse();
         },
         pause: () => {
@@ -39,6 +41,7 @@ function Control(items, g) {
           tw.resume();
         },
         item,
+        tw,
       };
     });
   } else {
@@ -63,7 +66,8 @@ function Control(items, g) {
     }
 
     return {
-      reverse: () => {
+      reverse: (delay) => {
+        tw.delay.delay = delay || re.del;
         tw.reverse();
       },
       pause: () => {
@@ -73,6 +77,7 @@ function Control(items, g) {
         tw.resume();
       },
       items,
+      tw,
     };
   }
 }
