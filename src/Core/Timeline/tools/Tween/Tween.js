@@ -120,6 +120,7 @@ class Tween {
   }
 
   run(t) {
+    this.ran = true;
     this.e = this.ease(t);
 
     this.results.map((p) => {
@@ -138,7 +139,7 @@ class Tween {
       ];
     }
 
-    this.reverseOn = true;
+    this.reverseOn = this.ran ? true : false;
 
     if (this.mode !== "reverse") {
       this.mode = "reverse";
