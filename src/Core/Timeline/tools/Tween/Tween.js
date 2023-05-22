@@ -78,6 +78,7 @@ class Tween {
     this.d = this.o.d ? this.o.d : 0.5;
     this.del = this.o.delay ? this.o.delay : 0;
     this.completed = this.o.completed || 0;
+    this.raf = this.o.raf;
 
     this.cbO = {
       cb: this.run.bind(this),
@@ -101,6 +102,7 @@ class Tween {
     this.running = true;
     this.e = this.ease(t);
 
+    this.raf && this.raf(this.e);
     this.results.map((p) => {
       let cb = p.cb(this.e);
 
