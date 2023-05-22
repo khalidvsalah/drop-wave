@@ -108,7 +108,7 @@ class Scroll {
 
     let id = Sub.subC(this.scrollId.name, (e) => {
       let y = e.y + window.innerHeight;
-      let pr = (o.s / 100) * window.innerHeight;
+      let pr = ((o.s || 0) / 100) * window.innerHeight;
 
       if (pr + bounds.top <= y) {
         o.o && Tween(ele, o.o);
