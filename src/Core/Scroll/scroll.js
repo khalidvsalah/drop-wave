@@ -94,7 +94,7 @@ class Scroll {
     }
   }
 
-  onMU(e) {
+  onMU() {
     this.drag.on = false;
   }
 
@@ -143,9 +143,5 @@ class Scroll {
     Sub.subCR("raf", this.rafId);
   }
 }
-
-/*
- * scroll.add(ele, {s: 10%, o: {...tw}})
- */
 
 export default Scroll;
