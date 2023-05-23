@@ -17,6 +17,7 @@ function tweenController(item, g) {
       tw.ease = Ease[g.ease] || re.ease;
       tw.d = typeof g.d === "number" ? g.d : re.d;
       tw.completed = g.completed || re.completed;
+      tw.raf = g.raf;
 
       tw.play(g.p);
     }
@@ -51,6 +52,11 @@ function Control(items, g) {
         let delay = g.delay || 0;
         let add = delay + (g.stagger || 0) * k;
 
+        if (items.length !== k + 1) {
+          g.raf = null;
+          g.completed = null;
+        }
+
         return tweenController(item, { ...g, delay: add });
       }
     });
@@ -65,6 +71,9 @@ class Tween {
     this.element = element;
     this.o = JSON.parse(JSON.stringify(o));
 
+    this.completed = o.completed || 0;
+    this.raf = o.raf || 0;
+
     this.played = false;
     this.mode = false;
     this.startPoint = {};
@@ -77,8 +86,6 @@ class Tween {
 
     this.d = this.o.d ? this.o.d : 0.5;
     this.del = this.o.delay ? this.o.delay : 0;
-    this.completed = this.o.completed || 0;
-    this.raf = this.o.raf;
 
     this.cbO = {
       cb: this.run.bind(this),
