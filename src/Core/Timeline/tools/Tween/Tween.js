@@ -18,13 +18,10 @@ function tweenController(item, g) {
       tw.d = typeof g.d === "number" ? g.d : re.d;
       tw.completed = g.completed || re.completed;
       tw.raf = g.raf;
-
-      tw.play(g.p);
     }
   } else {
     tw = new Tween(item, g);
     S.set(item, tw);
-    tw.play();
   }
 
   return {
@@ -38,6 +35,9 @@ function tweenController(item, g) {
     resume: () => {
       tw.resume();
     },
+    play: (p) => {
+      tw.play(p);
+    },
     item,
     tw,
   };
@@ -45,7 +45,7 @@ function tweenController(item, g) {
 
 function Control(items, g) {
   if (items.length) {
-    return [...items].map((item, k) => {
+    const tweens = [...items].map((item, k) => {
       if (k === 0) {
         return tweenController(item, g);
       } else {
@@ -60,8 +60,13 @@ function Control(items, g) {
         return tweenController(item, { ...g, delay: add });
       }
     });
+
+    tweens.map(({ play }) => play(g.p));
+    return tweens;
   } else {
-    return tweenController(items, g);
+    const tween = tweenController(items, g);
+    tween.play();
+    return tween;
   }
 }
 
