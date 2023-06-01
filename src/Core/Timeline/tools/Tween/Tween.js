@@ -65,7 +65,7 @@ function Control(items, g) {
     return tweens;
   } else {
     const tween = tweenController(items, g);
-    tween.play();
+    tween.play(g.p);
     return tween;
   }
 }
