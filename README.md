@@ -2,6 +2,12 @@
 
 ##### A JavaScript Library Contain (virtual-scroll, Tween, Route, Subscribe, Raf, Ease).
 
+&nbsp;
+
+```js
+import { Tween, Scroll, Raf, Ease, Sub, Route } from "ardo";
+```
+
 #### Tween
 
 ##### Function for animating dom-element, supported css-properties (opacity, transform, scale).
