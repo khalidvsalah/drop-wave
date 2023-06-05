@@ -82,8 +82,8 @@ class Tween {
     this.delay.o.pause = false;
   }
 
-  play(newO) {
-    this.props = JSON.parse(JSON.stringify(newO || this.o.p));
+  play(o) {
+    this.props = JSON.parse(JSON.stringify(o || this.o.p));
 
     this.delay.o.cb = this.run.bind(this);
     this.delay.o.d = this.d;
