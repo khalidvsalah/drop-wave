@@ -8,9 +8,14 @@ class Tween {
     this.obj = obj;
     this.ele = ele;
     this.o = o;
+
+    this.completed = o.completed;
+    this.raf = o.raf;
+
+    this.mode;
     this.prog = 0;
     this.elp = 0;
-    this.mode;
+    this.played = false;
 
     this.to();
   }
@@ -22,8 +27,17 @@ class Tween {
     this.del = this.o.delay;
 
     this.ease = Ease[this.o.ease] ? Ease[this.o.ease] : Ease["l"];
-    this.props = JSON.parse(JSON.stringify(this.o.p));
+    this.props = this.o.p;
     this.keys = Object.entries(this.props);
+
+    this.cbO = {
+      cb: this.run.bind(this),
+    };
+
+    this.delay = new Delay({
+      delay: this.del,
+      o: this.cbO,
+    });
   }
 
   run(t) {
@@ -48,11 +62,12 @@ class Tween {
 
   reverse() {
     if (this.mode === "r") return;
+
     this.dir = 1;
-    this.prog = 1 - this.elp;
     this.mode = "r";
 
     if (this.on) {
+      this.prog = 1 - this.elp;
       this.st = null;
     } else {
       this.delay.cb = null;
@@ -81,35 +96,39 @@ class Tween {
   }
 
   play(o) {
-    if (this.mode === "p") return;
-    if (JSON.stringify(this.props) !== JSON.stringify(o.p)) {
-      this.delay.delay = o.delay;
-      this.ease = Ease[obj.ease] || this.ease;
-      this.d = o.d || stored.d;
-      this.completed = obj.completed || 0;
-      this.raf = obj.raf || 0;
-    }
-
-    this.cbO = {
-      cb: this.run.bind(this),
-      d: this.d,
-    };
-
-    this.delay = new Delay({
-      delay: this.del,
-      o: this.cbO,
-      cb: () => checkProps.call(this, this.obj),
-    });
+    let newO = JSON.stringify(this.props) !== JSON.stringify(o.p);
+    if (this.mode === "p" && !newO) return;
 
     this.mode = "p";
     this.dir = 0;
 
+    if (newO) {
+      this.delay.delay = o.delay;
+      this.d = o.d;
+
+      this.ease = Ease[o.ease] || this.ease;
+      this.props = o.p;
+
+      this.completed = o.completed;
+      this.raf = o.raf;
+    }
+
     if (this.on) {
       this.st = null;
-      this.prog = 1 - this.elp;
+
+      if (newO) this.prog = 0;
+      else this.prog = 1 - this.elp;
     } else {
       this.delay.play();
     }
+
+    if (!this.played) this.delay.cb = () => checkProps.call(this, this.obj);
+    else if (newO && this.on) checkProps.call(this, this.obj);
+    else if (newO && !this.on)
+      this.delay.cb = () => checkProps.call(this, this.obj);
+    else this.delay.cb = null;
+
+    this.played = true;
   }
 }
 
