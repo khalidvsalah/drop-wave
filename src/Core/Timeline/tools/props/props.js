@@ -1,5 +1,5 @@
 const props = {
-  transform: (x, y, sx, sy, n, store) => {
+  transform: (x, y, sx, sy, n) => {
     let xV, yV, sXV, sYV;
     let transform =
       n.transform !== "none" && n.transform.match(/\((.+)\)$/)[1].split(", ");
@@ -52,13 +52,6 @@ const props = {
     sXV.lerp = sXV.e - sXV.s;
     sYV.lerp = sYV.e - sYV.s;
 
-    if (store) {
-      store["y"] = yV.s;
-      store["x"] = xV.s;
-      store["sy"] = sXV.s;
-      store["sx"] = sYV.s;
-    }
-
     if ((x && y) || (x.lerp && y.lerp)) {
       return (e) => {
         let rX = x ? `${xV.s + xV.lerp * e}${xV.unit}` : xV.s + xV.unit;
@@ -91,15 +84,13 @@ const props = {
       }
     }
   },
-  opacity: (o, n, store) => {
+  opacity: (o, n) => {
     let oV = {
       s: +n.opacity,
       e: o[0],
     };
 
     oV.lerp = oV.e - oV.s;
-    if (store) store["opacity"] = oV.s;
-
     return (e) => `${oV.s + oV.lerp * e}`;
   },
   pointer: (e) => {
@@ -108,16 +99,13 @@ const props = {
   display: (e) => {
     return () => e;
   },
-  top: (t, n, pH, store) => {
+  top: (t, n, pH) => {
     let tV = {
       s: t[1] === "px" ? parseFloat(n.top) : (parseFloat(n.top) / pH) * 100,
       e: t[0],
     };
 
     tV.lerp = tV.e - tV.s;
-    store["top"] = tV.s;
-    if (store) store["top"] = tV.s;
-
     return (e) => `${tV.s + tV.lerp * e}${t[1]}`;
   },
 };

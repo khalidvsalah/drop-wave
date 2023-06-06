@@ -6,7 +6,6 @@ export default function checkProps(w) {
 
   if (!w) {
     let x, y, o, p, d, sx, sy, t, l, b, r;
-    let point = this.reverseOn ? false : this.startPoint;
 
     x = Has(this.props, "x") && this.props["x"];
     y = Has(this.props, "y") && this.props["y"];
@@ -35,7 +34,7 @@ export default function checkProps(w) {
       this.results.push({
         name: "transform",
         element: element,
-        cb: props["transform"](x, y, sx, sy, n, point),
+        cb: props["transform"](x, y, sx, sy, n),
       });
     }
 
@@ -43,7 +42,7 @@ export default function checkProps(w) {
       this.results.push({
         name: "top",
         element: element,
-        cb: props["top"](t, n, pH, point),
+        cb: props["top"](t, n, pH),
       });
 
     p &&
@@ -64,7 +63,7 @@ export default function checkProps(w) {
       this.results.push({
         name: "opacity",
         element: element,
-        cb: props["opacity"](o, n, point),
+        cb: props["opacity"](o, n),
       });
 
     // b &&
