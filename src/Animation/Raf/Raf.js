@@ -1,5 +1,3 @@
-import { Clamp } from "../../index";
-
 class _F {
   constructor() {
     this.items = [];
@@ -27,27 +25,9 @@ class _F {
     for (let i = 0; i < this.items.length; i++) {
       let item = this.items[i];
 
-      if (item.d === 0) this.kill(item.id);
-
-      if (!item.st && item.d !== -1) {
-        item.st = t;
-        if (item.start) item.start();
-      }
-
-      if (item.pause) {
-        item.elapsed = item.elapsed ? 1 - item.elapsed : 1;
-        item.d = !item.paused ? item.elapsed * item.d : item.d;
-        item.st = t - item.d * item.elapsed;
-        item.paused = true;
-      } else if (item.d === -1) {
-        item.cb(t);
-      } else if (item.d > 0) {
-        let time = (t - item.st) / (item.d * 1000);
-
-        item.elapsed = Clamp(0, 1, time);
-        if (item.cb) item.cb(item.elapsed);
-
-        if (item.elapsed === 1) this.kill(item.id);
+      if (item.cb) {
+        const cb = item.cb(t);
+        cb && this.kill(item.id);
       }
     }
 
@@ -58,13 +38,8 @@ class _F {
     if (typeof n === "number") {
       this.items.map((item, i) => {
         if (item.id === n) {
-          item.st = 0;
           item.id = null;
-
-          if (item.cb) item.cb(item.elapsed);
           this.items.splice(i, 1);
-
-          if (item.completed) item.completed();
         }
       });
     } else {

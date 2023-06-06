@@ -7,15 +7,10 @@ class Tween {
   constructor(ele, o, obj) {
     this.obj = obj;
     this.ele = ele;
-    this.o = JSON.parse(JSON.stringify(o));
-
-    this.completed = o.completed || 0;
-    this.raf = o.raf || 0;
-
-    this.played = false;
-    this.startPoint = {};
+    this.o = o;
     this.prog = 0;
     this.elp = 0;
+    this.mode;
 
     this.to();
   }
@@ -35,14 +30,11 @@ class Tween {
     this.on = true;
     if (!this.st) this.st = t;
 
-    // console.log(this.prod);
     let time = this.prog + (t - this.st) / (this.d * 1000);
     this.elp = Clamp(0, 1, time);
 
     this.e = Math.abs(this.dir - this.ease(this.elp));
     this.raf && this.raf(this.e);
-
-    // this.ran = true;
 
     this.results.map((p) => {
       let cb = p.cb(this.e);
@@ -55,8 +47,10 @@ class Tween {
   }
 
   reverse() {
+    if (this.mode === "r") return;
     this.dir = 1;
     this.prog = 1 - this.elp;
+    this.mode = "r";
 
     if (this.on) {
       this.st = null;
@@ -64,30 +58,16 @@ class Tween {
       this.delay.cb = null;
       this.delay.play();
     }
-
-    // for (let i = 0; i < this.keys.length; i++) {
-    //   this.props[this.keys[i][0]] = [
-    //     this.startPoint[this.keys[i][0]],
-    //     this.keys[i][1][1],
-    //   ];
-    // }
-    // this.reverseOn = this.ran ? true : false;
-    // if (this.mode !== "reverse") {
-    //   this.mode = "reverse";
-    //   this.delay.play();
-    // }
   }
 
   pause() {
     this.prog = this.elp;
-    // this.delay.o.pause = true;
   }
 
   resume() {
     this.st = null;
     this.delay.cb = null;
     this.delay.play();
-    // this.delay.o.pause = false;
   }
 
   kill() {
@@ -95,13 +75,20 @@ class Tween {
 
     this.st = null;
     this.on = false;
+    this.prog = 0;
 
     return true;
   }
 
   play(o) {
-    this.dir = 0;
-    this.props = JSON.parse(JSON.stringify(o || this.o.p));
+    if (this.mode === "p") return;
+    if (JSON.stringify(this.props) !== JSON.stringify(o.p)) {
+      this.delay.delay = o.delay;
+      this.ease = Ease[obj.ease] || this.ease;
+      this.d = o.d || stored.d;
+      this.completed = obj.completed || 0;
+      this.raf = obj.raf || 0;
+    }
 
     this.cbO = {
       cb: this.run.bind(this),
@@ -114,21 +101,15 @@ class Tween {
       cb: () => checkProps.call(this, this.obj),
     });
 
-    if (!this.on) {
-      this.delay.play();
-      this.prog = 0;
-    } else {
+    this.mode = "p";
+    this.dir = 0;
+
+    if (this.on) {
       this.st = null;
       this.prog = 1 - this.elp;
+    } else {
+      this.delay.play();
     }
-
-    // this.start && this.start();
-    // this.delay.o.cb = this.run.bind(this);
-    // this.delay.o.d = this.d;
-    // this.delay.o.completed = this.completed;
-
-    // if (this.mode !== "p") {
-    // }
   }
 }
 

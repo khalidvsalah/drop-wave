@@ -1,43 +1,32 @@
-import { Ease, Store } from "../../../../index";
+import { Store } from "../../../../index";
 import Tween from "./Tween";
 
 const S = new Store();
 
-function tweenController(item, g) {
-  let re = S.get(item);
-  let tw = re ? re : null;
+function tweenController(item, obj) {
+  let stored = S.get(item);
+  let tween = stored ? stored : null;
 
-  if (re) {
-    if (JSON.stringify(re.props) !== JSON.stringify(g.p)) {
-      tw.mode = undefined;
-
-      tw.delay.delay = typeof g.delay === "number" ? g.delay : re.del;
-      tw.ease = Ease[g.ease] || re.ease;
-      tw.d = typeof g.d === "number" ? g.d : re.d;
-      tw.completed = g.completed || 0;
-      tw.raf = g.raf || 0;
-    }
-  } else {
-    tw = new Tween(item, g);
-    S.set(item, tw);
+  if (!stored) {
+    tween = new Tween(item, obj);
+    S.set(item, tween);
   }
 
   return {
     reverse: (delay) => {
-      tw.delay.delay = typeof delay === "number" ? delay : tw.del;
-      tw.reverse();
+      tween.reverse();
     },
     pause: () => {
-      tw.pause();
+      tween.pause();
     },
     resume: () => {
-      tw.resume();
+      tween.resume();
     },
     play: (p) => {
-      tw.play(p);
+      tween.play(p, "");
     },
     item,
-    tw,
+    tween,
   };
 }
 
@@ -59,11 +48,11 @@ function Control(items, o) {
       }
     });
 
-    tweens.map(({ play }) => play(o.p));
+    tweens.map(({ play }) => play(o));
     return tweens;
   } else {
     const tween = tweenController(items, o);
-    tween.play(o.p);
+    tween.play(o);
     return tween;
   }
 }
