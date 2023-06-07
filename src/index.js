@@ -1,6 +1,6 @@
 import { Lerp, Clamp, Ease, Round } from "./Core/Math/math";
 
-import { Has, Bounds } from "./Utils/Methods/methods";
+import { Has, Bounds, deepCopy } from "./Utils/Methods/methods";
 import Store from "./Utils/Store/Store";
 import Sub from "./Utils/Sub/sub";
 import Throttle from "./Utils/Throttle/throttle";
@@ -32,4 +32,5 @@ export {
   Ease,
   Round,
   Tween,
+  deepCopy,
 };
