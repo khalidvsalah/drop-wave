@@ -1,69 +1,7 @@
-import { Delay, Ease, Store } from "../../../../index";
+import { Delay, Ease } from "../../../../index";
 
 import checkProps from "../props/checkProps";
 import checkEle from "../elements/checkEle";
-
-const S = new Store();
-
-function tweenController(item, g) {
-  let re = S.get(item);
-  let tw = re ? re : null;
-
-  if (re) {
-    if (JSON.stringify(re.props) !== JSON.stringify(g.p)) {
-      tw.mode = undefined;
-
-      tw.delay.delay = typeof g.delay === "number" ? g.delay : re.del;
-      tw.ease = Ease[g.ease] || re.ease;
-      tw.d = typeof g.d === "number" ? g.d : re.d;
-      tw.completed = g.completed || re.completed;
-      tw.raf = g.raf;
-
-      tw.play(g.p);
-    }
-  } else {
-    tw = new Tween(item, g);
-    S.set(item, tw);
-    tw.play();
-  }
-
-  return {
-    reverse: (delay) => {
-      tw.delay.delay = typeof delay === "number" ? delay : tw.del;
-      tw.reverse();
-    },
-    pause: () => {
-      tw.pause();
-    },
-    resume: () => {
-      tw.resume();
-    },
-    item,
-    tw,
-  };
-}
-
-function Control(items, g) {
-  if (items.length) {
-    return [...items].map((item, k) => {
-      if (k === 0) {
-        return tweenController(item, g);
-      } else {
-        let delay = g.delay || 0;
-        let add = delay + (g.stagger || 0) * k;
-
-        if (items.length !== k + 1) {
-          g.raf = null;
-          g.completed = null;
-        }
-
-        return tweenController(item, { ...g, delay: add });
-      }
-    });
-  } else {
-    return tweenController(items, g);
-  }
-}
 
 class Tween {
   constructor(element, o, obj) {
@@ -144,8 +82,6 @@ class Tween {
     this.delay.o.pause = false;
   }
 
-  destroy() {}
-
   play(newO) {
     this.props = JSON.parse(JSON.stringify(newO || this.o.p));
 
@@ -160,4 +96,4 @@ class Tween {
   }
 }
 
-export default Control;
+export default Tween;
