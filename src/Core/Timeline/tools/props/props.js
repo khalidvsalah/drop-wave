@@ -13,7 +13,6 @@ const props = {
         e: x ? (x[1] === "px" ? x[0] : x[0]) : 0,
         unit: x[1] ? x[1] : "px",
       };
-
       yV = {
         s:
           y[1] === "px"
@@ -52,7 +51,7 @@ const props = {
     sXV.lerp = sXV.e - sXV.s;
     sYV.lerp = sYV.e - sYV.s;
 
-    if ((x && y) || (x.lerp && y.lerp)) {
+    if ((x && y) || (xV.lerp && yV.lerp)) {
       return (e) => {
         let rX = x ? `${xV.s + xV.lerp * e}${xV.unit}` : xV.s + xV.unit;
         let rY = y ? `${yV.s + yV.lerp * e}${yV.unit}` : yV.s + yV.unit;
