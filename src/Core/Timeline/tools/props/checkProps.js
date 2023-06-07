@@ -1,40 +1,32 @@
-import { Has } from "../../../../index";
 import props from "./props.js";
 
 export default function checkProps(w) {
   this.results = [];
 
   if (!w) {
-    let x, y, o, p, d, sx, sy, t, l, b, r;
-
-    x = Has(this.props, "x") && this.props["x"];
-    y = Has(this.props, "y") && this.props["y"];
-
-    sx = Has(this.props, "sx") && this.props["sx"];
-    sy = Has(this.props, "sy") && this.props["sy"];
-
-    t = Has(this.props, "t") && this.props["t"];
-    // l = Has(this.props, "l") && this.props["l"];
-
-    // b = Has(this.props, "b") && this.props["b"];
-    // r = Has(this.props, "r") && this.props["r"];
-
-    o = Has(this.props, "opacity") && this.props["opacity"];
-    p = Has(this.props, "pointer") && this.props["pointer"];
-    d = Has(this.props, "display") && this.props["display"];
+    let x, y, o, p, d, sx, sy, t;
 
     let element = this.elements;
-    let n = window.getComputedStyle(element);
-    // let eH = element.clientHeight;
-    // let eW = element.clientWidth;
-    let pH = element.parentNode.clientHeight;
-    // let pW = element.parentNode.clientWidth;
+    let c = window.getComputedStyle(element);
+    let ph = element.parentNode.clientHeight;
+
+    x = this.ps["x"] || false;
+    y = this.ps["y"] || false;
+
+    sx = this.ps["sx"] || false;
+    sy = this.ps["sy"] || false;
+
+    t = this.ps["t"] || false;
+
+    o = this.ps["opacity"] || false;
+    p = this.ps["pointer"] || false;
+    d = this.ps["display"] || false;
 
     if (x || y || sx || sy) {
       this.results.push({
         name: "transform",
         element: element,
-        cb: props["transform"](x, y, sx, sy, n),
+        cb: props["transform"](x, y, sx, sy, c),
       });
     }
 
@@ -42,7 +34,7 @@ export default function checkProps(w) {
       this.results.push({
         name: "top",
         element: element,
-        cb: props["top"](t, n, pH),
+        cb: props["top"](t, c, ph),
       });
 
     p &&
@@ -63,29 +55,8 @@ export default function checkProps(w) {
       this.results.push({
         name: "opacity",
         element: element,
-        cb: props["opacity"](o, n),
+        cb: props["opacity"](o, c),
       });
-
-    // b &&
-    //   this.results.push({
-    //     name: "bottom",
-    //     element: e,
-    //     cb: props["bottom"](b, n, pH),
-    //   });
-
-    // l &&
-    //   this.results.push({
-    //     name: "left",
-    //     element: e,
-    //     cb: props["left"](l, n, pW),
-    //   });
-
-    // r &&
-    //   this.results.push({
-    //     name: "right",
-    //     element: e,
-    //     cb: props["right"](r, n, pW),
-    //   });
   } else {
     for (let i = 0; i < this.keys.length; i++) {
       let ks = this.keys[i];

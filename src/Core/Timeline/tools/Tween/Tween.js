@@ -27,8 +27,8 @@ class Tween {
     this.del = this.o.delay;
 
     this.ease = Ease[this.o.ease] ? Ease[this.o.ease] : Ease["l"];
-    this.props = this.o.p;
-    this.keys = Object.entries(this.props);
+    this.ps = this.o.p;
+    this.keys = Object.keys(this.ps);
 
     this.cbO = {
       cb: this.run.bind(this),
@@ -96,7 +96,7 @@ class Tween {
   }
 
   play(o) {
-    let newO = JSON.stringify(this.props) !== JSON.stringify(o.p);
+    let newO = JSON.stringify(this.ps) !== JSON.stringify(o.p);
     if (this.mode === "p" && !newO) return;
 
     this.mode = "p";
@@ -107,7 +107,7 @@ class Tween {
       this.d = o.d;
 
       this.ease = Ease[o.ease] || this.ease;
-      this.props = o.p;
+      this.ps = o.p;
 
       this.completed = o.completed;
       this.raf = o.raf;
