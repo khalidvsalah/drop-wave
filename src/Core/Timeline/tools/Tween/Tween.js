@@ -39,6 +39,8 @@ class Tween {
       delay: this.del,
       o: this.cbO,
     });
+
+    checkProps.call(this);
   }
 
   run(t) {
@@ -47,7 +49,6 @@ class Tween {
 
     let time = this.prog + (t - this.st) / (this.d * 1000);
     this.elp = Clamp(0, 1, time);
-    console.log(this.elp, this.mode);
 
     this.e = Math.abs(this.dir - this.ease(this.elp));
     this.raf && this.raf(this.e);
@@ -62,19 +63,27 @@ class Tween {
     if (this.elp === 1) return this.kill();
   }
 
-  reverse() {
-    if (this.mode === "r") return;
-    this.mode = "r";
-    this.dir = 1;
-    this.prog = 1 - this.elp;
-    if (!this.played || this.delay.on) return;
+  control(m, n) {
+    if (this.delay.on && this.mode !== m) {
+      this.mode = m;
+      this.delay.kill();
+    }
+
+    if (this.mode === m) return;
+    this.mode = m;
+    this.dir = m === "r" ? 1 : 0;
+    if (this.delay.on) return;
 
     if (this.on) {
       this.st = null;
+      n ? (this.prog = 0) : (this.prog = 1 - this.elp);
     } else {
-      this.delay.cb = null;
       this.delay.play();
     }
+  }
+
+  reverse() {
+    this.control("r");
   }
 
   pause() {
@@ -99,34 +108,6 @@ class Tween {
 
   play(o) {
     let newO = JSON.stringify(this.ps) !== JSON.stringify(o.p);
-    if (this.mode === "p" && !newO) return;
-
-    this.mode = "p";
-    this.dir = 0;
-
-    if (this.delay.on) return;
-
-    if (!this.played && this.ps) {
-      this.delay.cb = () => {
-        checkProps.call(this, this.obj);
-        this.played = true;
-      };
-    } else if (newO && this.on) {
-      checkProps.call(this, this.obj);
-    } else if (newO && !this.on) {
-      this.delay.cb = () => checkProps.call(this, this.obj);
-    } else {
-      this.delay.cb = null;
-    }
-
-    if (this.on) {
-      this.st = null;
-
-      if (newO) this.prog = 0;
-      else this.prog = 1 - this.elp;
-    } else {
-      this.delay.play();
-    }
 
     if (newO) {
       this.delay.delay = o.delay;
@@ -137,6 +118,13 @@ class Tween {
 
       this.completed = o.completed;
       this.raf = o.raf;
+
+      checkProps.call(this);
+
+      this.mode = "r";
+      this.control("p", true);
+    } else {
+      this.control("p");
     }
   }
 }
