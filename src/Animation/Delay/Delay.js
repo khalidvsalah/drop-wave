@@ -5,9 +5,11 @@ export default class Delay {
     this.delay = delay;
     this.o = o;
     this.cb = cb;
+    this.on = false;
   }
 
   play() {
+    this.on = true;
     Raf.push({
       cb: this.run.bind(this),
     });
@@ -20,12 +22,14 @@ export default class Delay {
 
     if (elp === 1) {
       this.Elapsed();
-      this.st = null;
       return true;
     }
   }
 
   Elapsed() {
+    this.on = false;
+    this.st = null;
+
     this.o && Raf.push(this.o);
     this.cb && this.cb();
   }
