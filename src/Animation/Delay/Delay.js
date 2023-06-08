@@ -6,13 +6,20 @@ export default class Delay {
     this.o = o;
     this.cb = cb;
     this.on = false;
+    this.stop = false;
   }
 
   play() {
     this.on = true;
+    this.stop = false;
     Raf.push({
       cb: this.run.bind(this),
     });
+  }
+
+  kill() {
+    this.stop = true;
+    this.on = false;
   }
 
   run(t) {
@@ -27,6 +34,7 @@ export default class Delay {
   }
 
   Elapsed() {
+    if (this.stop) return;
     this.on = false;
     this.st = null;
 
