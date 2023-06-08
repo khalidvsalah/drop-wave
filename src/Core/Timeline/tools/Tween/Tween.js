@@ -17,6 +17,7 @@ class Tween {
     this.elp = 0;
     this.played = false;
 
+    this.results = [];
     this.to();
   }
 
@@ -28,7 +29,7 @@ class Tween {
 
     this.ease = Ease[this.o.ease] ? Ease[this.o.ease] : Ease["l"];
     this.ps = this.o.p;
-    this.keys = Object.keys(this.ps);
+    this.keys = this.ps && Object.keys(this.ps);
 
     this.cbO = {
       cb: this.run.bind(this),
@@ -61,14 +62,14 @@ class Tween {
   }
 
   reverse() {
-    if (this.mode === "r") return;
+    if (this.mode === "r" || !this.played) return;
 
     this.dir = 1;
     this.mode = "r";
 
     if (this.on) {
-      this.prog = 1 - this.elp;
       this.st = null;
+      this.prog = 1 - this.elp;
     } else {
       this.delay.cb = null;
       this.delay.play();
@@ -113,6 +114,19 @@ class Tween {
       this.raf = o.raf;
     }
 
+    if (!this.played && this.ps) {
+      this.delay.cb = () => {
+        checkProps.call(this, this.obj);
+        this.played = true;
+      };
+    } else if (newO && this.on) {
+      checkProps.call(this, this.obj);
+    } else if (newO && !this.on) {
+      this.delay.cb = () => checkProps.call(this, this.obj);
+    } else {
+      this.delay.cb = null;
+    }
+
     if (this.on) {
       this.st = null;
 
@@ -121,14 +135,6 @@ class Tween {
     } else {
       this.delay.play();
     }
-
-    if (!this.played) this.delay.cb = () => checkProps.call(this, this.obj);
-    else if (newO && this.on) checkProps.call(this, this.obj);
-    else if (newO && !this.on)
-      this.delay.cb = () => checkProps.call(this, this.obj);
-    else this.delay.cb = null;
-
-    this.played = true;
   }
 }
 
