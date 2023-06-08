@@ -47,6 +47,7 @@ class Tween {
 
     let time = this.prog + (t - this.st) / (this.d * 1000);
     this.elp = Clamp(0, 1, time);
+    console.log(this.elp, this.mode);
 
     this.e = Math.abs(this.dir - this.ease(this.elp));
     this.raf && this.raf(this.e);
@@ -62,14 +63,14 @@ class Tween {
   }
 
   reverse() {
-    if (this.mode === "r" || !this.played) return;
-
-    this.dir = 1;
+    if (this.mode === "r") return;
     this.mode = "r";
+    this.dir = 1;
+    this.prog = 1 - this.elp;
+    if (!this.played || this.delay.on) return;
 
     if (this.on) {
       this.st = null;
-      this.prog = 1 - this.elp;
     } else {
       this.delay.cb = null;
       this.delay.play();
@@ -103,16 +104,7 @@ class Tween {
     this.mode = "p";
     this.dir = 0;
 
-    if (newO) {
-      this.delay.delay = o.delay;
-      this.d = o.d;
-
-      this.ease = Ease[o.ease] || this.ease;
-      this.ps = o.p;
-
-      this.completed = o.completed;
-      this.raf = o.raf;
-    }
+    if (this.delay.on) return;
 
     if (!this.played && this.ps) {
       this.delay.cb = () => {
@@ -134,6 +126,17 @@ class Tween {
       else this.prog = 1 - this.elp;
     } else {
       this.delay.play();
+    }
+
+    if (newO) {
+      this.delay.delay = o.delay;
+      this.d = o.d;
+
+      this.ease = Ease[o.ease] || this.ease;
+      this.ps = o.p;
+
+      this.completed = o.completed;
+      this.raf = o.raf;
     }
   }
 }
