@@ -49,7 +49,6 @@ class Tween {
 
     let time = this.prog + (t - this.st) / (this.d * 1000);
     this.elp = Clamp(0, 1, time);
-    console.log(this.elp, this.mode);
 
     this.e = Math.abs(this.dir - this.ease(this.elp));
     this.raf && this.raf(this.e);
@@ -83,7 +82,8 @@ class Tween {
     }
   }
 
-  reverse() {
+  reverse(d) {
+    this.delay.delay = d;
     this.control("r");
   }
 

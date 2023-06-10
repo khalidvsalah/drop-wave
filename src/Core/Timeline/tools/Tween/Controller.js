@@ -1,19 +1,19 @@
 import { Store } from "../../../../index";
 import Tween from "./Tween";
 
-const S = new Store();
+const s = new Store();
 
 function tweenController(item, obj) {
-  let stored = S.get(item);
+  let stored = s.get(item);
   let tween = stored;
 
   if (!stored) {
     tween = new Tween(item, obj);
-    S.set(item, tween);
+    s.set(item, tween);
   }
 
   return {
-    reverse: () => tween.reverse(),
+    reverse: (d) => tween.reverse(d),
     pause: () => tween.pause(),
     resume: () => tween.resume(),
     play: (o) => tween.play(o),
@@ -46,7 +46,11 @@ function Control(items, o) {
 
     tweens.map(({ play }) => play(o));
     return {
-      reverse: () => tweens.map(({ reverse }) => reverse()),
+      reverse: () => {
+        let ds = [];
+        tweens.map((t, i) => ds.push(tweens[i].tween.delay.delay));
+        tweens.map(({ reverse }, i) => reverse(ds.reverse()[i]));
+      },
       pause: () => tweens.map(({ pause }) => pause()),
       resume: () => tweens.map(({ resume }) => resume()),
       play: () => tweens.map(({ play }) => play(o)),
