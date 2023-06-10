@@ -2,7 +2,7 @@ import { Raf, Clamp } from "../../index";
 
 export default class Delay {
   constructor({ delay, o, cb }) {
-    this.delay = delay;
+    this.delay = delay || 0;
     this.o = o;
     this.cb = cb;
     this.on = false;
@@ -25,7 +25,7 @@ export default class Delay {
   run(t) {
     if (!this.st) this.st = t;
     let time = (t - this.st) / (this.delay * 1000);
-    let elp = isNaN(time) ? 1 : Clamp(0, 1, time);
+    let elp = isFinite(time) ? Clamp(0, 1, time) : 1;
 
     if (elp === 1) {
       this.Elapsed();
