@@ -107,8 +107,9 @@ class Tween {
     return true;
   }
 
-  play(o) {
+  play(o, d) {
     let newO = JSON.stringify(this.ps) !== JSON.stringify(o.p);
+    this.delay.delay = d || 0;
 
     if (newO) {
       this.delay.delay = o.delay;
@@ -126,17 +127,6 @@ class Tween {
       this.control("p", true);
     } else {
       this.control("p");
-    }
-
-    if (newO) {
-      this.delay.delay = o.delay;
-      this.d = o.d;
-
-      this.ease = Ease[o.ease] || this.ease;
-      this.ps = o.p;
-
-      this.completed = o.completed;
-      this.raf = o.raf;
     }
   }
 }

@@ -16,7 +16,7 @@ function tweenController(item, obj) {
     reverse: (d) => tween.reverse(d),
     pause: () => tween.pause(),
     resume: () => tween.resume(),
-    play: (o) => tween.play(o),
+    play: (o) => tween.play(o, obj.delay),
     item,
     tween,
   };
@@ -45,12 +45,10 @@ function Control(items, o) {
     });
 
     tweens.map(({ play }) => play(o));
+    let ds = tweens.map((t) => t.tween.delay.delay);
+
     return {
-      reverse: () => {
-        let ds = [];
-        tweens.map((t, i) => ds.push(tweens[i].tween.delay.delay));
-        tweens.map(({ reverse }, i) => reverse(ds.reverse()[i]));
-      },
+      reverse: () => tweens.map(({ reverse }, i) => reverse(ds.reverse()[i])),
       pause: () => tweens.map(({ pause }) => pause()),
       resume: () => tweens.map(({ resume }) => resume()),
       play: () => tweens.map(({ play }) => play(o)),
