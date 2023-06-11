@@ -1,10 +1,13 @@
 ## Ardo
 
 ##### A JavaScript Library Contain (virtual-scroll, Tween, Route, Subscribe, Raf, Ease).
+
 ```js
 import { Tween, Scroll, Raf, Ease, Sub, Route } from "ardo";
 ```
+
 &nbsp;
+
 #### Tween
 
 ##### Function for animating dom-element, supported css-properties (opacity, transform, scale).
@@ -22,12 +25,12 @@ Tween(domElement, {
 
 #### Subscribe
 
-##### a Function for adding Observer & Subscriber.
+##### a Function for adding observer & Subscriber.
 
 ```js
-window.addEventListener("wheel", Sub.subF("wheel").cb); // create Observer.
-this.wheel = Sub.subC("wheel", this.Wheel.bind(this)); // subscribe to an event.
-Sub.subCR("wheel", this.wheel); // unsubscribe to an event.
+window.addEventListener("wheel", Sub.obs("wheel").cb); // create Observer.
+this.wheel = Sub.add("wheel", this.Wheel.bind(this)); // subscribe to an event.
+Sub.remove("wheel", this.wheel); // unsubscribe to an event.
 ```
 
 ###

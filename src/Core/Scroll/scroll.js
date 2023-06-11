@@ -13,37 +13,37 @@ class Scroll {
     this.wheel = { x: 0, y: 0, lerp: wheelLerp };
     this.drag = { s: 0, e: 0, sp: 0, ep: 0, lerp: dragLerp, on: false };
 
-    if (!Sub.subCheck("wheel")) {
-      window.addEventListener("wheel", Sub.subF("wheel").cb);
+    if (!Sub.check("wheel")) {
+      window.addEventListener("wheel", Sub.obs("wheel").cb);
     }
 
-    if (!Sub.subCheck("resize")) {
-      window.addEventListener("resize", Sub.subF("resize").cb);
+    if (!Sub.check("resize")) {
+      window.addEventListener("resize", Sub.obs("resize").cb);
     }
 
     if (drag) {
-      if (!Sub.subCheck("mousedown"))
-        window.addEventListener("mousedown", Sub.subF("mousedown").cb);
-      if (!Sub.subCheck("mousemove"))
-        window.addEventListener("mousemove", Sub.subF("mousemove").cb);
-      if (!Sub.subCheck("mouseup"))
-        window.addEventListener("mouseup", Sub.subF("mouseup").cb);
+      if (!Sub.check("mousedown"))
+        window.addEventListener("mousedown", Sub.obs("mousedown").cb);
+      if (!Sub.check("mousemove"))
+        window.addEventListener("mousemove", Sub.obs("mousemove").cb);
+      if (!Sub.check("mouseup"))
+        window.addEventListener("mouseup", Sub.obs("mouseup").cb);
 
-      this.mdId = Sub.subC("mousedown", this.onMDown.bind(this));
-      this.mmId = Sub.subC("mousemove", this.onMM.bind(this));
-      this.muId = Sub.subC("mouseup", this.onMU.bind(this));
+      this.mdId = Sub.add("mousedown", this.onMDown.bind(this));
+      this.mmId = Sub.add("mousemove", this.onMM.bind(this));
+      this.muId = Sub.add("mouseup", this.onMU.bind(this));
     }
 
     this.Resize();
 
-    if (!Sub.subCheck("raf")) {
-      Raf.push({ d: -1, cb: Sub.subF("raf").cb });
+    if (!Sub.check("raf")) {
+      Raf.push({ d: -1, cb: Sub.obs("raf").cb });
     }
 
-    this.wId = Sub.subC("wheel", this.onWheel.bind(this));
-    this.resizeId = Sub.subC("resize", this.Resize.bind(this));
-    this.rafId = Sub.subC("raf", this.raf.bind(this));
-    this.scrollId = Sub.subF("scroll");
+    this.wId = Sub.add("wheel", this.onWheel.bind(this));
+    this.resizeId = Sub.add("resize", this.Resize.bind(this));
+    this.rafId = Sub.add("raf", this.raf.bind(this));
+    this.scrollId = Sub.obs("scroll");
 
     this.all = document.getElementById("all");
     if (!this.all) {
@@ -107,14 +107,14 @@ class Scroll {
     if (ele.length) bounds = Bounds(ele[0]);
     else bounds = Bounds(ele);
 
-    let id = Sub.subC(this.scrollId.name, (e) => {
+    let id = Sub.add(this.scrollId.name, (e) => {
       let y = e.y + window.innerHeight;
       let pr = ((o.s || 0) / 100) * window.innerHeight;
 
       if (pr + bounds.top <= y) {
         o.o && Tween(ele, o.o);
         o.cb && o.cb();
-        Sub.subCR(this.scrollId.name, id);
+        Sub.remove(this.scrollId.name, id);
       }
     });
 
@@ -141,13 +141,13 @@ class Scroll {
   }
 
   destroy() {
-    Sub.subCR("wheel", this.wId);
-    Sub.subCR("resize", this.resizeId);
-    Sub.subCR("raf", this.rafId);
+    Sub.remove("wheel", this.wId);
+    Sub.remove("resize", this.resizeId);
+    Sub.remove("raf", this.rafId);
 
-    this.mdId && Sub.subCR("mousedown", this.mdId);
-    this.mmId && Sub.subCR("mousemove", this.mmId);
-    this.muId && Sub.subCR("mouseup", this.muId);
+    this.mdId && Sub.remove("mousedown", this.mdId);
+    this.mmId && Sub.remove("mousemove", this.mmId);
+    this.muId && Sub.remove("mouseup", this.muId);
   }
 }
 

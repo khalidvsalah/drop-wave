@@ -3,7 +3,7 @@ class Subscribe {
     this.subs = {};
   }
 
-  subF(name) {
+  obs(name) {
     this.subs[name] = { cb: null, items: [] };
     this.subs[name].cb = function () {
       var args = Array.prototype.slice.call(arguments);
@@ -17,12 +17,12 @@ class Subscribe {
     return { cb: this.subs[name].cb, name };
   }
 
-  subC(name, cb) {
+  add(name, cb) {
     this.subs[name].items.push({ cb, id: this.subs[name].items.length + name });
     return this.subs[name].items.length - 1 + name;
   }
 
-  subCR(name, i) {
+  remove(name, i) {
     if (i.match(name) == null) {
       console.error(i + " is not in " + name);
       return;
@@ -31,7 +31,7 @@ class Subscribe {
     this.subs[name].items = item.filter(({ id }) => id !== i);
   }
 
-  subCheck(name) {
+  check(name) {
     return this.subs[name] ? true : false;
   }
 }
