@@ -1,9 +1,9 @@
-## Ardo
+## Blink Wave 🌊
 
 ##### A JavaScript Library Contain (virtual-scroll, Tween, Route, Subscribe, Raf, Ease).
 
 ```js
-import { Tween, Scroll, Raf, Ease, Sub, Route } from "ardo";
+import { Tween, Scroll, Raf, Ease, Sub, Route } from "blinkwave";
 ```
 
 &nbsp;
@@ -57,13 +57,9 @@ scroll.add(domElement, {s: 10, o: {
 
 ```js
 const scroll = Raf({
-  d: 0.4,
   cb: (e) => {
     const ease = Ease["io4"](e);
     return ease;
-  },
-  completed: () => {
-    console.log("completed");
-  },
+  }
 });
 ```
