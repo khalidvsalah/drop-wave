@@ -23,7 +23,7 @@ function tweenController(item, obj) {
 }
 
 function Control(items, o) {
-  if (items.length) {
+  if (Array.isArray(items)) {
     const tweens = [...items].map((item, k) => {
       if (k === 0) {
         return tweenController(item, o);

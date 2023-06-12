@@ -129,8 +129,11 @@ class Scroll {
       this.lerp.y
     );
 
-    this.wheel.x = Lerp(this.wheel.x, this.lerp.x, this.wheel.lerp);
-    this.wheel.y = Lerp(this.wheel.y, this.lerp.y, this.wheel.lerp);
+    let x = Lerp(this.wheel.x, this.lerp.x, this.wheel.lerp);
+    let y = Lerp(this.wheel.y, this.lerp.y, this.wheel.lerp);
+
+    this.wheel.x = x;
+    this.wheel.y = y;
 
     this.ele.style.transform = `translateY(${-this.wheel.y}px)`;
     this.scrollId.cb(this.wheel);

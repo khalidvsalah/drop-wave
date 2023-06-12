@@ -2,11 +2,11 @@ export default function checkElement(element) {
   let result;
 
   if (typeof element === "string") {
-    return document.querySelector(element);
+    result = document.querySelector(element);
   } else if (element instanceof window.HTMLElement) {
-    return element;
+    result = element;
   } else if (typeof element === "object") {
-    return element;
+    result = element;
   }
 
   return result;

@@ -1,8 +1,8 @@
 const props = {
   transform: (x, y, sx, sy, n) => {
     let xV, yV, sXV, sYV;
-    let tra = n.transform;
-    let t = tra != "none" && tra.match(/\((.+)\)$/)[1].split(", ");
+    let tr = n.transform;
+    let t = tr !== "none" && tr.match(/\((.+)\)$/)[1].split(", ");
 
     if (t) {
       xV = {
