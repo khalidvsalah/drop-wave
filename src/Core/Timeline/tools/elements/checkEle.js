@@ -5,8 +5,6 @@ export default function checkElement(element) {
     result = document.querySelector(element);
   } else if (element instanceof window.HTMLElement) {
     result = element;
-  } else if (typeof element === "object") {
-    result = element;
   }
 
   return result;
