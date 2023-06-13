@@ -18,6 +18,9 @@ Tween(domElement, {
     delay: 0.4, // delay
     ease: "io4" // easeInOut4
     p: {y: [100, "%"]} // ((y[0]=> end), (y[1]=> ("%", "px")))
+    raf: (e)=> (console.log(e)) // get called for every frame the tween is playing.
+    start: ()=> (console.log("go")) // onStart.
+    completed: ()=> (console.log("done")) // onCompleted.
 });
 ```
 
@@ -60,6 +63,6 @@ const scroll = Raf({
   cb: (e) => {
     const ease = Ease["io4"](e);
     return ease;
-  }
+  },
 });
 ```

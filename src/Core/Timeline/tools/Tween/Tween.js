@@ -4,8 +4,7 @@ import checkProps from "../props/checkProps";
 import checkEle from "../elements/checkEle";
 
 class Tween {
-  constructor(ele, o, obj) {
-    this.obj = obj;
+  constructor(ele, o) {
     this.ele = ele;
     this.o = o;
 
@@ -53,12 +52,7 @@ class Tween {
     this.e = Math.abs(this.dir - this.ease(this.elp));
     this.raf && this.raf(this.e);
 
-    this.results.map((p) => {
-      let cb = p.cb(this.e);
-
-      if (this.obj) this.elements[0][p.name] = cb;
-      else p.element.style[p.name] = cb;
-    });
+    this.results.map((p) => (p.element.style[p.name] = p.cb(this.e)));
 
     if (this.elp === 1) return this.kill();
   }
@@ -71,7 +65,13 @@ class Tween {
 
     if (this.mode === m) return;
     this.mode = m;
-    this.dir = m === "r" ? 1 : 0;
+    if (m === "r") {
+      this.delay.cb = null;
+      this.dir = 1;
+    } else {
+      this.dir = 0;
+      if (this.start) this.delay.cb = this.start;
+    }
     if (this.delay.on) return;
 
     if (this.on) {
@@ -98,7 +98,7 @@ class Tween {
   }
 
   kill() {
-    this.completed && this.completed();
+    if (this.completed && this.mode === "p") this.completed();
 
     this.st = null;
     this.on = false;
@@ -108,6 +108,7 @@ class Tween {
   }
 
   play(o, d) {
+    this.start = o.start;
     let newO = JSON.stringify(this.ps) !== JSON.stringify(o.p);
     this.delay.delay = d || 0;
 
