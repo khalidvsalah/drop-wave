@@ -1,9 +1,9 @@
 import props from "./props.js";
 
-export default function checkProps(w) {
+export default function checkProps() {
   this.results = [];
 
-  if (!w) {
+  if (this.ps) {
     let x, y, o, p, d, sx, sy, t;
 
     let element = this.elements;
@@ -57,23 +57,5 @@ export default function checkProps(w) {
         element: element,
         cb: props["opacity"](o, c),
       });
-  } else {
-    for (let i = 0; i < this.keys.length; i++) {
-      let ks = this.keys[i];
-      let sP = +this.elements[0][this.keys[i]];
-
-      this.results.push({
-        name: ks,
-        cb: (() => {
-          let V = {
-            s: sP ? sP : this.props[ks][0],
-            e: this.props[ks][1],
-          };
-          V.lerp = this.props[ks][1] - this.props[ks][0];
-
-          return (e) => V.s + V.lerp * e;
-        })(),
-      });
-    }
   }
 }
