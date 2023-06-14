@@ -3,7 +3,10 @@ export default function checkElement(element) {
 
   if (typeof element === "string") {
     result = document.querySelector(element);
-  } else if (element instanceof window.HTMLElement) {
+  } else if (
+    element instanceof window.HTMLElement ||
+    typeof element === "object"
+  ) {
     result = element;
   }
 

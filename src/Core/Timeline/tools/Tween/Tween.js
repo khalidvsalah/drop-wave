@@ -21,7 +21,8 @@ class Tween {
   }
 
   to() {
-    this.elements = checkEle(this.ele);
+    this.target = checkEle(this.ele);
+    this.obj = !(this.target instanceof window.HTMLElement);
 
     this.d = this.o.d ? this.o.d : 0.5;
     this.del = this.o.delay;
@@ -52,7 +53,11 @@ class Tween {
     this.e = Math.abs(this.dir - this.ease(this.elp));
     this.raf && this.raf(this.e);
 
-    this.results.map((p) => (p.element.style[p.name] = p.cb(this.e)));
+    this.results.map((p) => {
+      let cb = p.cb(this.e);
+      if (this.obj) this.target[p.name] = cb;
+      else this.target.style[p.name] = cb;
+    });
 
     if (this.elp === 1) return this.kill();
   }
