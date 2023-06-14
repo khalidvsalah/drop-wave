@@ -68,7 +68,7 @@ class Tween {
       this.delay.kill();
     }
 
-    if (this.mode === m) return;
+    if (this.mode === m && !this.obj) return;
     this.mode = m;
     if (m === "r") {
       this.delay.cb = null;
