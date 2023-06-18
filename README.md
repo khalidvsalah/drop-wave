@@ -1,6 +1,7 @@
 ## Blink Wave 🌊
 
 ##### A JavaScript Library Contain (virtual-scroll, Tween, Route, Subscribe, Raf, Ease).
+https://www.linkedin.com/posts/khalidsalah_javascript-animation-javascriptframework-activity-7074398716622684160-owKU?utm_source=share&utm_medium=member_desktop
 
 ```js
 import { Tween, Scroll, Raf, Ease, Sub, Route } from "blinkwave";
