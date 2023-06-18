@@ -1,4 +1,4 @@
-import { Delay, Ease, Clamp } from "../../../../index";
+import { Late, Ease, Clamp } from "../../../../index";
 
 import checkProps from "../props/checkProps";
 import checkEle from "../elements/checkEle";
@@ -25,7 +25,7 @@ class Tween {
     this.obj = !(this.target instanceof window.HTMLElement);
 
     this.d = this.o.d ? this.o.d : 0.5;
-    this.del = this.o.delay;
+    this.late = this.o.late;
 
     this.ease = Ease[this.o.ease] ? Ease[this.o.ease] : Ease["l"];
     this.ps = this.o.p;
@@ -35,8 +35,8 @@ class Tween {
       cb: this.run.bind(this),
     };
 
-    this.delay = new Delay({
-      delay: this.del,
+    this.late = new Late({
+      late: this.late,
       o: this.cbO,
     });
 
@@ -63,32 +63,32 @@ class Tween {
   }
 
   control(m, n) {
-    if (this.delay.on && this.mode !== m) {
+    if (this.late.on && this.mode !== m) {
       this.mode = m;
-      this.delay.kill();
+      this.late.kill();
     }
 
     if (this.mode === m && !this.obj) return;
     this.mode = m;
     if (m === "r") {
-      this.delay.cb = null;
+      this.late.cb = null;
       this.dir = 1;
     } else {
       this.dir = 0;
-      if (this.start) this.delay.cb = this.start;
+      if (this.start) this.late.cb = this.start;
     }
-    if (this.delay.on) return;
+    if (this.late.on) return;
 
     if (this.on) {
       this.st = null;
       n ? (this.prog = 0) : (this.prog = 1 - this.elp);
     } else {
-      this.delay.play();
+      this.late.play();
     }
   }
 
   reverse(d) {
-    this.delay.delay = d;
+    this.late.late = d;
     this.control("r");
   }
 
@@ -98,8 +98,8 @@ class Tween {
 
   resume() {
     this.st = null;
-    this.delay.cb = null;
-    this.delay.play();
+    this.late.cb = null;
+    this.late.play();
   }
 
   kill() {
@@ -115,10 +115,10 @@ class Tween {
   play(o, d) {
     this.start = o.start;
     let newO = JSON.stringify(this.ps) !== JSON.stringify(o.p);
-    this.delay.delay = d || 0;
+    this.late.late = d || 0;
 
     if (newO) {
-      this.delay.delay = o.delay;
+      this.late.late = o.late;
       this.d = o.d;
 
       this.ease = Ease[o.ease] || this.ease;

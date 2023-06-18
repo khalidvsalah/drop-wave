@@ -2,7 +2,6 @@ import { Store } from "../../../../index";
 import Tween from "./Tween";
 
 const s = new Store();
-
 function tweenController(item, obj) {
   let stored = s.get(item);
   let tween = stored;
@@ -16,7 +15,7 @@ function tweenController(item, obj) {
     reverse: (d) => tween.reverse(d),
     pause: () => tween.pause(),
     resume: () => tween.resume(),
-    play: (o) => tween.play(o, obj.delay),
+    play: (o) => tween.play(o, obj.late),
     item,
     tween,
   };
@@ -28,7 +27,7 @@ function Control(items, o) {
       if (k === 0) {
         return tweenController(item, o);
       } else {
-        let delay = (o.delay || 0) + (o.stagger || 0) * k;
+        let late = (o.late || 0) + (o.stagger || 0) * k;
 
         if (items.length !== k + 1) {
           o.raf = null;
@@ -37,7 +36,7 @@ function Control(items, o) {
 
         return tweenController(item, {
           ...o,
-          delay,
+          late,
           raf: undefined,
           completed: undefined,
         });
@@ -45,10 +44,13 @@ function Control(items, o) {
     });
 
     tweens.map(({ play }) => play(o));
-    let ds = tweens.map((t) => t.tween.delay.delay);
+    let ds = tweens.map((t) => t.tween.late.late);
 
     return {
-      reverse: () => tweens.map(({ reverse }, i) => reverse(ds.reverse()[i])),
+      reverse: (d) => {
+        let late = o.late - d;
+        tweens.map(({ reverse }, i) => reverse(ds.reverse()[i] - late));
+      },
       pause: () => tweens.map(({ pause }) => pause()),
       resume: () => tweens.map(({ resume }) => resume()),
       play: () => tweens.map(({ play }) => play(o)),

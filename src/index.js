@@ -5,14 +5,14 @@ import Store from "./Utils/Store/Store";
 import Sub from "./Utils/Sub/sub";
 import Throttle from "./Utils/Throttle/throttle";
 
-import Delay from "./Animation/Delay/delay";
+import Late from "./Animation/Late/Late";
 import Raf from "./Animation/Raf/raf";
 
 import Route from "./Core/Route/route";
 import Mount from "./Dom/Mount/mount";
 
 import Tween from "./Core/Timeline/tools/Tween/Controller";
-import TL from "./Core/Timeline/timeline";
+import TL from "./Core/Timeline/Timeline";
 import Scroll from "./Core/Scroll/scroll";
 
 export {
@@ -23,7 +23,7 @@ export {
   Route,
   Scroll,
   TL,
-  Delay,
+  Late,
   Raf,
   Has,
   Bounds,
