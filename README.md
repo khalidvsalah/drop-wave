@@ -1,6 +1,7 @@
 ## Blink Wave 🌊
 
 ##### A JavaScript Library Contain (virtual-scroll, Tween, Route, Subscribe, Raf, Ease).
+https://www.linkedin.com/posts/khalidsalah_javascript-animation-javascriptframework-activity-7074398716622684160-owKU?utm_source=share&utm_medium=member_desktop
 
 ```js
 import { Tween, Scroll, Raf, Ease, Sub, Route } from "blinkwave";
@@ -15,9 +16,12 @@ import { Tween, Scroll, Raf, Ease, Sub, Route } from "blinkwave";
 ```js
 Tween(domElement, {
     d: 0.4, // duration
-    delay: 0.4, // delay
+    late: 0.4, // late
     ease: "io4" // easeInOut4
     p: {y: [100, "%"]} // ((y[0]=> end), (y[1]=> ("%", "px")))
+    raf: (e)=> (console.log(e)) // get called for every frame the tween is playing.
+    start: ()=> (console.log("go")) // onStart.
+    completed: ()=> (console.log("done")) // onCompleted.
 });
 ```
 
@@ -43,7 +47,7 @@ Sub.remove("wheel", this.wheel); // unsubscribe to an event.
 const scroll = new Scroll(domElement, {drag: true, lerp: 0.1});
 scroll.add(domElement, {s: 10, o: {
     d: 0.4,
-    delay: 0.4,
+    late: 0.4,
     ease: "io4"
     p: {y: [100, "%"]}
 }});
@@ -60,6 +64,6 @@ const scroll = Raf({
   cb: (e) => {
     const ease = Ease["io4"](e);
     return ease;
-  }
+  },
 });
 ```

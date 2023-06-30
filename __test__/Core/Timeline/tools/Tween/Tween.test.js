@@ -1,14 +1,20 @@
 import { Tween } from "../../../../../src";
 
-describe("Tween.to function", () => {
-  test("to return undefined", () => {
+describe("Tween function", () => {
+  test("Match return Object", () => {
     let ele = document.createElement("div");
-    let o = { d: 1, ease: "l", p: { y: [0, 100, "%"] } };
+    document.body.appendChild(ele);
 
-    expect(Tween.to(ele, o)).toBe(undefined);
-  });
+    let o = { d: 1, ease: "l", p: { y: [100, "%"] } };
+    let returnedObj = {
+      reverse: expect.any(Function),
+      pause: expect.any(Function),
+      resume: expect.any(Function),
+      play: expect.any(Function),
+      item: expect.any(Object),
+      tween: expect.any(Object),
+    };
 
-  test("expect this.stop to equal false", () => {
-    expect(Tween.stop).toBe(false);
+    expect(Tween(ele, o)).toEqual(returnedObj);
   });
 });

@@ -2,7 +2,8 @@ const props = {
   transform: (x, y, sx, sy, n) => {
     let xV, yV, sXV, sYV;
     let tr = n.transform;
-    let t = tr !== "none" && tr.match(/\((.+)\)$/)[1].split(", ");
+    let t;
+    if (tr.length > 6) t = tr.match(/\((.+)\)$/)[1].split(", ");
 
     if (t) {
       xV = {

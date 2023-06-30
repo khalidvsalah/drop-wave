@@ -1,4 +1,4 @@
-import Delay from "../../../src/Animation/Delay/delay";
+import Delay from "../../../src/Animation/Delay/late";
 
 describe("", () => {
   test("", () => {

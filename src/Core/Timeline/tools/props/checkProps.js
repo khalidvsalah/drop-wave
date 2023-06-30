@@ -3,12 +3,12 @@ import props from "./props.js";
 export default function checkProps() {
   this.results = [];
 
-  if (this.ps) {
+  if (this.ps && !this.obj) {
     let x, y, o, p, d, sx, sy, t;
 
-    let element = this.elements;
-    let c = window.getComputedStyle(element);
-    let ph = element.parentNode.clientHeight;
+    let ele = this.target;
+    let c = window.getComputedStyle(ele);
+    let ph = ele.parentNode.clientHeight;
 
     x = this.ps["x"] || false;
     y = this.ps["y"] || false;
@@ -25,7 +25,6 @@ export default function checkProps() {
     if (x || y || sx || sy) {
       this.results.push({
         name: "transform",
-        element: element,
         cb: props["transform"](x, y, sx, sy, c),
       });
     }
@@ -33,29 +32,35 @@ export default function checkProps() {
     t &&
       this.results.push({
         name: "top",
-        element: element,
         cb: props["top"](t, c, ph),
       });
 
     p &&
       this.results.push({
         name: "pointerEvents",
-        element: element,
         cb: props["pointer"](p),
       });
 
     d &&
       this.results.push({
         name: "display",
-        element: element,
         cb: props["display"](d),
       });
 
     o &&
       this.results.push({
         name: "opacity",
-        element: element,
         cb: props["opacity"](o, c),
       });
+  } else if (this.obj) {
+    for (let key in this.ps) {
+      let p = this.ps[key];
+      let pV = { s: p[0], lerp: p[1] - p[0] };
+
+      this.results.push({
+        name: key,
+        cb: (e) => pV.s + pV.lerp * e,
+      });
+    }
   }
 }

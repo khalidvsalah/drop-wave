@@ -54,7 +54,7 @@ class Scroll {
     }
 
     this.thr = new Throttle({
-      delay: 0.3,
+      late: 0.3,
       cb: () => {
         this.all.style.pointerEvents = "none";
       },
