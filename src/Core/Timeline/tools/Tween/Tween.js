@@ -8,6 +8,7 @@ class Tween {
     this.ele = ele;
     this.o = o;
 
+    this.start = o.start;
     this.completed = o.completed;
     this.raf = o.raf;
 
@@ -51,7 +52,6 @@ class Tween {
     this.elp = Clamp(0, 1, time);
 
     this.e = Math.abs(this.dir - this.ease(this.elp));
-    this.raf && this.raf(this.e);
 
     this.results.map((p) => {
       let cb = p.cb(this.e);
@@ -59,6 +59,7 @@ class Tween {
       else this.target.style[p.name] = cb;
     });
 
+    this.raf && this.raf(this.e);
     if (this.elp === 1) return this.kill();
   }
 

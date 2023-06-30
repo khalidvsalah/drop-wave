@@ -4,6 +4,7 @@ import Tween from "./Tween";
 const s = new Store();
 function tweenController(item, obj) {
   let stored = s.get(item);
+
   let tween = stored;
 
   if (!stored) {
@@ -18,6 +19,7 @@ function tweenController(item, obj) {
     play: (o) => tween.play(o, obj.late),
     item,
     tween,
+    obj,
   };
 }
 
@@ -29,21 +31,17 @@ function Control(items, o) {
       } else {
         let late = (o.late || 0) + (o.stagger || 0) * k;
 
-        if (items.length !== k + 1) {
-          o.raf = null;
-          o.completed = null;
-        }
-
         return tweenController(item, {
           ...o,
           late,
+          start: undefined,
           raf: undefined,
           completed: undefined,
         });
       }
     });
 
-    tweens.map(({ play }) => play(o));
+    tweens.map(({ play, obj }) => play(obj));
     let ds = tweens.map((t) => t.tween.late.late);
 
     return {

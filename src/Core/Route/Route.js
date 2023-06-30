@@ -4,35 +4,30 @@ class _R {
   }
 
   match(url) {
-    return url.match(/(?:\w+:)?\/\/[^\/]+([^?#]+)/);
+    return url.match(/^(https?):\/\/([^/?#]+)(\/[^?#]*)?(\?[^#]*)?(#.*)?$/);
   }
 
-  async xhr({ url, push, post, isText, compile }) {
+  async xhr(url, post, page) {
     if (!this.cache.get(url)) {
       try {
-        var text;
+        const requst = new Request(url, {
+          headers: new Headers({
+            "Content-type": page
+              ? "text/html"
+              : "application/x-ww-form-urlencodeed",
+          }),
+          method: post ? "POST" : "GET",
+          mode: "cors",
+        });
 
-        if (compile) {
-          const requst = new Request(url, {
-            headers: new Headers({
-              "Content-type": isText
-                ? "application/x-ww-form-urlencodeed"
-                : "text/html",
-            }),
-            method: post ? "POST" : "GET",
-            mode: "cors",
-          });
-          const responed = await fetch(requst);
-          text = isText ? await responed.json() : await responed.text();
-        }
+        const fetchd = await fetch(requst);
+        const responed = page ? await fetchd.text() : await fetchd.json();
 
-        push && window.history.pushState({}, "", url);
         const match = this.match(url);
 
         const res = {
-          url: match ? match[1] : url,
-          data: compile ? text : "",
-          stored: false,
+          url: match,
+          data: responed,
         };
 
         this.cache.set(url, res);
@@ -41,8 +36,7 @@ class _R {
         console.error("Failed To Get The Data", e.message);
       }
     } else {
-      push && window.history.pushState({}, "", url);
-      return { ...this.cache.get(url), stored: true };
+      return { ...this.cache.get(url) };
     }
   }
 
@@ -50,9 +44,8 @@ class _R {
     const match = this.match(url);
 
     const res = {
-      url: match ? match[1] : url,
+      url: match,
       data: text,
-      stored: true,
     };
 
     this.cache.set(url, res);
