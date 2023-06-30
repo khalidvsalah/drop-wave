@@ -1,5 +1,5 @@
 {
-  "name": "ardo",
+  "name": "blinkwave",
   "version": "0.0.73",
   "description": "Animation Library",
   "author": "khalid_salah",
@@ -7,7 +7,7 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "https://github.com/khalidsalahh/Ardor"
+    "url": "https://github.com/khalidsalahh/blinkwave"
   },
   "scripts": {
     "prod": "node ./scripts/index.js",
@@ -15,7 +15,7 @@
     "test": "jest"
   },
   "bugs": {
-    "url": "https://github.com/khalidsalahh/Ardor/issues"
+    "url": "https://github.com/khalidsalahh/blinkwave/issues"
   },
   "devDependencies": {
     "@babel/core": "^7.20.12",
