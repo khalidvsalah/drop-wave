@@ -8,10 +8,6 @@ class Tween {
     this.ele = ele;
     this.o = o;
 
-    this.start = o.start;
-    this.completed = o.completed;
-    this.raf = o.raf;
-
     this.mode;
     this.prog = 0;
     this.elp = 0;
@@ -71,13 +67,15 @@ class Tween {
 
     if (this.mode === m && !this.obj) return;
     this.mode = m;
+
     if (m === "r") {
       this.late.cb = null;
       this.dir = 1;
     } else {
       this.dir = 0;
-      if (this.start) this.late.cb = this.start;
+      this.late.cb = this.start;
     }
+
     if (this.late.on) return;
 
     if (this.on) {
@@ -115,6 +113,9 @@ class Tween {
 
   play(o, d) {
     this.start = o.start;
+    this.completed = o.completed;
+    this.raf = o.raf;
+
     let newO = JSON.stringify(this.ps) !== JSON.stringify(o.p);
     this.late.late = d || 0;
 
@@ -124,9 +125,6 @@ class Tween {
 
       this.ease = Ease[o.ease] || this.ease;
       this.ps = o.p;
-
-      this.completed = o.completed;
-      this.raf = o.raf;
 
       checkProps.call(this);
 
