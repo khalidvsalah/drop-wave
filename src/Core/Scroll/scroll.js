@@ -131,20 +131,17 @@ class Scroll {
   }
 
   raf() {
-    this.lerp.x = Clamp(0, this.bounds.width - innerWidth, this.lerp.x);
-    this.lerp.y = Clamp(0, this.bounds.height - innerHeight, this.lerp.y);
+    let x = this.bounds.width - innerWidth;
+    let y = this.bounds.height - innerHeight;
 
-    let x = Lerp(this.wheel.x, this.lerp.x, this.ease);
-    let y = Lerp(this.wheel.y, this.lerp.y, this.ease);
+    this.lerp.x = Clamp(0, x <= 0 ? 0 : x, this.lerp.x);
+    this.lerp.y = Clamp(0, y <= 0 ? 0 : y, this.lerp.y);
 
-    this.wheel.x = x;
-    this.wheel.y = y;
+    this.wheel.x = Lerp(this.wheel.x, this.lerp.x, this.ease);
+    this.wheel.y = Lerp(this.wheel.y, this.lerp.y, this.ease);
 
-    if (this.dir) {
-      this.el.style.transform = `translateY(${-this.wheel.y}px)`;
-    } else {
-      this.el.style.transform = `translateX(${-this.wheel.x}px)`;
-    }
+    if (this.dir) this.el.style.transform = `translateY(${-this.wheel.y}px)`;
+    else this.el.style.transform = `translateX(${-this.wheel.x}px)`;
 
     this.iscroll.cb(this.wheel);
   }
