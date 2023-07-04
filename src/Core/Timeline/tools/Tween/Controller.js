@@ -26,28 +26,33 @@ function tweenController(item, obj) {
 function Control(items, o) {
   if (typeof items === "object" && items.length) {
     const tweens = [...items].map((item, k) => {
-      if (k === 0) {
-        return tweenController(item, o);
-      } else {
-        let late = (o.late || 0) + (o.stagger || 0) * k;
+      let late = (o.late || 0) + (o.stagger || 0) * k;
+      return tweenController(item, { ...o, late });
+    });
 
-        return tweenController(item, {
-          ...o,
-          late,
+    tweens.map(({ play, obj }, i) => {
+      if (i === 0)
+        play({
+          ...obj,
+          start: o.start,
+          raf: o.raf,
+          completed: o.completed,
+        });
+      else
+        play({
+          ...obj,
           start: undefined,
           raf: undefined,
           completed: undefined,
         });
-      }
     });
 
-    tweens.map(({ play, obj }) => play(obj));
-    let ds = tweens.map((t) => t.tween.late.late);
+    let lates = tweens.map((t) => t.tween.late.late);
 
     return {
       reverse: (d) => {
         let late = o.late - d;
-        tweens.map(({ reverse }, i) => reverse(ds.reverse()[i] - late));
+        tweens.map(({ reverse }, i) => reverse(lates.reverse()[i] - late));
       },
       pause: () => tweens.map(({ pause }) => pause()),
       resume: () => tweens.map(({ resume }) => resume()),
