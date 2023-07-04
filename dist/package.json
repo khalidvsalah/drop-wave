@@ -1,0 +1,18 @@
+{
+  "name": "blinkwave",
+  "version": "0.1.12",
+  "description": "Animation Library",
+  "author": "khalid_salah",
+  "main": "index.js",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/khalidsalahh/blinkwave"
+  },
+  "scripts": {
+    "build": "node ./scripts/index.js"
+  },
+  "bugs": {
+    "url": "https://github.com/khalidsalahh/blinkwave/issues"
+  }
+}
