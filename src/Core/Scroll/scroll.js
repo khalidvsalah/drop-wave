@@ -1,45 +1,74 @@
 import { Sub, Tween, Bounds, Clamp, Lerp, Throttle } from "../../index";
 
+function drag(dir, e) {
+  dir.prev = dir.e;
+  dir.e = this.dir ? e.pageY : e.pageX;
+
+  if (dir.d === 1) dir.sp = dir.e;
+  if (dir.d === -1) dir.ep = dir.e;
+
+  var diff = dir.e - dir.s;
+  dir.d = Math.sign(dir.prev - dir.e) * -1;
+
+  if (dir.d === -1) diff = dir.e - dir.sp;
+  if (dir.d === 1) diff = dir.e - dir.ep;
+
+  return diff * -1 * (this.ease * 0.55);
+}
 class Scroll {
   constructor(ele, o = {}) {
     history.scrollRestoration = "manual";
+    this.el = ele;
+    this.target = o.target || window;
 
     this.ease = o.ease || 0.1;
     this.dir = o.dir ? o.dir : "y";
-    this.wheelLerp = o.wheelLerp || 0.2;
-    this.dragLerp = o.dragLerp || 0.05;
-    this.dragOn = o.drag;
+    this.dir = this.dir === "y";
 
-    this.ele = ele;
-    this.lerp = { x: 0, y: 0, lerp: this.ease };
+    this.dragOn = o.drag || true;
+    this.wheelOn = o.wheel || true;
 
-    this.wheel = { x: 0, y: 0, lerp: this.wheelLerp };
+    this.lerp = { x: 0, y: 0 };
+    this.wheel = { x: 0, y: 0 };
+
     this.drag = {
       x: { s: 0, e: 0, sp: 0, ep: 0 },
       y: { s: 0, e: 0, sp: 0, ep: 0 },
-      lerp: this.dragLerp,
     };
 
-    if (this.dragOn) {
-      this.smousedown = Sub.add("mousedown", this.onMDown.bind(this));
-      this.smousemove = Sub.add("mousemove", this.onMM.bind(this));
-      this.smouseup = Sub.add("mouseup", this.onMU.bind(this));
+    if (this.target instanceof Node) {
+      if (o.drag) {
+        this.target.addEventListener("mousedown", Sub.obs("tmousedown").cb);
+        this.target.addEventListener("mousemove", Sub.obs("tmousemove").cb);
+        this.target.addEventListener("mouseup", Sub.obs("tmouseup").cb);
+
+        this.imousedown = Sub.add("tmousedown", this.onMDown.bind(this));
+        this.imousemove = Sub.add("tmousemove", this.onMM.bind(this));
+        this.imouseup = Sub.add("tmouseup", this.onMU.bind(this));
+      }
+
+      if (o.wheel) {
+        this.target.addEventListener("wheel", Sub.obs("twheel").cb);
+        this.iwheel = Sub.add("twheel", this.onWheel.bind(this));
+      }
+    } else {
+      if (o.drag) {
+        this.imousedown = Sub.add("mousedown", this.onMDown.bind(this));
+        this.imousemove = Sub.add("mousemove", this.onMM.bind(this));
+        this.imouseup = Sub.add("mouseup", this.onMU.bind(this));
+      }
+
+      if (o.wheel) {
+        this.iwheel = Sub.add("wheel", this.onWheel.bind(this));
+      }
     }
 
-    this.sresize = Sub.add("resize", this.Resize.bind(this));
-    this.swheel = Sub.add("wheel", this.onWheel.bind(this));
-    this.sraf = Sub.add("raf", this.raf.bind(this));
+    this.iresize = Sub.add("resize", this.Resize.bind(this));
+    this.iraf = Sub.add("raf", this.raf.bind(this));
 
-    this.rscroll = Sub.obs("scroll");
+    this.iscroll = Sub.obs("scroll");
 
     this.all = document.getElementById("all");
-    if (!this.all) {
-      this.all = document.createElement("div");
-      this.all.id = "all";
-
-      document.body.appendChild(this.all);
-    }
-
     this.throttle = new Throttle({
       late: 0.3,
       cb: () => {
@@ -51,8 +80,8 @@ class Scroll {
   }
 
   onWheel(e) {
-    this.lerp.x += e.deltaY * this.lerp.lerp;
-    this.lerp.y += e.deltaY * this.lerp.lerp;
+    this.lerp.x += e.deltaY * (this.ease * 2);
+    this.lerp.y += e.deltaY * (this.ease * 2);
 
     this.all.style.pointerEvents = "all";
     this.throttle.run();
@@ -70,35 +99,8 @@ class Scroll {
       this.all.style.pointerEvents = "all";
       this.throttle.run();
 
-      if (this.dir === "y") {
-        this.drag.y.prev = this.drag.y.e;
-        this.drag.y.e = e.pageY;
-
-        if (this.drag.y.d === 1) this.drag.y.sp = this.drag.y.e;
-        if (this.drag.y.d === -1) this.drag.y.ep = this.drag.y.e;
-
-        var diff = this.drag.y.e - this.drag.y.s;
-        this.drag.y.d = Math.sign(this.drag.y.prev - this.drag.y.e) * -1;
-
-        if (this.drag.y.d === -1) diff = this.drag.y.e - this.drag.y.sp;
-        if (this.drag.y.d === 1) diff = this.drag.y.e - this.drag.y.ep;
-
-        this.lerp.y = diff * -1 * this.drag.lerp + this.lerp.y;
-      } else {
-        this.drag.x.prev = this.drag.x.e;
-        this.drag.x.e = e.pageX;
-
-        if (this.drag.x.d === 1) this.drag.x.sp = this.drag.x.e;
-        if (this.drag.x.d === -1) this.drag.x.ep = this.drag.x.e;
-
-        var diff = this.drag.x.e - this.drag.x.s;
-        this.drag.x.d = Math.sign(this.drag.x.prev - this.drag.x.e) * -1;
-
-        if (this.drag.x.d === -1) diff = this.drag.x.e - this.drag.x.sp;
-        if (this.drag.x.d === 1) diff = this.drag.x.e - this.drag.x.ep;
-
-        this.lerp.x = diff * -1 * this.drag.lerp + this.lerp.x;
-      }
+      if (this.dir) this.lerp.y = drag.call(this, this.drag.y, e) + this.lerp.y;
+      else this.lerp.x = drag.call(this, this.drag.x, e) + this.lerp.x;
     }
   }
 
@@ -132,34 +134,49 @@ class Scroll {
     this.lerp.x = Clamp(0, this.bounds.width - innerWidth, this.lerp.x);
     this.lerp.y = Clamp(0, this.bounds.height - innerHeight, this.lerp.y);
 
-    let x = Lerp(this.wheel.x, this.lerp.x, this.wheel.lerp);
-    let y = Lerp(this.wheel.y, this.lerp.y, this.wheel.lerp);
+    let x = Lerp(this.wheel.x, this.lerp.x, this.ease);
+    let y = Lerp(this.wheel.y, this.lerp.y, this.ease);
 
     this.wheel.x = x;
     this.wheel.y = y;
 
-    if (this.dir === "y") {
-      this.ele.style.transform = `translateY(${-this.wheel.y}px)`;
+    if (this.dir) {
+      this.el.style.transform = `translateY(${-this.wheel.y}px)`;
     } else {
-      this.ele.style.transform = `translateX(${-this.wheel.x}px)`;
+      this.el.style.transform = `translateX(${-this.wheel.x}px)`;
     }
 
-    this.rscroll.cb(this.wheel);
+    this.iscroll.cb(this.wheel);
   }
 
   Resize() {
-    this.bounds = Bounds(this.ele);
+    this.bounds = Bounds(this.el);
   }
 
   destroy() {
-    Sub.remove("wheel", this.swheel);
-    Sub.remove("resize", this.sresize);
-    Sub.remove("raf", this.sraf);
+    Sub.remove("resize", this.iresize);
+    Sub.remove("raf", this.iraf);
 
-    if (this.dragOn) {
-      Sub.remove("mousedown", this.smousedown);
-      Sub.remove("mousemove", this.smousemove);
-      Sub.remove("mouseup", this.smouseup);
+    if (this.target instanceof Node) {
+      if (this.dragOn) {
+        Sub.remove("tmousedown", this.imousedown);
+        Sub.remove("tmousemove", this.imousemove);
+        Sub.remove("tmouseup", this.imouseup);
+      }
+
+      if (this.wheelOn) {
+        Sub.remove("twheel", this.iwheel);
+      }
+    } else {
+      if (this.dragOn) {
+        Sub.remove("mousedown", this.imousedown);
+        Sub.remove("mousemove", this.imousemove);
+        Sub.remove("mouseup", this.imouseup);
+      }
+
+      if (this.wheelOn) {
+        Sub.remove("wheel", this.iwheel);
+      }
     }
   }
 }
