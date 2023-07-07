@@ -2,12 +2,12 @@ import { Sub, Tween, Bounds, Clamp, Lerp, Throttle } from "../../index";
 
 function drag(dir, e) {
   dir.prev = dir.e;
-  dir.e = this.dir ? e.pageY : e.pageX;
+  dir.e = e;
 
   if (dir.d === 1) dir.sp = dir.e;
   if (dir.d === -1) dir.ep = dir.e;
 
-  var diff = dir.e - dir.s;
+  let diff = dir.e - dir.s;
   dir.d = Math.sign(dir.prev - dir.e) * -1;
 
   if (dir.d === -1) diff = dir.e - dir.sp;
@@ -89,7 +89,7 @@ class Scroll {
 
   onMDown(e) {
     this.drag.y.s = e.pageY;
-    this.drag.x.s = e.pageY;
+    this.drag.x.s = e.pageX;
 
     this.down = true;
   }
@@ -99,8 +99,11 @@ class Scroll {
       this.all.style.pointerEvents = "all";
       this.throttle.run();
 
-      if (this.dir) this.lerp.y = drag.call(this, this.drag.y, e) + this.lerp.y;
-      else this.lerp.x = drag.call(this, this.drag.x, e) + this.lerp.x;
+      if (this.dir) {
+        this.lerp.y = drag.call(this, this.drag.y, e.pageY) + this.lerp.y;
+      } else {
+        this.lerp.x = drag.call(this, this.drag.x, e.pageX) + this.lerp.x;
+      }
     }
   }
 
