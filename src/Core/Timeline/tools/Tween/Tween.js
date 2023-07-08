@@ -12,24 +12,22 @@ class Tween {
     this.prog = 0;
     this.elp = 0;
 
+    this.cbO = {
+      cb: this.run.bind(this),
+      d: o.d,
+    };
+
+    this.late = new Late({
+      late: o.late,
+      o: this.cbO,
+    });
+
     this.to();
   }
 
   to() {
-    this.late = this.o.late;
-
     this.ease = Ease[this.o.ease] || Ease["l"];
     this.ps = this.o.p;
-
-    this.cbO = {
-      cb: this.run.bind(this),
-      d: this.o.d,
-    };
-
-    this.late = new Late({
-      late: this.late,
-      o: this.cbO,
-    });
 
     checkProps.call(this);
   }
@@ -61,8 +59,8 @@ class Tween {
     this.mode = m;
 
     if (m === "r") {
-      this.late.cb = null;
       this.dir = 1;
+      this.late.cb = null;
     } else {
       this.dir = 0;
       this.late.cb = this.start;
@@ -79,18 +77,8 @@ class Tween {
   }
 
   reverse(d) {
-    this.late.late = d || this.late.late;
+    // this.late.late = d || this.late.late;
     this.control("r");
-  }
-
-  pause() {
-    this.prog = this.elp;
-  }
-
-  resume() {
-    this.st = null;
-    this.late.cb = null;
-    this.late.play();
   }
 
   kill() {

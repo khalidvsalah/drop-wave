@@ -8,11 +8,12 @@ class _F {
   }
 
   push(o) {
+    if (o.d == 0) o.cb(1);
     if (o.id) this.kill(o.id);
 
     let item = o;
-
     item.id = ++this.id;
+
     this.items.push(item);
 
     !this.on && this.loop();
@@ -22,10 +23,7 @@ class _F {
   update(t) {
     for (let i = 0; i < this.items.length; i++) {
       let item = this.items[i];
-      if (item.d == 0) {
-        this.kill(item.id);
-        item.cb(1);
-      } else if (item.d) {
+      if (item.d) {
         if (!item.st) item.st = t;
 
         let time = (t - item.st) / (item.d * 1e3);

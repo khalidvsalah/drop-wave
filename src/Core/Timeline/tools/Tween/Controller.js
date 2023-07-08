@@ -31,20 +31,13 @@ function Control(items, o) {
     });
 
     tweens.map(({ play, obj }, i) => {
-      if (i === 0)
-        play({
-          ...obj,
-          start: o.start,
-          raf: o.raf,
-          completed: o.completed,
-        });
-      else
-        play({
-          ...obj,
-          start: undefined,
-          raf: undefined,
-          completed: undefined,
-        });
+      let f = i === 0;
+      play({
+        ...obj,
+        start: f && o.start,
+        raf: f && o.raf,
+        completed: f && o.completed,
+      });
     });
 
     let lates = tweens.map((t) => t.tween.late.late);
