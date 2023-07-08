@@ -1,3 +1,5 @@
+import { Clamp } from "../../index";
+
 class _F {
   constructor() {
     this.items = [];
@@ -6,45 +8,44 @@ class _F {
   }
 
   push(o) {
-    if (typeof o.id === "number") this.kill(o.id);
+    if (o.id) this.kill(o.id);
 
-    if (typeof o === "object") {
-      let item = o;
+    let item = o;
 
-      item.id = ++this.id;
-      this.items.push(item);
+    item.id = ++this.id;
+    this.items.push(item);
 
-      !this.on && this.loop();
-      return item.id;
-    } else {
-      console.error("Failed To Push Object");
-    }
+    !this.on && this.loop();
+    return item.id;
   }
 
   update(t) {
     for (let i = 0; i < this.items.length; i++) {
       let item = this.items[i];
+      if (item.d == 0) {
+        this.kill(item.id);
+        item.cb(1);
+      } else if (item.d) {
+        if (!item.st) item.st = t;
 
-      if (item.cb) {
-        const cb = item.cb(t);
-        cb && this.kill(item.id);
+        let time = (t - item.st) / (item.d * 1e3);
+        let elp = Clamp(0, 1, time);
+
+        let cb = item.cb(elp);
+        if (cb || elp === 1) this.kill(item.id);
       }
     }
-
     this.loop();
   }
 
   kill(n) {
-    if (typeof n === "number") {
-      this.items.map((item, i) => {
-        if (item.id === n) {
-          item.id = null;
-          this.items.splice(i, 1);
-        }
-      });
-    } else {
-      console.error("You Need To Pass Number");
-    }
+    this.items.map((item, i) => {
+      if (item.id === n) {
+        item.id = null;
+        item.st = null;
+        this.items.splice(i, 1);
+      }
+    });
   }
 
   loop() {

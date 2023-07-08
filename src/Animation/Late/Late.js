@@ -1,10 +1,12 @@
-import { Raf, Clamp } from "../../index";
+import { Raf } from "../../index";
 
 export default class Late {
   constructor({ late, o, cb }) {
     this.late = late || 0;
+
     this.o = o;
     this.cb = cb;
+
     this.on = false;
     this.stop = false;
   }
@@ -12,8 +14,10 @@ export default class Late {
   play() {
     this.on = true;
     this.stop = false;
-    Raf.push({
+
+    this.id = Raf.push({
       cb: this.run.bind(this),
+      d: this.late,
     });
   }
 
@@ -23,14 +27,7 @@ export default class Late {
   }
 
   run(t) {
-    if (!this.st) this.st = t;
-    let time = (t - this.st) / (this.late * 1000);
-    let elp = isFinite(time) ? Clamp(0, 1, time) : 1;
-
-    if (elp === 1) {
-      this.Elapsed();
-      return true;
-    }
+    if (t === 1) this.Elapsed();
   }
 
   Elapsed() {
