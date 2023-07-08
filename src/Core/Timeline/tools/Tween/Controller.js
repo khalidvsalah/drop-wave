@@ -46,7 +46,6 @@ function Control(items, o) {
           completed: undefined,
         });
     });
-
     let lates = tweens.map((t) => t.tween.late.late);
 
     return {

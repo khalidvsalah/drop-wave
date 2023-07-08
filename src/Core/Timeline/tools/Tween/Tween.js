@@ -4,8 +4,8 @@ import checkProps from "../props/checkProps";
 import checkEle from "../elements/checkEle";
 
 class Tween {
-  constructor(ele, o) {
-    this.ele = ele;
+  constructor(el, o) {
+    this.target = checkEle.call(this, el);
     this.o = o;
 
     this.mode;
@@ -18,15 +18,11 @@ class Tween {
   }
 
   to() {
-    this.target = checkEle(this.ele);
-    this.obj = !(this.target instanceof window.HTMLElement);
-
-    this.d = this.o.d ? this.o.d : 0.5;
+    this.d = this.o.d;
     this.late = this.o.late;
 
-    this.ease = Ease[this.o.ease] ? Ease[this.o.ease] : Ease["l"];
+    this.ease = Ease[this.o.ease] || Ease["l"];
     this.ps = this.o.p;
-    this.keys = this.ps && Object.keys(this.ps);
 
     this.cbO = {
       cb: this.run.bind(this),
@@ -41,6 +37,7 @@ class Tween {
   }
 
   run(t) {
+    console.log(this.obj);
     this.on = true;
     if (!this.st) this.st = t;
 
