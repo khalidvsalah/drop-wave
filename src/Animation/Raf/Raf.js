@@ -8,7 +8,10 @@ class _F {
   }
 
   push(o) {
-    if (o.d == 0) o.cb(1);
+    if (o.d == 0) {
+      o.cb(1);
+      return;
+    }
     if (o.id) this.kill(o.id);
 
     let item = o;
