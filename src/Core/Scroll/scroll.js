@@ -1,4 +1,5 @@
-import { Sub, Tween, Bounds, Clamp, Lerp, Throttle } from "../../index";
+import { Sub, Bounds, Clamp, Lerp, Throttle, iSet } from "../../index";
+import Trigger from "./trigger";
 
 function drag(dir, e) {
   dir.prev = dir.e;
@@ -44,18 +45,18 @@ class Scroll {
 
       if (o.wheel) this.target.onwheel = this.onWheel.bind(this);
     } else {
-      if (o.drag) {
+      if (this.dragOn) {
         this.imousedown = Sub.add("mousedown", this.onMDown.bind(this));
         this.imousemove = Sub.add("mousemove", this.onMM.bind(this));
         this.imouseup = Sub.add("mouseup", this.onMU.bind(this));
       }
 
-      if (o.wheel) {
+      if (this.wheelOn) {
         this.iwheel = Sub.add("wheel", this.onWheel.bind(this));
       }
     }
 
-    this.iresize = Sub.add("resize", this.Resize.bind(this));
+    this.iresize = Sub.add("resize", this.resize.bind(this));
     this.iraf = Sub.add("raf", this.raf.bind(this));
 
     this.iscroll = Sub.obs("scroll");
@@ -68,27 +69,28 @@ class Scroll {
       },
     });
 
-    this.Resize();
+    this.resize();
   }
 
   onWheel(e) {
-    this.lerp.x += e.deltaY * (this.ease * 2);
-    this.lerp.y += e.deltaY * (this.ease * 2);
+    this.lerp.x += e.deltaY * (this.ease * 4);
+    this.lerp.y += e.deltaY * (this.ease * 4);
 
     this.all.style.pointerEvents = "all";
     this.throttle.run();
   }
 
   onMDown(e) {
+    iSet.p(this.all, "all");
+
     this.drag.y.s = e.pageY;
     this.drag.x.s = e.pageX;
-
     this.down = true;
   }
 
   onMM(e) {
     if (this.down) {
-      this.all.style.pointerEvents = "all";
+      iSet.p(this.all, "all");
       this.throttle.run();
 
       if (this.dir) {
@@ -103,26 +105,8 @@ class Scroll {
     this.down = false;
   }
 
-  add(ele, o) {
-    if (!ele || !o) console.error("You need to provide a ele and o");
-
-    let bounds;
-
-    if (ele.length) bounds = Bounds(ele[0]);
-    else bounds = Bounds(ele);
-
-    let id = Sub.add(this.scrollId.name, (e) => {
-      let y = e.y + window.innerHeight;
-      let pr = ((o.s || 0) / 100) * window.innerHeight;
-
-      if (pr + bounds.top <= y) {
-        o.o && Tween(ele, o.o);
-        o.cb && o.cb();
-        Sub.remove(this.scrollId.name, id);
-      }
-    });
-
-    return id;
+  add(el, o) {
+    new Trigger(el, o, this.iscroll.name, this.dir);
   }
 
   raf() {
@@ -141,7 +125,7 @@ class Scroll {
     this.iscroll.cb(this.wheel);
   }
 
-  Resize() {
+  resize() {
     this.bounds = Bounds(this.el);
   }
 
