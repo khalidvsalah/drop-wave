@@ -16,14 +16,13 @@ const props = {
         e: y ? y[0] : +t[5],
         unit: y[1] ? y[1] : "px",
       };
-
       sXV = {
         s: +t[0],
-        e: sx ? sx[0] : 1,
+        e: sx ? sx[0] : +t[0],
       };
       sYV = {
         s: +t[3],
-        e: sy ? sy[0] : 1,
+        e: sy ? sy[0] : +t[3],
       };
     } else {
       xV = {
@@ -40,12 +39,12 @@ const props = {
 
       sXV = {
         s: 1,
-        e: sx[0] || 1,
+        e: sx ? sx[0] : 1,
       };
 
       sYV = {
         s: 1,
-        e: sy[0] || 1,
+        e: sy ? sy[0] : 1,
       };
     }
 
@@ -73,21 +72,6 @@ const props = {
 
     oV.lerp = oV.e - oV.s;
     return (e) => `${oV.s + oV.lerp * e}`;
-  },
-  pointer: (e) => {
-    return () => e;
-  },
-  display: (e) => {
-    return () => e;
-  },
-  top: (t, n, pH) => {
-    let tV = {
-      s: t[1] === "px" ? parseFloat(n.top) : (parseFloat(n.top) / pH) * 100,
-      e: t[0],
-    };
-
-    tV.lerp = tV.e - tV.s;
-    return (e) => `${tV.s + tV.lerp * e}${t[1]}`;
   },
 };
 
