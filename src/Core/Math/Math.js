@@ -32,12 +32,12 @@ export const Ease = {
       ? (1 - Math.sqrt(1 - Math.pow(2 * x, 2))) / 2
       : (Math.sqrt(1 - Math.pow(-2 * x + 2, 2)) + 1) / 2,
 };
-
 export const Clamp = (m, x, z) => Math.min(Math.max(m, z), x);
 export const Lerp = (s, e, amt) => (1 - amt) * s + amt * e;
 export const Remap = (a, b, x) => Clamp(0, 1, (x - a) / (b - a));
 export const iRemap = (a, b, c, d, x) => Remap(a, b, x) * (d - c) + c;
+// export const iRemap = (d, t) => d/t;
 export const Round = (num, pow) => {
-  var d = pow ? Math.pow(10, pow) : 100;
+  let d = pow ? Math.pow(10, pow) : 100;
   return Math.round(num * d) / d;
 };
