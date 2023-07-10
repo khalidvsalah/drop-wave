@@ -1,6 +1,6 @@
 import { Lerp, Clamp, Ease, Round, Remap, iRemap } from "./Core/Math/math";
 
-import { Has, Bounds, deepCopy } from "./Utils/Methods/methods";
+import { Has, Bounds, deepCopy, iSet } from "./Utils/Methods/methods";
 import Store from "./Utils/Store/Store";
 import Sub from "./Utils/Sub/sub";
 import Throttle from "./Utils/Throttle/throttle";
@@ -11,6 +11,7 @@ import Raf from "./Animation/Raf/raf";
 import Route from "./Core/Route/route";
 import Mount from "./Dom/Mount/mount";
 
+import Props from "./Core/Timeline/tools/props/checkProps";
 import Tween from "./Core/Timeline/tools/Tween/Controller";
 import TL from "./Core/Timeline/Timeline";
 import Scroll from "./Core/Scroll/scroll";
@@ -22,7 +23,6 @@ export {
   Clamp,
   Route,
   Scroll,
-  TL,
   Late,
   Raf,
   Has,
@@ -31,8 +31,11 @@ export {
   Mount,
   Ease,
   Round,
+  Props,
   Tween,
+  TL,
   deepCopy,
+  iSet,
   Remap,
   iRemap,
 };

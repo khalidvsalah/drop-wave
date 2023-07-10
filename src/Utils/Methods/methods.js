@@ -14,3 +14,8 @@ export const deepCopy = (o) => {
 
   return tO;
 };
+export const iSet = {
+  o: (e, v) => (e.style.opacity = v),
+  d: (e, v) => (e.style.display = v),
+  p: (e, v) => (e.style.pointerEvents = v),
+};
