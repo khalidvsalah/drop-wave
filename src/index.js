@@ -1,4 +1,4 @@
-import { Lerp, Clamp, Ease, Round } from "./Core/Math/math";
+import { Lerp, Clamp, Ease, Round, Remap, iRemap } from "./Core/Math/math";
 
 import { Has, Bounds, deepCopy } from "./Utils/Methods/methods";
 import Store from "./Utils/Store/Store";
@@ -33,4 +33,6 @@ export {
   Round,
   Tween,
   deepCopy,
+  Remap,
+  iRemap,
 };
