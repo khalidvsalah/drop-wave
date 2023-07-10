@@ -1,6 +1,5 @@
-import { Late, Ease, Clamp } from "../../../../index";
+import { Late, Ease, Clamp, Props } from "../../../../index";
 
-import checkProps from "../props/checkProps";
 import checkEle from "../elements/checkEle";
 
 class Tween {
@@ -37,7 +36,7 @@ class Tween {
       o: this.cbO,
     });
 
-    checkProps.call(this);
+    this.results = Props(this.target, this.obj, this.ps);
   }
 
   run(t) {
@@ -126,7 +125,7 @@ class Tween {
       this.ease = Ease[o.ease] || this.ease;
       this.ps = o.p;
 
-      checkProps.call(this);
+      this.results = Props(this.target, this.obj, this.ps);
 
       this.mode = "r";
       this.control("p", true);
