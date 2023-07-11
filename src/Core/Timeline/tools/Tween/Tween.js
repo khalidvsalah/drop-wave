@@ -3,8 +3,9 @@ import { Late, Ease, Clamp, Props } from "../../../../index";
 import checkEle from "../elements/checkEle";
 
 class Tween {
-  constructor(ele, o) {
-    this.ele = ele;
+  constructor(el, o) {
+    this.target = checkEle(el);
+
     this.o = o;
 
     this.mode;
@@ -17,24 +18,14 @@ class Tween {
   }
 
   to() {
-    this.target = checkEle(this.ele);
-    this.obj = !(this.target instanceof window.HTMLElement);
-
-    this.d = this.o.d ? this.o.d : 0.5;
+    this.d = this.o.d || 0.5;
     this.late = this.o.late;
 
-    this.ease = Ease[this.o.ease] ? Ease[this.o.ease] : Ease["l"];
+    this.ease = Ease[this.o.ease] || Ease["l"];
     this.ps = this.o.p;
-    this.keys = this.ps && Object.keys(this.ps);
 
-    this.cbO = {
-      cb: this.run.bind(this),
-    };
-
-    this.late = new Late({
-      late: this.late,
-      o: this.cbO,
-    });
+    this.cbO = { cb: this.run.bind(this) };
+    this.late = new Late({ late: this.late, o: this.cbO });
 
     this.results = Props(this.target, this.obj, this.ps);
   }
@@ -88,16 +79,6 @@ class Tween {
   reverse(d) {
     this.late.late = d;
     this.control("r");
-  }
-
-  pause() {
-    this.prog = this.elp;
-  }
-
-  resume() {
-    this.st = null;
-    this.late.cb = null;
-    this.late.play();
   }
 
   kill() {
