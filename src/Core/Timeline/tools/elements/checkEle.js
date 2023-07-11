@@ -1,15 +1,11 @@
 export default function checkElement(element) {
-  let result;
-
   this.obj = false;
   if (typeof element === "string") {
-    result = document.querySelector(element);
+    this.target = document.querySelector(element);
   } else if (element instanceof Node) {
-    result = element;
+    this.target = element;
   } else {
     this.obj = true;
-    result = element;
+    this.target = element;
   }
-
-  return result;
 }

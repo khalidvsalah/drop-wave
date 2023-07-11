@@ -4,7 +4,7 @@ import checkEle from "../elements/checkEle";
 
 class Tween {
   constructor(el, o) {
-    this.target = checkEle.call(this, el);
+    checkEle.call(this, el);
     this.o = o;
 
     this.mode;
