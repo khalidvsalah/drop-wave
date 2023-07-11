@@ -14,8 +14,6 @@ function tweenController(item, obj) {
 
   return {
     reverse: (d) => tween.reverse(d),
-    pause: () => tween.pause(),
-    resume: () => tween.resume(),
     play: (o) => tween.play(o, obj.late),
     item,
     tween,
@@ -24,7 +22,7 @@ function tweenController(item, obj) {
 }
 
 function Control(items, o) {
-  if (typeof items === "object" && items.length) {
+  if (items instanceof NodeList) {
     const tweens = [...items].map((item, k) => {
       let late = (o.late || 0) + (o.stagger || 0) * k;
       return tweenController(item, { ...o, late });
@@ -54,8 +52,6 @@ function Control(items, o) {
         let late = o.late - d;
         tweens.map(({ reverse }, i) => reverse(lates.reverse()[i] - late));
       },
-      pause: () => tweens.map(({ pause }) => pause()),
-      resume: () => tweens.map(({ resume }) => resume()),
       play: () => tweens.map(({ play }) => play(o)),
     };
   } else {
