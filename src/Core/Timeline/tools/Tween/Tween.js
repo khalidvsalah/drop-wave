@@ -10,9 +10,7 @@ class Tween {
     this.mode;
     this.prog = 0;
     this.elp = 0;
-    this.played = false;
 
-    this.results = [];
     this.to();
   }
 
@@ -23,7 +21,7 @@ class Tween {
     this.ease = Ease[this.o.ease] || Ease["l"];
     this.ps = this.o.p;
 
-    this.cbO = { cb: this.run.bind(this) };
+    this.cbO = { cb: this.run.bind(this), d: this.d };
 
     this.late = new Late({ late: this.late, o: this.cbO });
     this.results = Props(this.target, this.obj, this.ps);
@@ -31,11 +29,9 @@ class Tween {
 
   run(t) {
     this.on = true;
-    if (!this.st) this.st = t;
 
-    let time = this.prog + (t - this.st) / (this.d * 1000);
-    this.elp = Clamp(0, 1, time);
-
+    this.ti = this.prog + t;
+    this.elp = Clamp(0, 1, this.ti);
     this.e = Math.abs(this.dir - this.ease(this.elp));
 
     this.results.map((p) => {
@@ -58,8 +54,8 @@ class Tween {
     this.mode = m;
 
     if (m === "r") {
-      this.late.cb = null;
       this.dir = 1;
+      this.late.cb = null;
     } else {
       this.dir = 0;
       this.late.cb = this.start;
@@ -68,7 +64,7 @@ class Tween {
     if (this.late.on) return;
 
     if (this.on) {
-      this.st = null;
+      this.cbO.st = null;
       n ? (this.prog = 0) : (this.prog = 1 - this.elp);
     } else {
       this.late.play();
@@ -76,14 +72,13 @@ class Tween {
   }
 
   reverse(d) {
-    this.late.late = d;
+    this.late.late = d || this.late.late;
     this.control("r");
   }
 
   kill() {
     if (this.completed && this.mode === "p") this.completed();
 
-    this.st = null;
     this.on = false;
     this.prog = 0;
 
