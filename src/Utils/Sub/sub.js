@@ -1,34 +1,37 @@
-class Subscribe {
+class Sub {
   constructor() {
     this.subs = {};
   }
 
   obs(name) {
-    this.subs[name] = { cb: null, items: [] };
-    this.subs[name].cb = function () {
-      var args = Array.prototype.slice.call(arguments);
-
-      for (let i = 0; i < this.items.length; i++) {
-        var o = this.items[i];
-        o.cb(...args);
+    function callItem() {
+      let t = this[name];
+      let args = Array.prototype.slice.call(arguments);
+      for (let i = 0; i < t.items.length; i++) {
+        t.items[i].cb(...args);
       }
-    }.bind(this.subs[name]);
+    }
+    this.subs[name] = { items: [] };
 
-    return { cb: this.subs[name].cb, name };
+    return {
+      cb: callItem.bind(this.subs),
+      name,
+    };
   }
 
   add(name, cb) {
-    this.subs[name].items.push({ cb, id: this.subs[name].items.length + name });
-    return this.subs[name].items.length - 1 + name;
-  }
+    let i = this.subs[name].items;
+    i.push({ cb, id: i.length + 1 });
 
-  remove(name, i) {
-    if (i.match(name) == null) {
-      console.error(i + " is not in " + name);
-      return;
-    }
-    var item = this.subs[name].items;
-    this.subs[name].items = item.filter(({ id }) => id !== i);
+    let r = (o) => {
+      for (let k = 0; k < i.length; i++) {
+        if (i[k].id === o) i.splice(i, 1);
+      }
+    };
+
+    return {
+      r: r.bind({}, i.length),
+    };
   }
 
   check(name) {
@@ -36,4 +39,4 @@ class Subscribe {
   }
 }
 
-export default new Subscribe();
+export default new Sub();

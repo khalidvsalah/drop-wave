@@ -40,7 +40,7 @@ class Trigger {
   fire() {
     Tween(this.o.t, this.o.o);
     this.o.cb && this.o.cb();
-    Sub.remove(this.sub, this.id);
+    this.id.r();
   }
 
   scroll(t) {

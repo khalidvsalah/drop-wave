@@ -130,8 +130,8 @@ class Scroll {
   }
 
   destroy() {
-    Sub.remove("resize", this.iresize);
-    Sub.remove("raf", this.iraf);
+    this.iresize.r();
+    this.iraf.r();
 
     if (this.target instanceof Node) {
       if (this.dragOn) {
@@ -143,12 +143,12 @@ class Scroll {
       if (this.wheelOn) this.target.onwheel = null;
     } else {
       if (this.dragOn) {
-        Sub.remove("mousedown", this.imousedown);
-        Sub.remove("mousemove", this.imousemove);
-        Sub.remove("mouseup", this.imouseup);
+        this.imousedown.r();
+        this.imousemove.r();
+        this.imouseup.r();
       }
 
-      if (this.wheelOn) Sub.remove("wheel", this.iwheel);
+      if (this.wheelOn) this.iwheel.r();
     }
   }
 }
