@@ -23,7 +23,7 @@ class Tween {
 
     this.cbO = { cb: this.run.bind(this), d: this.d };
 
-    this.late = new Late({ late: this.late, o: this.cbO });
+    this.late = Late.add({ late: this.late, o: this.cbO });
     this.results = Props(this.target, this.obj, this.ps);
   }
 
@@ -72,7 +72,7 @@ class Tween {
   }
 
   reverse(d) {
-    this.late.late = d || this.late.late;
+    this.late.d = d || this.late.late;
     this.control("r");
   }
 
@@ -91,10 +91,10 @@ class Tween {
     this.raf = o.raf;
 
     let newO = JSON.stringify(this.ps) !== JSON.stringify(o.p);
-    this.late.late = d || 0;
+    this.late.d = d || 0;
 
     if (newO) {
-      this.late.late = o.late;
+      this.late.d = o.late;
       this.d = o.d;
 
       this.ease = Ease[o.ease] || this.ease;
