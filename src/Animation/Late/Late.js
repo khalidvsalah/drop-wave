@@ -34,17 +34,14 @@ class Late {
     this.r = r;
 
     let p = this.p;
-
     this.i = p.l;
 
     if (r.d == 0 || p.cl > r.d) {
+      if (!p.run) p.cl = 0;
       Raf.push(r);
     } else if (p.cl <= r.d) {
-      if (!p.run) {
-        Raf.push(r);
-      } else {
-        p.arr.push({ r, i: this.i });
-      }
+      if (!p.run) Raf.push(r);
+      else p.arr.push({ r, i: this.i });
 
       p.run = true;
       this.next = next.bind(this);

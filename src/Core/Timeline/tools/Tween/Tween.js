@@ -72,7 +72,7 @@ class Tween {
   }
 
   reverse(d) {
-    this.late.d = d || this.late.late;
+    this.late.d = d;
     this.control("r");
   }
 

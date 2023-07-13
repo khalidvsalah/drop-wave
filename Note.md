@@ -2,6 +2,6 @@
 - If element is undefined.
 - Query Select the elemnt from controal funtion.
 
-- Test
-  1- Array of element call (start, completed) more then one.
-  2- I need to call (start, completed) only when it one the object.
+- Late
+  1- new late is bigger then the current late.
+  2- kill running late.

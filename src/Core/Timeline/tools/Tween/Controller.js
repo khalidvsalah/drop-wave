@@ -29,28 +29,21 @@ function Control(items, o) {
     });
 
     tweens.map(({ play, obj }, i) => {
-      if (i === 0)
-        play({
-          ...obj,
-          start: o.start,
-          raf: o.raf,
-          completed: o.completed,
-        });
-      else
-        play({
-          ...obj,
-          start: undefined,
-          raf: undefined,
-          completed: undefined,
-        });
+      let f = i == 0;
+      play({
+        ...obj,
+        start: f && o.start,
+        raf: f && o.raf,
+        completed: f && o.completed,
+      });
     });
 
-    let lates = tweens.map((t) => t.tween.late.late);
+    let lates = tweens.map((t) => t.tween.late.d);
 
     return {
-      reverse: (d) => {
-        let late = o.late - d;
-        tweens.map(({ reverse }, i) => reverse(lates.reverse()[i] - late));
+      reverse: (d = 0) => {
+        let late = (o.late || 0) - d;
+        tweens.reverse().map(({ reverse }, i) => reverse(lates[i] - late));
       },
       play: () => tweens.map(({ play }) => play(o)),
     };
