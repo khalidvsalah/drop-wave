@@ -22,7 +22,7 @@ class Tween {
 
     this.cbO = { cb: this.run.bind(this), d: this.d };
 
-    this.late = Late.add({ late: this.late, o: this.cbO });
+    this.late = new Late({ late: this.late, o: this.cbO });
     this.results = Props(this.target, this.obj, this.ps);
   }
 

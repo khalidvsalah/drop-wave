@@ -4,6 +4,7 @@ class _F {
   constructor() {
     this.items = [];
     this.on = false;
+
     this.id = -1;
   }
 
@@ -11,8 +12,8 @@ class _F {
     if (o.d == 0) return o.cb(1), undefined;
 
     o.id = ++this.id;
-    this.items.push(o);
 
+    this.items.push(o);
     if (!this.on) this.loop();
     return o.id;
   }
@@ -29,7 +30,7 @@ class _F {
         let cb = o.cb(e);
 
         if (cb || e == 1) this.kill(o.id);
-      }
+      } else o.cb(t);
     }
 
     this.loop();
