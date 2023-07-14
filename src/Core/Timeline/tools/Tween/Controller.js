@@ -14,7 +14,7 @@ function tweenController(item, obj) {
 
   return {
     reverse: (d) => tween.reverse(d),
-    play: (o) => tween.play(o, obj.late),
+    play: (o) => tween.play(o),
     item,
     tween,
     obj,

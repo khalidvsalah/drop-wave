@@ -71,7 +71,7 @@ class Tween {
   }
 
   reverse(d) {
-    this.late.d = d;
+    this.late.d = d || this.late.d;
     this.control("r");
   }
 
@@ -84,16 +84,15 @@ class Tween {
     return true;
   }
 
-  play(o, d) {
+  play(o) {
     this.start = o.start;
     this.completed = o.completed;
     this.raf = o.raf;
 
     let newO = JSON.stringify(this.ps) != JSON.stringify(o.p);
-    this.late.d = d || 0;
 
     if (newO) {
-      this.late.d = o.late;
+      this.late.d = o.late || this.late.d;
       this.d = o.d;
 
       this.ease = Ease[o.ease] || this.ease;

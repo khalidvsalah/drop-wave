@@ -15,8 +15,12 @@ export default class Late {
     this.on = true;
     this.stop = false;
 
-    this.id = Raf.push({ cb: this.run.bind(this) });
-    this.f = performance.now() + this.d * 1e3;
+    if (this.d == 0) {
+      this.Elp();
+    } else {
+      this.id = Raf.push({ cb: this.run.bind(this) });
+      this.f = performance.now() + this.d * 1e3;
+    }
   }
 
   kill() {
