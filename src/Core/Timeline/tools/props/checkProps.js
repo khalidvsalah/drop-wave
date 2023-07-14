@@ -4,7 +4,7 @@ export default function checkProps(el, o, ps) {
   let results = [];
 
   if (!o) {
-    let x, y, o, sx, sy;
+    let x, y, o, sx, sy, rx, ry;
     let c = window.getComputedStyle(el);
 
     x = ps["x"] || false;
@@ -13,12 +13,15 @@ export default function checkProps(el, o, ps) {
     sx = ps["sx"] || false;
     sy = ps["sy"] || false;
 
+    rx = ps["rx"] || false;
+    ry = ps["ry"] || false;
+
     o = ps["opacity"] || false;
 
-    if (x || y || sx || sy) {
+    if (x || y || sx || sy || rx || ry) {
       results.push({
         name: "transform",
-        cb: props["transform"](x, y, sx, sy, c),
+        cb: props["transform"](x, y, sx, sy, rx, ry, c),
       });
     }
 

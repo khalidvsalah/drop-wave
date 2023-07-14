@@ -1,9 +1,11 @@
 const props = {
-  transform: (x, y, sx, sy, n) => {
-    let xV, yV, sXV, sYV;
+  transform: (x, y, sx, sy, rx, ry, n) => {
+    let xV, yV, sXV, sYV, rXV, rYV;
     let tr = n.transform;
     let t;
-    if (tr.length > 6) t = tr.match(/\((.+)\)$/)[1].split(", ");
+    if (tr.length > 6) {
+      t = tr.match(/\((.+)\)$/)[1].split(", ");
+    }
 
     if (t) {
       xV = {
@@ -48,21 +50,49 @@ const props = {
       };
     }
 
+    rXV = {
+      s: rx ? rx[0] : 0,
+      e: rx ? rx[1] : 0,
+    };
+
+    rYV = {
+      s: ry ? ry[0] : 0,
+      e: ry ? ry[1] : 0,
+    };
+
     xV.lerp = xV.e - xV.s;
     yV.lerp = yV.e - yV.s;
 
     sXV.lerp = sXV.e - sXV.s;
     sYV.lerp = sYV.e - sYV.s;
 
-    return (e) => {
-      let rX = `${xV.s + xV.lerp * e}${xV.unit}`;
-      let rY = `${yV.s + yV.lerp * e}${yV.unit}`;
+    rXV.lerp = rXV.e - rXV.s;
+    rYV.lerp = rYV.e - rYV.s;
 
-      let rSX = `${sXV.s + sXV.lerp * e}`;
-      let rSY = `${sYV.s + sYV.lerp * e}`;
+    if (rx || ry) {
+      return (e) => {
+        let eX = `${xV.s + xV.lerp * e}${xV.unit}`;
+        let eY = `${yV.s + yV.lerp * e}${yV.unit}`;
 
-      return `translate3d(${rX}, ${rY}, 0) scale(${rSX}, ${rSY})`;
-    };
+        let eSX = `${sXV.s + sXV.lerp * e}`;
+        let eSY = `${sYV.s + sYV.lerp * e}`;
+
+        let eRX = `${rXV.s + rXV.lerp * e}deg`;
+        let eRY = `${rYV.s + rYV.lerp * e}deg`;
+
+        return `translate(${eX}, ${eY}) scale(${eSX}, ${eSY}) rotateX(${eRX}) rotateY(${eRY})`;
+      };
+    } else {
+      return (e) => {
+        let eX = `${xV.s + xV.lerp * e}${xV.unit}`;
+        let eY = `${yV.s + yV.lerp * e}${yV.unit}`;
+
+        let eSX = `${sXV.s + sXV.lerp * e}`;
+        let eSY = `${sYV.s + sYV.lerp * e}`;
+
+        return `translate(${eX}, ${eY}) scale(${eSX}, ${eSY})`;
+      };
+    }
   },
   opacity: (o, n) => {
     let oV = {
