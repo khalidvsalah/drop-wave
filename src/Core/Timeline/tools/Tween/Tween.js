@@ -1,5 +1,4 @@
 import { Late, Ease, Clamp, Props } from "../../../../index";
-
 import checkEle from "../elements/checkEle";
 
 class Tween {
@@ -45,15 +44,15 @@ class Tween {
   }
 
   control(m, n) {
-    if (this.late.on && this.mode !== m) {
+    if (this.late.on && this.mode != m) {
       this.mode = m;
       this.late.kill();
     }
 
-    if (this.mode === m && !this.obj) return;
+    if (this.mode == m && !this.obj) return;
     this.mode = m;
 
-    if (m === "r") {
+    if (m == "r") {
       this.dir = 1;
       this.late.cb = null;
     } else {
@@ -77,7 +76,7 @@ class Tween {
   }
 
   kill() {
-    if (this.completed && this.mode === "p") this.completed();
+    if (this.completed && this.mode == "p") this.completed();
 
     this.on = false;
     this.prog = 0;
@@ -90,7 +89,7 @@ class Tween {
     this.completed = o.completed;
     this.raf = o.raf;
 
-    let newO = JSON.stringify(this.ps) !== JSON.stringify(o.p);
+    let newO = JSON.stringify(this.ps) != JSON.stringify(o.p);
     this.late.d = d || 0;
 
     if (newO) {
