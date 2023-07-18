@@ -14,7 +14,7 @@ function drag(dir, e) {
   if (dir.d === -1) diff = dir.e - dir.sp;
   if (dir.d === 1) diff = dir.e - dir.ep;
 
-  return diff * -1 * (this.ease * 0.55);
+  return diff * -1 * (this.ease * 0.3);
 }
 class Scroll {
   constructor(el, o = {}) {
@@ -38,21 +38,21 @@ class Scroll {
 
     if (this.target instanceof Node) {
       if (o.drag) {
-        this.target.onmousedown = this.onMDown.bind(this);
-        this.target.onmousemove = this.onMM.bind(this);
-        this.target.onmouseup = this.onMU.bind(this);
+        this.target.onmousedown = this.down.bind(this);
+        this.target.onmousemove = this.move.bind(this);
+        this.target.onmouseup = this.up.bind(this);
       }
 
-      if (o.wheel) this.target.onwheel = this.onWheel.bind(this);
+      if (o.wheel) this.target.onwheel = this.ewheel.bind(this);
     } else {
       if (this.dragOn) {
-        this.imousedown = Sub.add("mousedown", this.onMDown.bind(this));
-        this.imousemove = Sub.add("mousemove", this.onMM.bind(this));
-        this.imouseup = Sub.add("mouseup", this.onMU.bind(this));
+        this.imousedown = Sub.add("mousedown", this.down.bind(this));
+        this.imousemove = Sub.add("mousemove", this.move.bind(this));
+        this.imouseup = Sub.add("mouseup", this.up.bind(this));
       }
 
       if (this.wheelOn) {
-        this.iwheel = Sub.add("wheel", this.onWheel.bind(this));
+        this.iwheel = Sub.add("wheel", this.ewheel.bind(this));
       }
     }
 
@@ -70,24 +70,24 @@ class Scroll {
     this.resize();
   }
 
-  onWheel(e) {
-    this.lerp.x += e.deltaY * (this.ease * 4);
-    this.lerp.y += e.deltaY * (this.ease * 4);
+  ewheel(e) {
+    this.lerp.x += e.deltaY * (this.ease + this.ease * 6);
+    this.lerp.y += e.deltaY * (this.ease + this.ease * 6);
 
-    this.all.style.pointerEvents = "all";
+    iSet.p(this.all, "all");
     this.throttle.run();
   }
 
-  onMDown(e) {
+  down(e) {
     iSet.p(this.all, "all");
 
     this.drag.y.s = e.pageY;
     this.drag.x.s = e.pageX;
-    this.down = true;
+    this.dn = true;
   }
 
-  onMM(e) {
-    if (this.down) {
+  move(e) {
+    if (this.dn) {
       iSet.p(this.all, "all");
       this.throttle.run();
 
@@ -99,8 +99,8 @@ class Scroll {
     }
   }
 
-  onMU() {
-    this.down = false;
+  up() {
+    this.dn = false;
   }
 
   add(el, o) {
