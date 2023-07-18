@@ -1,6 +1,6 @@
 {
   "name": "blinkwave",
-  "version": "0.1.17",
+  "version": "0.1.2",
   "description": "Animation Library",
   "author": "khalid_salah",
   "main": "index.js",
