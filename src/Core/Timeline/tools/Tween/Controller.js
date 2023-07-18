@@ -22,7 +22,7 @@ function tweenController(item, obj) {
 }
 
 function Control(items, o) {
-  if (items instanceof NodeList) {
+  if (items instanceof NodeList || Array.isArray(items)) {
     const tweens = [...items].map((item, k) => {
       let late = (o.late || 0) + (o.stagger || 0) * k;
       return tweenController(item, { ...o, late });

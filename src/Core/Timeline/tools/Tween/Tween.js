@@ -92,7 +92,7 @@ class Tween {
     let newO = JSON.stringify(this.ps) != JSON.stringify(o.p);
 
     if (newO) {
-      this.late.d = o.late || this.late.d;
+      this.late.d = o.late || 0;
       this.d = o.d;
 
       this.ease = Ease[o.ease] || this.ease;
