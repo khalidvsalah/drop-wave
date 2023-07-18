@@ -64,9 +64,7 @@ class Scroll {
     this.all = document.getElementById("all");
     this.throttle = new Throttle({
       late: 0.3,
-      cb: () => {
-        this.all.style.pointerEvents = "none";
-      },
+      cb: () => iSet.p(this.all, "none"),
     });
 
     this.resize();
