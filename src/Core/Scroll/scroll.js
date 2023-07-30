@@ -9,18 +9,15 @@ function drag(dir, e) {
   if (dir.d === -1) dir.ep = dir.e;
 
   let diff = dir.e - dir.s;
-  dir.d = Math.sign(dir.prev - dir.e) * -1;
 
-  if (dir.d === -1) diff = dir.e - dir.sp;
-  if (dir.d === 1) diff = dir.e - dir.ep;
-
-  return diff * -1 * (this.ease * 0.3);
+  return -diff;
 }
 class Scroll {
   constructor(el, o = {}) {
     history.scrollRestoration = "manual";
     this.el = el;
     this.target = o.target || window;
+    this.d = o.type == false ? false : true;
 
     this.ease = o.ease || 0.1;
     this.dir = o.dir === undefined;
@@ -29,6 +26,7 @@ class Scroll {
     this.wheelOn = o.wheel || true;
 
     this.lerp = { x: 0, y: 0 };
+    this.plerp = { x: 0, y: 0 };
     this.wheel = { x: 0, y: 0 };
 
     this.drag = {
@@ -38,9 +36,15 @@ class Scroll {
 
     if (this.target instanceof Node) {
       if (o.drag) {
-        this.target.onmousedown = this.down.bind(this);
-        this.target.onmousemove = this.move.bind(this);
-        this.target.onmouseup = this.up.bind(this);
+        if (this.d) {
+          this.target.onmousedown = this.down.bind(this);
+          this.target.onmousemove = this.move.bind(this);
+          this.target.onmouseup = this.up.bind(this);
+        } else {
+          this.target.ontouchstart = this.down.bind(this);
+          this.target.ontouchmove = this.move.bind(this);
+          this.target.ontouchend = this.up.bind(this);
+        }
       }
 
       if (o.wheel) this.target.onwheel = this.ewheel.bind(this);
@@ -78,23 +82,31 @@ class Scroll {
     this.throttle.run();
   }
 
-  down(e) {
+  down(t) {
+    let e = this.d ? t : t.touches[0];
+
     iSet.p(this.all, "all");
 
     this.drag.y.s = e.pageY;
     this.drag.x.s = e.pageX;
+
     this.dn = true;
+
+    this.plerp.y = this.lerp.y;
+    this.plerp.x = this.lerp.x;
   }
 
-  move(e) {
+  move(t) {
+    let e = this.d ? t : t.touches[0];
+
     if (this.dn) {
       iSet.p(this.all, "all");
       this.throttle.run();
 
       if (this.dir) {
-        this.lerp.y = drag.call(this, this.drag.y, e.pageY) + this.lerp.y;
+        this.lerp.y = drag.call(this, this.drag.y, e.pageY) + this.plerp.y;
       } else {
-        this.lerp.x = drag.call(this, this.drag.x, e.pageX) + this.lerp.x;
+        this.lerp.x = drag.call(this, this.drag.x, e.pageX) + this.plerp.x;
       }
     }
   }
@@ -133,9 +145,15 @@ class Scroll {
 
     if (this.target instanceof Node) {
       if (this.dragOn) {
-        this.target.onmousedown = null;
-        this.target.onmousemove = null;
-        this.target.onmouseup = null;
+        if (this.d) {
+          this.target.onmousedown = null;
+          this.target.onmousemove = null;
+          this.target.onmouseup = null;
+        } else {
+          this.target.ontouchstart = null;
+          this.target.ontouchmove = null;
+          this.target.ontouchend = null;
+        }
       }
 
       if (this.wheelOn) this.target.onwheel = null;
