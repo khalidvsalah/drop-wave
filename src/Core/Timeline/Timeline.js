@@ -1,51 +1,39 @@
 import { Tween } from "../../index";
 
-function pushTween(ele, o, time, obj) {
-  let prev = this.items[this.id - 1];
-  this.late = (o.late || 0) + (prev ? (prev.late || 0) + prev.d : 0) + time;
+function pT(ele, o, t, obj) {
+  let pr = this.its[this.id - 1];
+  let prl = pr ? (pr.late || 0) + pr.d : 0;
+  let late = (o.late || 0) + prl + t;
+  let tween = Tween(ele, { ...o, late }, obj);
 
-  let tween = Tween(ele, { ...o, late: this.late }, obj);
-
-  this.items.push({
-    tween,
-    late: this.late,
-    addlate: this.late - (o.late || 0),
-    d: o.d,
-  });
+  if (this.id == 0) this.fl = o.late;
+  this.its.push({ tween, late, d: o.d, t });
 }
 
 class TL {
   constructor() {
-    this.items = [];
+    this.its = [];
     this.id = -1;
-    this.late = 0;
+    this.fl = 0;
   }
 
-  to(ele, o, time = 0) {
+  to(ele, o, t = 0) {
     if (!ele || !o) return;
 
     ++this.id;
-    pushTween.call(this, ele, o, time);
+    pT.call(this, ele, o, t);
     return this;
-  }
-
-  pause() {
-    this.items.map(({ tween }) => tween.pause());
-  }
-
-  resume() {
-    this.items.map(({ tween }) => tween.resume());
   }
 
   reverse() {
     this.id = -1;
 
-    this.items.map(({ tween, addlate }) => {
-      tween.reverse(this.late - addlate);
+    let l = this.its.length - 1;
+    this.its.map(({ tween, t }, i) => {
+      tween.reverse(this.its[l - i].late - this.fl - t);
     });
 
-    this.items = [];
-    this.late = 0;
+    this.its = [];
   }
 }
 

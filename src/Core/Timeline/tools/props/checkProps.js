@@ -1,3 +1,4 @@
+import { Computed } from "../../../../index";
 import props from "./props.js";
 
 export default function checkProps(el, o, ps) {
@@ -5,7 +6,7 @@ export default function checkProps(el, o, ps) {
 
   if (!o) {
     let x, y, o, sx, sy, rx, ry;
-    let c = window.getComputedStyle(el);
+    let c = Computed(el);
 
     x = ps["x"] || false;
     y = ps["y"] || false;

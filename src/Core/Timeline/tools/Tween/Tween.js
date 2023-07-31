@@ -71,7 +71,7 @@ class Tween {
   }
 
   reverse(d) {
-    this.late.d = d || this.late.d;
+    this.late.d = typeof d == "number" ? d : this.late.d;
     this.control("r");
   }
 
