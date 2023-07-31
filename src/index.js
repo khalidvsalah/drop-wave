@@ -1,6 +1,6 @@
 import { Ease, Lerp, Clamp, Remap, iRemap, Round } from "./Core/Math/Math";
 
-import { Has, Bounds, deepCopy, iSet } from "./Utils/Methods/methods";
+import { Has, Bounds, deepCopy, iSet, Computed } from "./Utils/Methods/methods";
 import Store from "./Utils/Store/Store";
 import Sub from "./Utils/Sub/sub";
 import Throttle from "./Utils/Throttle/throttle";
@@ -27,6 +27,7 @@ export {
   Raf,
   Has,
   Bounds,
+  Computed,
   Sub,
   Mount,
   Ease,
