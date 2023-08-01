@@ -12,17 +12,14 @@ class Trigger {
     this.dir = dir;
     this.d = dir ? "y" : "x";
 
-    if (o.t) {
-      this.ti = o.t;
-      this.ps = Props(o.t, false, this.ti.p);
-    }
+    if (o.t) this.ps = Props(o.t, false, o.o.p);
 
     this.resize();
   }
 
   raf(e) {
-    if (this.ti) {
-      let p = (this.ti.s || 0.2) * this.l;
+    if (this.ps) {
+      let p = (typeof this.o.s == "number" ? this.o.s : 0.2) * this.l;
       let d = e[this.d] + this.l;
 
       let start = this.p - p;
@@ -47,7 +44,7 @@ class Trigger {
 
   scroll(t) {
     if (!this.in) return;
-    this.o.raf && this.o.raf();
+    this.o.raf && this.o.raf(t);
     this.ps.map((p) => (this.o.t.style[p.name] = p.cb(t)));
   }
 
