@@ -39,7 +39,7 @@ class Tween {
       else this.target.style[p.name] = cb;
     });
 
-    this.raf && this.raf(this.e);
+    this.raf && this.raf(this.e, this.target);
     if (this.elp === 1) return this.kill();
   }
 

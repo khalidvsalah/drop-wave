@@ -3,9 +3,8 @@ const props = {
     let xV, yV, sXV, sYV, rXV, rYV;
     let tr = n.transform;
     let t;
-    if (tr.length > 6) {
-      t = tr.match(/\((.+)\)$/)[1].split(", ");
-    }
+
+    if (tr.length > 6) t = tr.match(/\((.+)\)$/)[1].split(", ");
 
     if (t) {
       xV = {
@@ -32,18 +31,15 @@ const props = {
         e: x[0] || 0,
         unit: x[1] ? x[1] : "px",
       };
-
       yV = {
         s: 0,
         e: y[0] || 0,
         unit: y[1] ? y[1] : "px",
       };
-
       sXV = {
         s: 1,
         e: sx ? sx[0] : 1,
       };
-
       sYV = {
         s: 1,
         e: sy ? sy[0] : 1,

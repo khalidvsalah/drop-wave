@@ -1,12 +1,12 @@
 import { Computed } from "../../../../index";
 import props from "./props.js";
 
-export default function checkProps(el, o, ps) {
+export default function checkProps(e, o, ps) {
   let results = [];
 
   if (!o) {
     let x, y, o, sx, sy, rx, ry;
-    let c = Computed(el);
+    let c = Computed(e);
 
     x = ps["x"] || false;
     y = ps["y"] || false;
@@ -17,7 +17,7 @@ export default function checkProps(el, o, ps) {
     rx = ps["rx"] || false;
     ry = ps["ry"] || false;
 
-    o = ps["opacity"] || false;
+    o = ps["o"] || false;
 
     if (x || y || sx || sy || rx || ry) {
       results.push({
