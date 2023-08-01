@@ -1,16 +1,13 @@
 {
-  "name": "blinkwave",
-  "version": "0.1.2",
+  "name": "oxca",
+  "version": "0.0.35",
   "description": "Animation Library",
-  "author": "khalid_salah",
+  "author": "oo3",
   "main": "index.js",
   "license": "ISC",
   "repository": {
     "type": "git",
     "url": "https://github.com/khalidsalahh/blinkwave"
-  },
-  "scripts": {
-    "build": "node ./scripts/index.js"
   },
   "bugs": {
     "url": "https://github.com/khalidsalahh/blinkwave/issues"

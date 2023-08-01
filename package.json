@@ -1,10 +1,11 @@
 {
-  "name": "blinkwave",
-  "version": "0.0.73",
+  "name": "@oo3/blinkwave",
+  "version": "0.0.1",
   "description": "Animation Library",
-  "author": "khalid_salah",
+  "author": "khalid-salah",
   "main": "index.js",
   "license": "ISC",
+  "private": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/khalidsalahh/blinkwave"
@@ -12,6 +13,7 @@
   "scripts": {
     "prod": "node ./scripts/index.js",
     "dev": "node ./scripts/dev.js",
+    "push": "bash ./scripts/bash/push.sh",
     "test": "jest"
   },
   "bugs": {
@@ -29,3 +31,4 @@
     "uglify-js": "^3.17.4"
   }
 }
+
