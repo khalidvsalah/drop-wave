@@ -2,19 +2,21 @@ import { Tween, Bounds, Sub, Remap, Props } from "../../index";
 
 class Trigger {
   constructor(el, o, sub, dir) {
+    this.sub = sub;
     this.id = Sub.add(sub, this.raf.bind(this));
     this.iresize = Sub.add("resize", this.resize.bind(this));
 
     this.o = o;
     this.el = el;
-    this.sub = sub;
 
     this.dir = dir;
     this.d = dir ? "y" : "x";
 
-    this.ti = this.o.trigger;
+    if (o.t) {
+      this.ti = o.t;
+      this.ps = Props(o.t, false, this.ti.p);
+    }
 
-    this.tResults = Props(o.t, false, this.ti.p);
     this.resize();
   }
 
@@ -38,15 +40,15 @@ class Trigger {
   }
 
   fire() {
-    Tween(this.o.t, this.o.o);
+    Tween(this.o.t || this.el, this.o.o);
     this.o.cb && this.o.cb();
     this.id.r();
   }
 
   scroll(t) {
     if (!this.in) return;
-
-    this.tResults.map((p) => (this.o.t.style[p.name] = p.cb(t)));
+    this.o.raf && this.o.raf();
+    this.ps.map((p) => (this.o.t.style[p.name] = p.cb(t)));
   }
 
   resize() {
