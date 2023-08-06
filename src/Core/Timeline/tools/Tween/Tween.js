@@ -14,7 +14,7 @@ class Tween {
   }
 
   to() {
-    this.d = this.o.d || 0.5;
+    this.d = this.o.d;
     this.late = this.o.late;
 
     this.ease = Ease[this.o.ease] || Ease["l"];
@@ -35,6 +35,7 @@ class Tween {
 
     this.results.map((p) => {
       let cb = p.cb(this.e);
+      console.log(cb);
       if (this.obj) this.target[p.name] = cb;
       else this.target.style[p.name] = cb;
     });
@@ -76,10 +77,10 @@ class Tween {
   }
 
   kill() {
-    if (this.completed && this.mode == "p") this.completed();
-
     this.on = false;
     this.prog = 0;
+
+    if (this.completed && this.mode == "p") this.completed();
 
     return true;
   }

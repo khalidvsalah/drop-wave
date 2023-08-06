@@ -8,12 +8,20 @@ const props = {
 
     if (t) {
       xV = {
-        s: x[1] === "px" ? +t[4] : (+t[4] / parseFloat(n.width)) * 100,
+        s: x
+          ? x[1] === "px"
+            ? +t[4]
+            : (+t[4] / parseFloat(n.width)) * 100
+          : +t[4],
         e: x ? x[0] : +t[4],
         unit: x[1] ? x[1] : "px",
       };
       yV = {
-        s: y[1] === "px" ? +t[5] : (+t[5] / parseFloat(n.height)) * 100,
+        s: y
+          ? y[1] === "px"
+            ? +t[5]
+            : (+t[5] / parseFloat(n.height)) * 100
+          : +t[5],
         e: y ? y[0] : +t[5],
         unit: y[1] ? y[1] : "px",
       };
