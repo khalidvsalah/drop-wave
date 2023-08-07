@@ -57,7 +57,7 @@ class Tween {
       this.late.cb = null;
     } else {
       this.dir = 0;
-      this.late.cb = this.start;
+      this.late.cb = () => this.start && this.start(this.target);
     }
 
     if (this.late.on) return;
@@ -79,7 +79,7 @@ class Tween {
     this.on = false;
     this.prog = 0;
 
-    if (this.completed && this.mode == "p") this.completed();
+    if (this.completed && this.mode == "p") this.completed(this.target);
 
     return true;
   }
