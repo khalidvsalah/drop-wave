@@ -5,11 +5,7 @@ function drag(dir, e) {
   dir.prev = dir.e;
   dir.e = e;
 
-  if (dir.d === 1) dir.sp = dir.e;
-  if (dir.d === -1) dir.ep = dir.e;
-
   let diff = dir.e - dir.s;
-
   return -diff;
 }
 class Scroll {
@@ -75,8 +71,8 @@ class Scroll {
   }
 
   ewheel(e) {
-    this.lerp.x += e.deltaY * (this.ease + this.ease * 6);
-    this.lerp.y += e.deltaY * (this.ease + this.ease * 6);
+    this.lerp.x += e.deltaY * this.ease * 7;
+    this.lerp.y += e.deltaY * this.ease * 7;
 
     iSet.p(this.all, "all");
     this.throttle.run();
@@ -103,11 +99,10 @@ class Scroll {
       iSet.p(this.all, "all");
       this.throttle.run();
 
-      if (this.dir) {
-        this.lerp.y = drag.call(this, this.drag.y, e.pageY) + this.plerp.y;
-      } else {
-        this.lerp.x = drag.call(this, this.drag.x, e.pageX) + this.plerp.x;
-      }
+      if (this.dir)
+        this.lerp.y = drag(this.drag.y, e.pageY) * this.ease * 7 + this.plerp.y;
+      else
+        this.lerp.x = drag(this.drag.x, e.pageX) * this.ease * 7 + this.plerp.x;
     }
   }
 
