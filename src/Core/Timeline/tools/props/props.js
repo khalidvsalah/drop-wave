@@ -1,5 +1,5 @@
 const props = {
-  transform: (x, y, sx, sy, rx, ry, n) => {
+  t: (x, y, sx, sy, rx, ry, n) => {
     let xV, yV, sXV, sYV, rXV, rYV;
     let tr = n.transform;
     let t;
@@ -98,7 +98,7 @@ const props = {
       };
     }
   },
-  opacity: (o, n) => {
+  o: (o, n) => {
     let oV = {
       s: +n.opacity,
       e: o[0],
@@ -106,6 +106,15 @@ const props = {
 
     oV.lerp = oV.e - oV.s;
     return (e) => `${oV.s + oV.lerp * e}`;
+  },
+  d: (d, n) => {
+    let dV = {
+      s: parseFloat(n.strokeDashoffset),
+      e: d[0],
+    };
+
+    dV.lerp = dV.e - dV.s;
+    return (e) => `${dV.s + dV.lerp * e}`;
   },
 };
 

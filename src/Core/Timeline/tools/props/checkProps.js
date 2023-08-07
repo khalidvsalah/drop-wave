@@ -5,7 +5,7 @@ export default function checkProps(e, o, ps) {
   let results = [];
 
   if (!o) {
-    let x, y, o, sx, sy, rx, ry;
+    let x, y, o, sx, sy, rx, ry, d;
     let c = Computed(e);
 
     x = ps["x"] || false;
@@ -18,18 +18,26 @@ export default function checkProps(e, o, ps) {
     ry = ps["ry"] || false;
 
     o = ps["o"] || false;
+    d = ps["dash"] || false;
 
     if (x || y || sx || sy || rx || ry) {
       results.push({
         name: "transform",
-        cb: props["transform"](x, y, sx, sy, rx, ry, c),
+        cb: props["t"](x, y, sx, sy, rx, ry, c),
       });
     }
 
     if (o) {
       results.push({
         name: "opacity",
-        cb: props["opacity"](o, c),
+        cb: props["o"](o, c),
+      });
+    }
+
+    if (d) {
+      results.push({
+        name: "strokeDashoffset",
+        cb: props["d"](d, c),
       });
     }
   } else if (o) {

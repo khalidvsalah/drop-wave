@@ -35,7 +35,6 @@ class Tween {
 
     this.results.map((p) => {
       let cb = p.cb(this.e);
-      console.log(cb);
       if (this.obj) this.target[p.name] = cb;
       else this.target.style[p.name] = cb;
     });
