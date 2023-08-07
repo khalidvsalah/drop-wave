@@ -1,3 +1,5 @@
+import { Lerp } from "../../../../index";
+
 const props = {
   t: (x, y, sx, sy, rx, ry, n) => {
     let xV, yV, sXV, sYV, rXV, rYV;
@@ -107,7 +109,7 @@ const props = {
     oV.lerp = oV.e - oV.s;
     return (e) => `${oV.s + oV.lerp * e}`;
   },
-  d: (d, n) => {
+  dash: (d, n) => {
     let dV = {
       s: parseFloat(n.strokeDashoffset),
       e: d[0],
@@ -115,6 +117,40 @@ const props = {
 
     dV.lerp = dV.e - dV.s;
     return (e) => `${dV.s + dV.lerp * e}`;
+  },
+  points(p, n) {
+    const d = (t) => {
+      let r = [];
+      let arr = t.split(" ");
+      let length = arr.length;
+
+      for (let t = 0; t < length; t++) {
+        let i = arr[t].split(",");
+        let a = i.length;
+
+        for (let t = 0; t < a; t++) {
+          var n = i[t];
+          r.push(isNaN(n) ? n : +n);
+        }
+      }
+
+      return r;
+    };
+
+    let s = d(n.el.getAttribute("points"));
+    let e = d(p[0]);
+
+    return (t) => {
+      let st = "";
+      let value = "";
+
+      for (let i = 0; i < s.length; i++) {
+        st += Lerp(s[i], e[i], t) + " ";
+        value = st.trim();
+      }
+
+      return value;
+    };
   },
 };
 

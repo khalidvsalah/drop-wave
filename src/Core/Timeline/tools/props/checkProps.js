@@ -5,8 +5,9 @@ export default function checkProps(e, o, ps) {
   let results = [];
 
   if (!o) {
-    let x, y, o, sx, sy, rx, ry, d;
+    let x, y, o, sx, sy, rx, ry, dash, points;
     let c = Computed(e);
+    c.el = e;
 
     x = ps["x"] || false;
     y = ps["y"] || false;
@@ -18,26 +19,35 @@ export default function checkProps(e, o, ps) {
     ry = ps["ry"] || false;
 
     o = ps["o"] || false;
-    d = ps["dash"] || false;
+    dash = ps["dash"] || false;
+
+    points = ps["points"] || false;
 
     if (x || y || sx || sy || rx || ry) {
       results.push({
-        name: "transform",
+        setV: (v) => (e.style.transform = v),
         cb: props["t"](x, y, sx, sy, rx, ry, c),
       });
     }
 
     if (o) {
       results.push({
-        name: "opacity",
+        setV: (v) => (e.style.opacity = v),
         cb: props["o"](o, c),
       });
     }
 
-    if (d) {
+    if (dash) {
       results.push({
-        name: "strokeDashoffset",
-        cb: props["d"](d, c),
+        setV: (v) => (e.style.strokeDashoffset = v),
+        cb: props["dash"](dash, c),
+      });
+    }
+
+    if (points) {
+      results.push({
+        setV: (v) => e.setAttribute("points", v),
+        cb: props["points"](points, c),
       });
     }
   } else if (o) {

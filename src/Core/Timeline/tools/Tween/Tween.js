@@ -36,7 +36,7 @@ class Tween {
     this.results.map((p) => {
       let cb = p.cb(this.e);
       if (this.obj) this.target[p.name] = cb;
-      else this.target.style[p.name] = cb;
+      else p.setV(cb);
     });
 
     this.raf && this.raf(this.e, this.target);
