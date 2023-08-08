@@ -1,5 +1,68 @@
 import { Lerp } from "../../../../index";
 
+let length = {
+  a: 7,
+  c: 6,
+  h: 1,
+  l: 2,
+  m: 2,
+  q: 4,
+  s: 4,
+  t: 2,
+  v: 1,
+  z: 0,
+};
+
+let segment = /([astvzqmhlc])([^astvzqmhlc]*)/gi;
+let number = /-?[0-9]*\.?[0-9]+(?:e[-+]?\d+)?/gi;
+
+function parse(path) {
+  let data = [];
+  path.replace(segment, function (_, command, args) {
+    let type = command.toLowerCase();
+    args = parseValues(args);
+
+    if (type == "m" && args.length > 2) {
+      data.push([command].concat(args.splice(0, 2)));
+      type = "l";
+      command = command == "m" ? "l" : "L";
+    }
+
+    while (true) {
+      if (args.length == length[type]) {
+        args.unshift(command);
+        return data.push(args);
+      }
+      if (args.length < length[type]) throw new Error("malformed path data");
+      data.push([command].concat(args.splice(0, length[type])));
+    }
+  });
+  return data;
+}
+
+function parseValues(args) {
+  let numbers = args.match(number);
+  return numbers ? numbers.map(Number) : [];
+}
+
+const d = (t) => {
+  let r = [];
+  let arr = t.split(" ");
+  let length = arr.length;
+
+  for (let t = 0; t < length; t++) {
+    let i = arr[t].split(",");
+    let a = i.length;
+
+    for (let t = 0; t < a; t++) {
+      var n = i[t];
+      r.push(isNaN(n) ? n : +n);
+    }
+  }
+
+  return r;
+};
+
 const props = {
   t: (x, y, sx, sy, rx, ry, n) => {
     let xV, yV, sXV, sYV, rXV, rYV;
@@ -119,24 +182,6 @@ const props = {
     return (e) => `${dV.s + dV.lerp * e}`;
   },
   points(p, n) {
-    const d = (t) => {
-      let r = [];
-      let arr = t.split(" ");
-      let length = arr.length;
-
-      for (let t = 0; t < length; t++) {
-        let i = arr[t].split(",");
-        let a = i.length;
-
-        for (let t = 0; t < a; t++) {
-          var n = i[t];
-          r.push(isNaN(n) ? n : +n);
-        }
-      }
-
-      return r;
-    };
-
     let s = d(n.el.getAttribute("points"));
     let e = d(p[0]);
 
@@ -146,6 +191,31 @@ const props = {
 
       for (let i = 0; i < s.length; i++) {
         st += Lerp(s[i], e[i], t) + " ";
+        value = st.trim();
+      }
+
+      return value;
+    };
+  },
+  d: (p, n) => {
+    let s = parse(n.el.getAttribute("d"));
+    let e = parse(p[0]);
+
+    console.log(s);
+    console.log(e);
+
+    return (t) => {
+      let st = "";
+      let value = "";
+
+      for (let i = 0; i < s.length; i++) {
+        let i1 = s[i];
+        let i2 = e[i];
+
+        for (let k = 0; k < i1.length; k++) {
+          st += (isNaN(i1[k]) ? i1[k] : Lerp(i1[k], i2[k], t)) + " ";
+        }
+
         value = st.trim();
       }
 

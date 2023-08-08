@@ -5,7 +5,7 @@ export default function checkProps(e, o, ps) {
   let results = [];
 
   if (!o) {
-    let x, y, o, sx, sy, rx, ry, dash, points;
+    let x, y, o, sx, sy, rx, ry, dash, points, d;
     let c = Computed(e);
     c.el = e;
 
@@ -19,9 +19,10 @@ export default function checkProps(e, o, ps) {
     ry = ps["ry"] || false;
 
     o = ps["o"] || false;
-    dash = ps["dash"] || false;
 
+    dash = ps["dash"] || false;
     points = ps["points"] || false;
+    d = ps["d"] || false;
 
     if (x || y || sx || sy || rx || ry) {
       results.push({
@@ -48,6 +49,14 @@ export default function checkProps(e, o, ps) {
       results.push({
         setV: (v) => e.setAttribute("points", v),
         cb: props["points"](points, c),
+      });
+    }
+
+    //
+    if (d) {
+      results.push({
+        setV: (v) => e.setAttribute("d", v),
+        cb: props["d"](d, c),
       });
     }
   } else if (o) {
