@@ -1,55 +1,24 @@
-class _R {
-  constructor() {
-    this.cache = new Map();
-  }
+async function xhr(o) {
+  try {
+    let t = o.type == "json";
 
-  match(url) {
-    return url.match(/^(https?):\/\/([^/?#]+)(\/[^?#]*)?(\?[^#]*)?(#.*)?$/);
-  }
+    const requst = new Request(o.url, {
+      headers: new Headers({
+        "Content-type": t ? "text/html" : "application/x-ww-form-urlencodeed",
+      }),
+      method: t ? "POST" : "GET",
+      mode: "same-origin",
+    });
 
-  async xhr(url, post, page) {
-    if (!this.cache.get(url)) {
-      try {
-        const requst = new Request(url, {
-          headers: new Headers({
-            "Content-type": page
-              ? "text/html"
-              : "application/x-ww-form-urlencodeed",
-          }),
-          method: post ? "POST" : "GET",
-          mode: "cors",
-        });
+    if (o.body) requst.body = o.body;
 
-        const fetchd = await fetch(requst);
-        const responed = page ? await fetchd.text() : await fetchd.json();
+    const data = await fetch(requst);
+    const parser = await data[t ? "json" : "text"]();
 
-        const match = this.match(url);
-
-        const res = {
-          url: match,
-          data: responed,
-        };
-
-        this.cache.set(url, res);
-        return res;
-      } catch (e) {
-        console.error("Failed To Get The Data", e.message);
-      }
-    } else {
-      return { ...this.cache.get(url) };
-    }
-  }
-
-  store(url, text) {
-    const match = this.match(url);
-
-    const res = {
-      url: match,
-      data: text,
-    };
-
-    this.cache.set(url, res);
+    o.cb({ url: o.url, parser });
+  } catch (e) {
+    console.error(e.message);
   }
 }
 
-export default new _R();
+export default xhr;
