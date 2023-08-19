@@ -201,9 +201,6 @@ const props = {
     let s = parse(n.el.getAttribute("d"));
     let e = parse(p[0]);
 
-    console.log(s);
-    console.log(e);
-
     return (t) => {
       let st = "";
       let value = "";
