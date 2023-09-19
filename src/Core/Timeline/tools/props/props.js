@@ -201,9 +201,6 @@ const props = {
     let s = parse(n.el.getAttribute("d"));
     let e = parse(p[0]);
 
-    console.log(s);
-    console.log(e);
-
     return (t) => {
       let st = "";
       let value = "";
@@ -221,6 +218,10 @@ const props = {
 
       return value;
     };
+  },
+  stroke: (s, c) => {
+    console.log(s, c);
+    return 1;
   },
 };
 
