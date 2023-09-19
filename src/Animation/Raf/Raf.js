@@ -15,6 +15,7 @@ class _F {
 
     this.items.push(o);
     if (!this.on) this.loop();
+
     return o.id;
   }
 
