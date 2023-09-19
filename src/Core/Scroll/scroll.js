@@ -11,12 +11,13 @@ function drag(dir, e) {
 class Scroll {
   constructor(el, o = {}) {
     history.scrollRestoration = "manual";
+
     this.el = el;
     this.target = o.target || window;
-    this.d = o.type == false ? false : true;
+    this.d = o.type;
 
     this.ease = o.ease || 0.1;
-    this.dir = o.dir === undefined;
+    this.dir = o.dir == undefined;
 
     this.dragOn = o.drag || true;
     this.wheelOn = o.wheel || true;
@@ -32,23 +33,17 @@ class Scroll {
 
     if (this.target instanceof Node) {
       if (o.drag) {
-        if (this.d) {
-          this.target.onmousedown = this.down.bind(this);
-          this.target.onmousemove = this.move.bind(this);
-          this.target.onmouseup = this.up.bind(this);
-        } else {
-          this.target.ontouchstart = this.down.bind(this);
-          this.target.ontouchmove = this.move.bind(this);
-          this.target.ontouchend = this.up.bind(this);
-        }
+        this.target.onpointerdown = this.down.bind(this);
+        this.target.onpointermove = this.move.bind(this);
+        this.target.onpointerup = this.up.bind(this);
       }
 
       if (o.wheel) this.target.onwheel = this.ewheel.bind(this);
     } else {
       if (this.dragOn) {
-        this.imousedown = Sub.add("mousedown", this.down.bind(this));
-        this.imousemove = Sub.add("mousemove", this.move.bind(this));
-        this.imouseup = Sub.add("mouseup", this.up.bind(this));
+        this.ipointerdown = Sub.add("pointerdown", this.down.bind(this));
+        this.ipointermove = Sub.add("pointermove", this.move.bind(this));
+        this.ipointerup = Sub.add("pointerup", this.up.bind(this));
       }
 
       if (this.wheelOn) {
@@ -79,9 +74,9 @@ class Scroll {
   }
 
   down(t) {
-    let e = this.d ? t : t.touches[0];
-
     iSet.p(this.all, "all");
+
+    let e = t;
 
     this.drag.y.s = e.pageY;
     this.drag.x.s = e.pageX;
@@ -93,16 +88,14 @@ class Scroll {
   }
 
   move(t) {
-    let e = this.d ? t : t.touches[0];
+    let e = t;
 
     if (this.dn) {
       iSet.p(this.all, "all");
       this.throttle.run();
 
-      if (this.dir)
-        this.lerp.y = drag(this.drag.y, e.pageY) * this.ease * 7 + this.plerp.y;
-      else
-        this.lerp.x = drag(this.drag.x, e.pageX) * this.ease * 7 + this.plerp.x;
+      if (this.dir) this.lerp.y = drag(this.drag.y, e.pageY) + this.plerp.y;
+      else this.lerp.x = drag(this.drag.x, e.pageX) + this.plerp.x;
     }
   }
 
@@ -140,23 +133,17 @@ class Scroll {
 
     if (this.target instanceof Node) {
       if (this.dragOn) {
-        if (this.d) {
-          this.target.onmousedown = null;
-          this.target.onmousemove = null;
-          this.target.onmouseup = null;
-        } else {
-          this.target.ontouchstart = null;
-          this.target.ontouchmove = null;
-          this.target.ontouchend = null;
-        }
+        this.target.onmousedown = null;
+        this.target.onmousemove = null;
+        this.target.onmouseup = null;
       }
 
       if (this.wheelOn) this.target.onwheel = null;
     } else {
       if (this.dragOn) {
-        this.imousedown.r();
-        this.imousemove.r();
-        this.imouseup.r();
+        this.ipointerdown.r();
+        this.ipointermove.r();
+        this.ipointerup.r();
       }
 
       if (this.wheelOn) this.iwheel.r();
