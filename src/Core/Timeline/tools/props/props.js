@@ -219,6 +219,10 @@ const props = {
       return value;
     };
   },
+  stroke: (s, c) => {
+    console.log(s, c);
+    return 1;
+  },
 };
 
 export default props;
