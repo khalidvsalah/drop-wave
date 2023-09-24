@@ -93,7 +93,7 @@ class Tween {
 
     if (newO) {
       this.late.d = o.late || 0;
-      this.d = o.d;
+      this.cbO.d = o.d;
 
       this.ease = Ease[o.ease] || this.ease;
       this.ps = o.p;
