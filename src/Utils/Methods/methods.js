@@ -1,5 +1,15 @@
 export const Has = (e, p) => window.hasOwnProperty.call(e, p);
-export const Bounds = (e) => e.getBoundingClientRect();
+export const Bounds = (e) => {
+  let rect = e.getBoundingClientRect();
+  return {
+    w: rect.width,
+    h: rect.height,
+    t: rect.top,
+    b: rect.bottom,
+    l: rect.left,
+    r: rect.right,
+  };
+};
 export const Computed = (c) => window.getComputedStyle(c);
 export const deepCopy = (o) => {
   let tO, v, k;

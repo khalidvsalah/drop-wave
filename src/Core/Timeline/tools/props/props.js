@@ -1,4 +1,4 @@
-import { Lerp } from "../../../../index";
+import { Lerp, Bounds } from "../../../../index";
 
 let length = {
   a: 7,
@@ -219,9 +219,28 @@ const props = {
       return value;
     };
   },
-  stroke: (s, c) => {
-    console.log(s, c);
-    return 1;
+  // stroke: (s, c) => {
+  //   return 1;
+  // },
+  top: (t, c) => {
+    let tV;
+    if (c.top == "auto") {
+      tV = {
+        s: 0,
+        e: t[0],
+        unit: t[1] || "px",
+      };
+    } else {
+      let tC = parseFloat(c.top);
+      tV = {
+        s: t[1] == "px" ? tC : (tC / Bounds(c.pa).h) * 100,
+        e: t[0],
+        unit: t[1] || "px",
+      };
+    }
+
+    tV.lerp = tV.e - tV.s;
+    return (e) => `${tV.s + tV.lerp * e}${tV.unit}`;
   },
 };
 

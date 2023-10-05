@@ -5,9 +5,11 @@ export default function checkProps(e, o, ps) {
   let results = [];
 
   if (!o) {
-    let x, y, o, sx, sy, rx, ry, dash, points, d, stroke;
+    let x, y, o, sx, sy, rx, ry, dash, points, d, stroke, t;
     let c = Computed(e);
+
     c.el = e;
+    c.pa = e.parentNode;
 
     x = ps["x"] || false;
     y = ps["y"] || false;
@@ -23,7 +25,9 @@ export default function checkProps(e, o, ps) {
     dash = ps["dash"] || false;
     points = ps["points"] || false;
     d = ps["d"] || false;
-    stroke = ps["stroke"] || false;
+    // stroke = ps["stroke"] || false;
+
+    t = ps["t"] || false;
 
     if (x || y || sx || sy || rx || ry) {
       results.push({
@@ -60,10 +64,17 @@ export default function checkProps(e, o, ps) {
       });
     }
 
-    if (stroke) {
+    // if (stroke) {
+    //   results.push({
+    //     setV: (v) => (e.style.strokeWidth = v),
+    //     cb: props["stroke"](stroke, c),
+    //   });
+    // }
+
+    if (t) {
       results.push({
-        setV: (v) => (e.style.strokeWidth = v),
-        cb: props["stroke"](stroke, c),
+        setV: (v) => (e.style.top = v),
+        cb: props["top"](t, c),
       });
     }
   } else if (o) {
