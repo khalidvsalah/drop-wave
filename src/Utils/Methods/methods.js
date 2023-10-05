@@ -31,5 +31,5 @@ export const iSet = {
   p: (e, v) => (e.style.pointerEvents = v),
   id: (s) => document.getElementById(s),
   el: (s) => document.querySelector(s),
-  els: (s) => document.querySelectorAll(s),
+  els: (s) => [...document.querySelectorAll(s)],
 };

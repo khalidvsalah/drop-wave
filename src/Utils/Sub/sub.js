@@ -20,6 +20,7 @@ class Sub {
   }
 
   add(name, cb) {
+    if (!this.subs[name]) console.error(name);
     let i = this.subs[name].items;
     i.push({ cb, id: i.length + 1 });
 
