@@ -53,8 +53,8 @@ class Scroll {
 
     this.iresize = Sub.add("resize", this.resize.bind(this));
     this.iraf = Sub.add("raf", this.raf.bind(this));
-
     this.iscroll = Sub.obs("scroll");
+    this.idist = Sub.obs("idist");
 
     this.all = document.getElementById("all");
     this.throttle = new Throttle({
@@ -108,11 +108,17 @@ class Scroll {
   }
 
   raf() {
-    let x = this.bounds.width - window.innerWidth;
-    let y = this.bounds.height - window.innerHeight;
+    let x = this.bounds.w - window.innerWidth;
+    let y = this.bounds.h - window.innerHeight;
+
+    this.dist.x = this.lerp.x;
+    this.dist.y = this.lerp.x;
 
     this.lerp.x = Clamp(0, x < 0 ? 0 : x, this.lerp.x);
     this.lerp.y = Clamp(0, y < 0 ? 0 : y, this.lerp.y);
+
+    this.distance.x = Lerp(this.distance.x, this.dist.x, this.ease);
+    this.distance.y = Lerp(this.distance.x, this.dist.x, this.ease);
 
     this.wheel.x = Lerp(this.wheel.x, this.lerp.x, this.ease);
     this.wheel.y = Lerp(this.wheel.y, this.lerp.y, this.ease);
@@ -121,6 +127,7 @@ class Scroll {
     else this.el.style.transform = `translateX(${-this.wheel.x}px)`;
 
     this.iscroll.cb(this.wheel);
+    this.idist.cb(this.distance);
   }
 
   resize() {
@@ -130,6 +137,8 @@ class Scroll {
   destroy() {
     this.iresize.r();
     this.iraf.r();
+    this.iscroll.r();
+    this.idist.r();
 
     if (this.target instanceof Node) {
       if (this.dragOn) {

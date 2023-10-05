@@ -52,11 +52,11 @@ class Trigger {
     this.b = Bounds(this.el);
 
     if (this.dir) {
-      this.p = this.b.top;
-      this.si = this.b.bottom;
+      this.p = this.b.t;
+      this.si = this.b.b;
     } else {
-      this.p = this.b.left;
-      this.si = this.b.right;
+      this.p = this.b.l;
+      this.si = this.b.r;
     }
 
     this.l = this.dir ? window.innerHeight : window.innerWidth;
