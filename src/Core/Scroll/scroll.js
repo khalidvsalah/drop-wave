@@ -97,10 +97,10 @@ class Scroll {
 
       if (this.dir) {
         this.lerp.y = drag(this.drag.y, e.pageY) + this.prevLerp.y;
-        this.dist.y = drag(this.drag.y, e.pageY) + this.prevLerp.y;
+        this.dist.y = drag(this.drag.y, e.pageY) + this.prevDist.y;
       } else {
         this.lerp.x = drag(this.drag.x, e.pageX) + this.prevLerp.x;
-        this.dist.x = drag(this.drag.x, e.pageX) + this.prevLerp.x;
+        this.dist.x = drag(this.drag.x, e.pageX) + this.prevDist.x;
       }
     }
   }
