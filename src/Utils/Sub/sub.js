@@ -21,17 +21,20 @@ class Sub {
 
   add(name, cb) {
     if (!this.subs[name]) console.error(name);
-    let i = this.subs[name].items;
-    i.push({ cb, id: i.length + 1 });
+
+    let items = this.subs[name].items;
+    let obj = { cb, id: items.length + 1 };
+
+    items.push(obj);
 
     let r = (o) => {
-      for (let k = 0; k < i.length; i++) {
-        if (i[k].id === o) i.splice(i, 1);
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].id == o) items.splice(i, 1);
       }
     };
 
     return {
-      r: r.bind({}, i.length),
+      r: r.bind({}, obj.id),
     };
   }
 
