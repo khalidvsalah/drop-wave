@@ -11,11 +11,17 @@ class Sub {
         t.items[i].cb(...args);
       }
     }
+
     this.subs[name] = { items: [] };
+
+    let r = (name) => {
+      this.subs[name].items = [];
+    };
 
     return {
       cb: callItem.bind(this.subs),
       name,
+      r: r.bind(this, name),
     };
   }
 

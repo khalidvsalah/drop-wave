@@ -140,6 +140,7 @@ class Scroll {
   destroy() {
     this.iresize.r();
     this.iraf.r();
+
     this.sscroll.r();
     this.sdist.r();
 
