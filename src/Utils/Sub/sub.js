@@ -4,15 +4,15 @@ class Sub {
   }
 
   obs(name) {
+    this.subs[name] = { items: [] };
     function callItem() {
-      let t = this[name];
+      let target = this[name];
       let args = Array.prototype.slice.call(arguments);
-      for (let i = 0; i < t.items.length; i++) {
-        t.items[i].cb(...args);
+
+      for (let i = 0; i < target.items.length; i++) {
+        target.items[i].cb(...args);
       }
     }
-
-    this.subs[name] = { items: [] };
 
     let r = (name) => {
       this.subs[name].items = [];
