@@ -1,4 +1,4 @@
-import { Sub, Bounds, Clamp, Lerp, Throttle, iSet } from "../../index";
+import { Sub, Bounds, Clamp, Lerp, Round } from "../../index";
 import Trigger from "./trigger";
 
 function drag(dir, e) {
@@ -11,30 +11,15 @@ function drag(dir, e) {
 class Scroll {
   constructor(el, o = {}) {
     history.scrollRestoration = "manual";
-
     this.el = el;
 
     this.ease = o.ease || 0.1;
     this.dir = o.dir == undefined;
 
-    this.dragOn = o.drag || true;
-    this.wheelOn = o.wheel || true;
-
-    if (this.dragOn) {
-      this.ipointerdown = Sub.add("pointerdown", this.down.bind(this));
-      this.ipointermove = Sub.add("pointermove", this.move.bind(this));
-      this.ipointerup = Sub.add("pointerup", this.up.bind(this));
-    }
-
-    if (this.wheelOn) {
-      this.iwheel = Sub.add("wheel", this.wheel.bind(this));
-    }
-
-    this.all = iSet.id("all");
-    this.throttle = new Throttle({
-      late: 0.3,
-      cb: () => iSet.p(this.all, "none"),
-    });
+    this.ipointerdown = Sub.add("pointerdown", this.down.bind(this));
+    this.ipointermove = Sub.add("pointermove", this.move.bind(this));
+    this.ipointerup = Sub.add("pointerup", this.up.bind(this));
+    this.iwheel = Sub.add("wheel", this.wheel.bind(this));
 
     this.Init();
   }
@@ -63,23 +48,20 @@ class Scroll {
   }
 
   wheel(e) {
-    this.lerp.x += e.deltaY * this.ease * 7;
-    this.lerp.y += e.deltaY * this.ease * 7;
+    this.lerp.x += e.deltaY * 0.5;
+    this.lerp.y += e.deltaY * 0.5;
 
-    this.dist.x += e.deltaY * this.ease * 7;
-    this.dist.y += e.deltaY * this.ease * 7;
-
-    iSet.p(this.all, "all");
-    this.throttle.run();
+    this.dist.x += e.deltaX * 0.5;
+    this.dist.y += e.deltaY * 0.5;
   }
 
   down(t) {
     let e = t;
 
+    this.dn = true;
+
     this.drag.y.s = e.pageY;
     this.drag.x.s = e.pageX;
-
-    this.dn = true;
 
     this.prevLerp.x = this.lerp.x;
     this.prevLerp.y = this.lerp.y;
@@ -92,9 +74,6 @@ class Scroll {
     let e = t;
 
     if (this.dn) {
-      iSet.p(this.all, "all");
-      this.throttle.run();
-
       if (this.dir) {
         this.lerp.y = drag(this.drag.y, e.pageY) + this.prevLerp.y;
         this.dist.y = drag(this.drag.y, e.pageY) + this.prevDist.y;
@@ -117,17 +96,17 @@ class Scroll {
     let x = this.bs.w - window.innerWidth;
     let y = this.bs.h - window.innerHeight;
 
-    this.distance.x = Lerp(this.distance.x, this.dist.x, this.ease);
-    this.distance.y = Lerp(this.distance.y, this.dist.y, this.ease);
-
     this.lerp.x = Clamp(0, x < 0 ? 0 : x, this.lerp.x);
     this.lerp.y = Clamp(0, y < 0 ? 0 : y, this.lerp.y);
 
-    this.scroll.x = Lerp(this.scroll.x, this.lerp.x, this.ease);
-    this.scroll.y = Lerp(this.scroll.y, this.lerp.y, this.ease);
+    this.distance.x = Round(Lerp(this.distance.x, this.dist.x, this.ease));
+    this.distance.y = Round(Lerp(this.distance.y, this.dist.y, this.ease));
 
-    if (this.dir) this.el.style.transform = `translateY(${-this.scroll.y}px)`;
-    else this.el.style.transform = `translateX(${-this.scroll.x}px)`;
+    this.scroll.x = Round(Lerp(this.scroll.x, this.lerp.x, this.ease));
+    this.scroll.y = Round(Lerp(this.scroll.y, this.lerp.y, this.ease));
+
+    this.el.style.transform = `translate3d(${-this.scroll.x}, ${-this.scroll
+      .y}px, 0)`;
 
     this.sscroll.cb(this.scroll);
     this.sdist.cb(this.distance);
@@ -144,13 +123,10 @@ class Scroll {
     this.sscroll.r();
     this.sdist.r();
 
-    if (this.dragOn) {
-      this.ipointerdown.r();
-      this.ipointermove.r();
-      this.ipointerup.r();
-    }
-
-    if (this.wheelOn) this.iwheel.r();
+    this.ipointerdown.r();
+    this.ipointermove.r();
+    this.ipointerup.r();
+    this.iwheel.r();
   }
 }
 

@@ -41,7 +41,7 @@ class Trigger {
   fire() {
     Tween(this.o.target || this.el, this.o.o);
     this.o.cb && this.o.cb();
-    this.iscroll.r();
+    this.Destroy();
   }
 
   scroll(t) {
@@ -71,6 +71,11 @@ class Trigger {
     }
 
     this.l = this.dir ? window.innerHeight : window.innerWidth;
+  }
+
+  Destroy() {
+    this.iscroll.r();
+    this.iresize.r();
   }
 }
 

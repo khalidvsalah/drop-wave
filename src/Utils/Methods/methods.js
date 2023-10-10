@@ -32,4 +32,5 @@ export const iSet = {
   id: (s) => document.getElementById(s),
   el: (s) => document.querySelector(s),
   els: (s) => [...document.querySelectorAll(s)],
+  screen: { w: window.innerWidth, h: window.innerHeight },
 };
