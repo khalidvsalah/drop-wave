@@ -36,13 +36,12 @@ class Scroll {
     };
 
     this.dist = { x: 0, y: 0 };
-    this.distance = { x: 0, y: 0 };
 
     this.iresize = Sub.add("resize", this.resize.bind(this));
     this.iraf = Sub.add("raf", this.raf.bind(this));
 
     this.sscroll = Sub.obs("scroll");
-    this.sdist = Sub.obs("dist");
+    this.sdrag = Sub.obs("drag");
 
     this.resize();
   }
@@ -82,6 +81,9 @@ class Scroll {
         this.dist.x = drag(this.drag.x, e.pageX) + this.prevDist.x;
       }
     }
+
+    this.sdrag.cb(this.dist);
+    console.log(this.lerp, "-->><<--");
   }
 
   up() {
@@ -99,9 +101,6 @@ class Scroll {
     this.lerp.x = Clamp(0, x < 0 ? 0 : x, this.lerp.x);
     this.lerp.y = Clamp(0, y < 0 ? 0 : y, this.lerp.y);
 
-    this.distance.x = Round(Lerp(this.distance.x, this.dist.x, this.ease));
-    this.distance.y = Round(Lerp(this.distance.y, this.dist.y, this.ease));
-
     this.scroll.x = Round(Lerp(this.scroll.x, this.lerp.x, this.ease));
     this.scroll.y = Round(Lerp(this.scroll.y, this.lerp.y, this.ease));
 
@@ -109,7 +108,6 @@ class Scroll {
       .y}px, 0)`;
 
     this.sscroll.cb(this.scroll);
-    this.sdist.cb(this.distance);
   }
 
   resize() {
@@ -121,7 +119,7 @@ class Scroll {
     this.iraf.r();
 
     this.sscroll.r();
-    this.sdist.r();
+    this.sdrag.r();
 
     this.ipointerdown.r();
     this.ipointermove.r();
