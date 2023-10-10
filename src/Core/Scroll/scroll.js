@@ -9,22 +9,32 @@ function drag(dir, e) {
   return -diff;
 }
 class Scroll {
-  constructor(el, o = {}) {
+  constructor(attacher, o) {
     history.scrollRestoration = "manual";
-    this.el = el;
+    this.attacher = attacher;
+
+    this.target = o.target;
 
     this.ease = o.ease || 0.09;
     this.dir = o.dir == undefined;
 
-    this.ipointerdown = Sub.add("pointerdown", this.down.bind(this));
-    this.ipointermove = Sub.add("pointermove", this.move.bind(this));
-    this.ipointerup = Sub.add("pointerup", this.up.bind(this));
-    this.iwheel = Sub.add("wheel", this.wheel.bind(this));
-
     this.Init();
+    this.resize();
   }
 
   Init() {
+    if (this.attacher == window) {
+      this.ipointerdown = Sub.add("pointerdown", this.down.bind(this));
+      this.ipointermove = Sub.add("pointermove", this.move.bind(this));
+      this.iwheel = Sub.add("wheel", this.wheel.bind(this));
+    } else {
+      this.attacher.onpointerdown = this.down.bind(this);
+      this.attacher.onpointermove = this.move.bind(this);
+      this.attacher.onwheel = this.wheel.bind(this);
+    }
+
+    this.ipointerup = Sub.add("pointerup", this.up.bind(this));
+
     this.lerp = { x: 0, y: 0 };
     this.prevLerp = { x: 0, y: 0 };
     this.prevDist = { x: 0, y: 0 };
@@ -41,8 +51,6 @@ class Scroll {
 
     this.sscroll = Sub.obs("scroll");
     this.sdrag = Sub.obs("drag");
-
-    this.resize();
   }
 
   begin() {
@@ -99,21 +107,18 @@ class Scroll {
     this.dn = false;
   }
 
-  add(el, o) {
-    new Trigger(el, o, this.sscroll.name, this.dir);
+  add(target, o) {
+    new Trigger(target, o, this.sscroll.name, this.dir);
   }
 
   raf() {
-    let x = this.bs.w - window.innerWidth;
-    let y = this.bs.h - window.innerHeight;
-
-    this.lerp.x = Clamp(0, x < 0 ? 0 : x, this.lerp.x);
-    this.lerp.y = Clamp(0, y < 0 ? 0 : y, this.lerp.y);
+    this.lerp.x = Clamp(0, this.w < 0 ? 0 : this.w, this.lerp.x);
+    this.lerp.y = Clamp(0, this.h < 0 ? 0 : this.h, this.lerp.y);
 
     this.scroll.x = Round(Lerp(this.scroll.x, this.lerp.x, this.ease), 4);
     this.scroll.y = Round(Lerp(this.scroll.y, this.lerp.y, this.ease), 4);
 
-    this.el.style.transform = `translate3d(-${this.scroll.x}, -${this.scroll.y}px, 0)`;
+    this.target.style.transform = `translate3d(-${this.scroll.x}, -${this.scroll.y}px, 0)`;
 
     this.sscroll.cb(this.scroll);
 
@@ -125,22 +130,29 @@ class Scroll {
   }
 
   resize() {
-    this.bs = Bounds(this.el);
+    this.bs = Bounds(this.target);
+    this.w = this.bs.w - window.innerWidth;
+    this.h = this.bs.h - window.innerHeight;
   }
 
   destroy() {
     this.iresize.r();
-    this.iraf.r();
+    this.iraf && this.iraf.r();
 
     this.sscroll.r();
     this.sdrag.r();
 
-    this.ipointerdown.r();
-    this.ipointermove.r();
-    this.ipointerup.r();
-    this.iwheel.r();
-
-    console.log(this.iraf);
+    if (this.attacher == window) {
+      this.ipointerdown.r();
+      this.ipointermove.r();
+      this.ipointerup.r();
+      this.iwheel.r();
+    } else {
+      this.attacher.onpointerdown = null;
+      this.attacher.onpointermove = null;
+      this.attacher.onpointerup = null;
+      this.attacher.onwheel = null;
+    }
   }
 }
 
