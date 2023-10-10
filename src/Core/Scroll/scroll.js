@@ -118,7 +118,7 @@ class Scroll {
     this.scroll.x = Round(Lerp(this.scroll.x, this.lerp.x, this.ease), 4);
     this.scroll.y = Round(Lerp(this.scroll.y, this.lerp.y, this.ease), 4);
 
-    this.target.style.transform = `translate3d(-${this.scroll.x}, -${this.scroll.y}px, 0)`;
+    this.target.style.transform = `translate3d(-${this.scroll.x}px, -${this.scroll.y}px, 0)`;
 
     this.sscroll.cb(this.scroll);
 
