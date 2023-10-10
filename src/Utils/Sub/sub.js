@@ -29,17 +29,21 @@ class Sub {
     if (!this.subs[name]) console.error(name);
 
     let items = this.subs[name].items;
-    let obj = { cb, id: items.length + 1 };
+    let obj = { cb, id: items.length + 1, on: true };
 
     items.push(obj);
 
     let r = (o) => {
       for (let i = 0; i < items.length; i++) {
-        if (items[i].id == o) items.splice(i, 1);
+        if (items[i].id == o) {
+          items[i].on = false;
+          items.splice(i, 1);
+        }
       }
     };
 
     return {
+      item: obj,
       r: r.bind({}, obj.id),
     };
   }

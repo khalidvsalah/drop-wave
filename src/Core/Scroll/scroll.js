@@ -13,7 +13,7 @@ class Scroll {
     history.scrollRestoration = "manual";
     this.el = el;
 
-    this.ease = o.ease || 0.1;
+    this.ease = o.ease || 0.09;
     this.dir = o.dir == undefined;
 
     this.ipointerdown = Sub.add("pointerdown", this.down.bind(this));
@@ -38,7 +38,6 @@ class Scroll {
     this.dist = { x: 0, y: 0 };
 
     this.iresize = Sub.add("resize", this.resize.bind(this));
-    this.iraf = Sub.add("raf", this.raf.bind(this));
 
     this.sscroll = Sub.obs("scroll");
     this.sdrag = Sub.obs("drag");
@@ -46,12 +45,22 @@ class Scroll {
     this.resize();
   }
 
-  wheel(e) {
-    this.lerp.x += e.deltaY * 0.5;
-    this.lerp.y += e.deltaY * 0.5;
+  begin() {
+    if (!this.iraf || !this.iraf.item.on) {
+      this.iraf = Sub.add("raf", this.raf.bind(this));
+    }
+  }
 
-    this.dist.x += e.deltaX * 0.5;
-    this.dist.y += e.deltaY * 0.5;
+  wheel(e) {
+    let multiplier = e.deltaMode == 1 ? 0.85 : 0.5;
+
+    this.lerp.x -= e.wheelDeltaX * multiplier;
+    this.lerp.y -= e.wheelDeltaY * multiplier;
+
+    this.dist.x -= e.wheelDeltaX * multiplier;
+    this.dist.y -= e.wheelDeltaY * multiplier;
+
+    this.begin();
   }
 
   down(t) {
@@ -80,10 +89,10 @@ class Scroll {
         this.lerp.x = drag(this.drag.x, e.pageX) + this.prevLerp.x;
         this.dist.x = drag(this.drag.x, e.pageX) + this.prevDist.x;
       }
-    }
 
-    this.sdrag.cb(this.dist);
-    console.log(this.lerp, "-->><<--");
+      this.sdrag.cb(this.dist);
+      this.begin();
+    }
   }
 
   up() {
@@ -101,13 +110,18 @@ class Scroll {
     this.lerp.x = Clamp(0, x < 0 ? 0 : x, this.lerp.x);
     this.lerp.y = Clamp(0, y < 0 ? 0 : y, this.lerp.y);
 
-    this.scroll.x = Round(Lerp(this.scroll.x, this.lerp.x, this.ease));
-    this.scroll.y = Round(Lerp(this.scroll.y, this.lerp.y, this.ease));
+    this.scroll.x = Round(Lerp(this.scroll.x, this.lerp.x, this.ease), 4);
+    this.scroll.y = Round(Lerp(this.scroll.y, this.lerp.y, this.ease), 4);
 
-    this.el.style.transform = `translate3d(${-this.scroll.x}, ${-this.scroll
-      .y}px, 0)`;
+    this.el.style.transform = `translate3d(-${this.scroll.x}, -${this.scroll.y}px, 0)`;
 
     this.sscroll.cb(this.scroll);
+
+    if (this.dir) {
+      if (Round(this.scroll.y, 3) == this.lerp.y) this.iraf.r();
+    } else {
+      if (Round(this.scroll.x, 3) == this.lerp.x) this.iraf.r();
+    }
   }
 
   resize() {
@@ -125,6 +139,8 @@ class Scroll {
     this.ipointermove.r();
     this.ipointerup.r();
     this.iwheel.r();
+
+    console.log(this.iraf);
   }
 }
 
