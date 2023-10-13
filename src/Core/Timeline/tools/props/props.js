@@ -219,9 +219,6 @@ const props = {
       return value;
     };
   },
-  // stroke: (s, c) => {
-  //   return 1;
-  // },
   top: (t, c) => {
     let tV;
     if (c.top == "auto") {
@@ -241,6 +238,24 @@ const props = {
 
     tV.lerp = tV.e - tV.s;
     return (e) => `${tV.s + tV.lerp * e}${tV.unit}`;
+  },
+  blur(b, c) {
+    let bV;
+
+    if (c.filter == "none") {
+      bV = {
+        s: 0,
+        e: b[0],
+      };
+    } else {
+      bV = {
+        s: +c.filter.match(/(\d.*)px/)[1],
+        e: b[0],
+      };
+    }
+
+    bV.lerp = bV.e - bV.s;
+    return (e) => bV.s + bV.lerp * e;
   },
 };
 
