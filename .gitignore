@@ -1,8 +1,4 @@
-node_modules
-.eslintcache
-coverage
-.sass-cache
 .DS_Store
-.env
-functions
-.gitignore
+node_modules
+dist
+.prettierrc

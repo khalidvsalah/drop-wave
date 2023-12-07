@@ -1,10 +1,11 @@
 ## Blink Wave 🌊
 
-##### A JavaScript Library Contain (virtual-scroll, Tween, Route, Subscribe, Raf, Ease).
-https://www.linkedin.com/posts/khalidsalah_javascript-animation-javascriptframework-activity-7074398716622684160-owKU?utm_source=share&utm_medium=member_desktop
+##### A JavaScript Library Contain (tween, subscribe, raf, ease).
+
+##### Coming soon features (timeline).
 
 ```js
-import { Tween, Scroll, Raf, Ease, Sub, Route } from "blinkwave";
+import { tween, raf, ease, sub } from "blinkwave";
 ```
 
 &nbsp;
@@ -14,15 +15,59 @@ import { Tween, Scroll, Raf, Ease, Sub, Route } from "blinkwave";
 ##### Function for animating dom-element, supported css-properties (opacity, transform, scale).
 
 ```js
-Tween(domElement, {
+tween(domElement, {
     d: 0.4, // duration
     late: 0.4, // late
     ease: "io4" // easeInOut4
-    p: {y: [100, "%"]} // ((y[0]=> end), (y[1]=> ("%", "px")))
+    p: {a: [100]} // ((a[0]=> end))
     raf: (e)=> (console.log(e)) // get called for every frame the tween is playing.
     start: ()=> (console.log("go")) // onStart.
     completed: ()=> (console.log("done")) // onCompleted.
 });
+```
+
+###
+
+#### Current Properties
+
+#####
+
+```js
+// transform
+tween(element: {
+    p:{ fore: {
+            y: [100, "%"], // ((y[0]=> end), (y[1]=> unit)) (translateY)
+            x: [100, "%"], // (translateX)
+            sx: [100, "%"], // (scaleX)
+            sy: [100, "%"], // (scaleY)
+            rx: [100, "%"], // (rotateX)
+            ry: [100, "%"] // (rotateY)
+        }
+    }
+});
+///////
+
+// opacity
+tween(element: {
+    p:{a: [1]} // alpha => opacity
+});
+///////
+
+// blur
+tween(element: {
+    p:{blur: [12]} // filter: blur(12);
+});
+///////
+
+// top
+tween(element: {
+    p:{t: [12, "px"]} // top;
+});
+
+///////
+
+// Current Units
+// (px, unit)
 ```
 
 ###
@@ -32,38 +77,49 @@ Tween(domElement, {
 ##### a Function for adding observer & Subscriber.
 
 ```js
-window.addEventListener("wheel", Sub.obs("wheel").cb); // create Observer.
-this.wheel = Sub.add("wheel", this.Wheel.bind(this)); // subscribe to an event.
-Sub.remove("wheel", this.wheel); // unsubscribe to an event.
-```
-
-###
-
-#### Virtual-Scroll
-
-##### Add smooth scrolling to the page & you can add element to be revealed when you need.
-
-```js
-const scroll = new Scroll(domElement, {drag: true, lerp: 0.1});
-scroll.add(domElement, {s: 10, o: {
-    d: 0.4,
-    late: 0.4,
-    ease: "io4"
-    p: {y: [100, "%"]}
-}});
+window.addEventListener("wheel", sub.obs("wheel").cb); // create Observer.
+this.wheel = sub.add("wheel", this.Wheel.bind(this)); // subscribe to an event.
+this.wheel.r(); // unsubscribe to an event.
 ```
 
 ###
 
 #### Raf
 
-##### RequestAnimationFrame.
-
 ```js
-const scroll = Raf({
+raf({
   cb: (e) => {
     const ease = Ease["io4"](e);
     return ease;
   },
+  d: 0.6,
+});
+```
+
+###
+
+#### scroll
+
+```js
+/**
+ * @param {HTMLElement|Window} attacher - the parent
+ * @param {Object} o - properties
+ */
+const scoll = new scroll(window, { target: iSet.id("app") });
+
+// You can animate a element in a specific point
+scoll.add(iSet.el(".box"), {
+  tween: {
+    d: 0.8,
+    ease: "io2",
+    p: { form: { x: [400, "%"] } },
+  },
+  start: 50,
+});
+
+// You can animate a element while scrolling
+scoll.add(iSet.el(".fade"), {
+  scroll: true,
+  p: { a: [0] },
 });
 ```
