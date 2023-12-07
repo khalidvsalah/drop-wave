@@ -1,42 +1,33 @@
-import { Ease, Lerp, Clamp, Remap, iRemap, Round } from "./Core/Math/Math";
+import ease from './Math/ease';
+import { clamp, lerp, map, remap, round } from './Math/operations';
+import { has, bounds, computed, iSet, choke } from './Core/methods/methods';
 
-import { Has, Bounds, deepCopy, iSet, Computed } from "./Utils/Methods/methods";
-import Store from "./Utils/Store/Store";
-import Sub from "./Utils/Sub/sub";
-import Throttle from "./Utils/Throttle/throttle";
+import props from './Utils/props';
+import raf from './Utils/raf';
+import scrub from './Utils/helpers/scrub';
+import late from './Core/late/late';
+import tween from './Core/tween/index';
 
-import Late from "./Animation/Late/Late";
-import Raf from "./Animation/Raf/raf";
-
-import Route from "./Core/Route/route";
-import Mount from "./Dom/Mount/mount";
-
-import Props from "./Core/Timeline/tools/props/checkProps";
-import Tween from "./Core/Timeline/tools/Tween/Controller";
-import TL from "./Core/Timeline/Timeline";
-import Scroll from "./Core/Scroll/scroll";
+import sub from './Core/methods/observer';
+import scroll from './Core/scroll/scroll';
 
 export {
-  Store,
-  Lerp,
-  Throttle,
-  Clamp,
-  Route,
-  Scroll,
-  Late,
-  Raf,
-  Has,
-  Bounds,
-  Computed,
-  Sub,
-  Mount,
-  Ease,
-  Round,
-  Props,
-  Tween,
-  TL,
-  deepCopy,
+  ease,
+  clamp,
+  lerp,
+  map,
+  remap,
+  round,
+  has,
+  bounds,
+  computed,
   iSet,
-  Remap,
-  iRemap,
+  choke,
+  props,
+  raf,
+  late,
+  scrub,
+  tween,
+  sub,
+  scroll
 };
