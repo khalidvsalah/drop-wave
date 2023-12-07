@@ -1,16 +1,17 @@
-import { Sub, Bounds, Clamp, Lerp, Round } from "../../index";
-import Trigger from "./trigger";
+import { sub, bounds, clamp, lerp, round, choke, iSet } from '../../index';
+import { drag, events } from './tools';
+import Trigger from './trigger';
 
-function drag(dir, e) {
-  dir.prev = dir.e;
-  dir.e = e;
-
-  let diff = dir.e - dir.s;
-  return -diff;
-}
+/**
+ * Creating virtual scrolling
+ */
 class Scroll {
+  /**
+   * @param {HTMLElement|Window} attacher - the parent
+   * @param {Object} o - properties
+   */
   constructor(attacher, o) {
-    history.scrollRestoration = "manual";
+    history.scrollRestoration = 'manual';
     this.attacher = attacher;
 
     this.target = o.target;
@@ -18,131 +19,139 @@ class Scroll {
     this.ease = o.ease || 0.09;
     this.dir = o.dir == undefined;
 
+    events();
+
     this.Init();
     this.resize();
+
+    this.chokeEl = iSet.id('overlay');
+    this.choke = new choke({
+      late: 0.3,
+      cb: () => iSet.pointer(this.chokeEl, 'none')
+    });
   }
 
+  /**
+   * Initializing the virtial scrolling class
+   */
   Init() {
     if (this.attacher == window) {
-      this.ipointerdown = Sub.add("pointerdown", this.down.bind(this));
-      this.ipointermove = Sub.add("pointermove", this.move.bind(this));
-      this.iwheel = Sub.add("wheel", this.wheel.bind(this));
+      this.ipointerdown = sub.add('pointerdown', this.down.bind(this));
+      this.ipointermove = sub.add('pointermove', this.move.bind(this));
+      this.iwheel = sub.add('wheel', this.wheel.bind(this));
     } else {
       this.attacher.onpointerdown = this.down.bind(this);
       this.attacher.onpointermove = this.move.bind(this);
       this.attacher.onwheel = this.wheel.bind(this);
     }
 
-    this.ipointerup = Sub.add("pointerup", this.up.bind(this));
+    this.ipointerup = sub.add('pointerup', this.up.bind(this));
+    this.iresize = sub.add('resize', this.resize.bind(this));
 
-    this.lerp = { x: 0, y: 0 };
-    this.prevLerp = { x: 0, y: 0 };
-    this.prevDist = { x: 0, y: 0 };
+    this.drag = { x: 0, y: 0 };
+    this.prev = { x: 0, y: 0 };
     this.scroll = { x: 0, y: 0 };
-
-    this.drag = {
-      x: { s: 0, e: 0, sp: 0, ep: 0 },
-      y: { s: 0, e: 0, sp: 0, ep: 0 },
+    this.dist = {
+      x: { start: 0, end: 0 },
+      y: { start: 0, ende: 0 }
     };
-
-    this.dist = { x: 0, y: 0 };
-
-    this.iresize = Sub.add("resize", this.resize.bind(this));
-
-    this.sscroll = Sub.obs("scroll");
-    this.sdrag = Sub.obs("drag");
   }
 
+  /**
+   * Run on scolling
+   */
   begin() {
     if (!this.iraf || !this.iraf.item.on) {
-      this.iraf = Sub.add("raf", this.raf.bind(this));
+      this.iraf = sub.add('raf', this.raf.bind(this));
     }
   }
 
+  /**
+   * Handling wheel event
+   */
   wheel(e) {
-    let multiplier = e.deltaMode == 1 ? 0.85 : 0.5;
+    let multip = e.deltaMode == 1 ? 0.85 : 0.5;
 
-    this.lerp.x -= e.wheelDeltaX * multiplier;
-    this.lerp.y -= e.wheelDeltaY * multiplier;
-
-    this.dist.x -= e.wheelDeltaX * multiplier;
-    this.dist.y -= e.wheelDeltaY * multiplier;
+    this.drag.x -= e.wheelDeltaX * multip;
+    this.drag.y -= e.wheelDeltaY * multip;
 
     this.begin();
   }
 
-  down(t) {
-    let e = t;
+  /**
+   * Starting point
+   */
+  down(e) {
+    iSet.pointer(this.chokeEl, 'all');
+    this.downOn = true;
 
-    this.dn = true;
+    this.dist.y.start = e.pageY;
+    this.dist.x.start = e.pageX;
 
-    this.drag.y.s = e.pageY;
-    this.drag.x.s = e.pageX;
-
-    this.prevLerp.x = this.lerp.x;
-    this.prevLerp.y = this.lerp.y;
-
-    this.prevDist.x = this.dist.x;
-    this.prevDist.y = this.dist.y;
+    this.prev.x = this.drag.x;
+    this.prev.y = this.drag.y;
   }
 
-  move(t) {
-    let e = t;
+  /**
+   * drag / mouse-moveing
+   */
+  move(e) {
+    if (this.downOn) {
+      if (this.dir) this.drag.y = drag(this.dist.y, e.pageY) + this.prev.y;
+      else this.drag.x = drag(this.dist.x, e.pageX) + this.prev.x;
 
-    if (this.dn) {
-      if (this.dir) {
-        this.lerp.y = drag(this.drag.y, e.pageY) + this.prevLerp.y;
-        this.dist.y = drag(this.drag.y, e.pageY) + this.prevDist.y;
-      } else {
-        this.lerp.x = drag(this.drag.x, e.pageX) + this.prevLerp.x;
-        this.dist.x = drag(this.drag.x, e.pageX) + this.prevDist.x;
-      }
-
-      this.sdrag.cb(this.dist);
       this.begin();
     }
   }
 
+  /**
+   * End point
+   */
   up() {
-    this.dn = false;
+    this.downOn = false;
+    this.choke.run();
   }
 
+  /**
+   * Add Trigger
+   */
   add(target, o) {
-    new Trigger(target, o, this.sscroll.name, this.dir);
+    const trigger = new Trigger(target, o, this.scroll, this.dir);
+    this.begin();
+    return trigger;
   }
 
   raf() {
-    this.lerp.x = Clamp(0, this.w < 0 ? 0 : this.w, this.lerp.x);
-    this.lerp.y = Clamp(0, this.h < 0 ? 0 : this.h, this.lerp.y);
+    this.drag.x = clamp(0, this.w < 0 ? 0 : this.w, this.drag.x);
+    this.drag.y = clamp(0, this.h < 0 ? 0 : this.h, this.drag.y);
 
-    this.scroll.x = Round(Lerp(this.scroll.x, this.lerp.x, this.ease), 4);
-    this.scroll.y = Round(Lerp(this.scroll.y, this.lerp.y, this.ease), 4);
+    this.scroll.x = round(lerp(this.scroll.x, this.drag.x, this.ease), 4);
+    this.scroll.y = round(lerp(this.scroll.y, this.drag.y, this.ease), 4);
 
     this.target.style.transform = `translate3d(-${this.scroll.x}px, -${this.scroll.y}px, 0)`;
 
-    this.sscroll.cb(this.scroll);
-
     if (this.dir) {
-      if (Round(this.scroll.y, 3) == this.lerp.y) this.iraf.r();
+      if (round(this.scroll.y, 2) == this.drag.y) this.iraf.r();
     } else {
-      if (Round(this.scroll.x, 3) == this.lerp.x) this.iraf.r();
+      if (round(this.scroll.x, 2) == this.drag.x) this.iraf.r();
     }
   }
 
   resize() {
-    this.bs = Bounds(this.target);
-    this.w = this.bs.w - window.innerWidth;
-    this.h = this.bs.h - window.innerHeight;
+    this.bs = bounds(this.target);
+
+    this.w = this.bs.w - iSet.screen.w;
+    this.h = this.bs.h - iSet.screen.h;
   }
 
+  /**
+   * Remove events
+   */
   destroy() {
     this.iresize.r();
     this.iraf && this.iraf.r();
 
-    this.sscroll.r();
-    this.sdrag.r();
-
-    if (this.attacher == window) {
+    if (this.attacher === window) {
       this.ipointerdown.r();
       this.ipointermove.r();
       this.ipointerup.r();
