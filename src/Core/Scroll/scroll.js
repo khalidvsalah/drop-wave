@@ -18,11 +18,15 @@ class Scroll {
 
     this.ease = o.ease || 0.09;
     this.dir = o.dir == undefined;
+    this.d = this.dir ? 'y' : 'x';
 
     events();
 
     this.Init();
     this.resize();
+
+    this.time = new Date().getTime();
+    this.offset = 0;
 
     this.chokeEl = iSet.id('overlay');
     this.choke = new choke({
@@ -72,9 +76,18 @@ class Scroll {
   wheel(e) {
     let multip = e.deltaMode == 1 ? 0.85 : 0.5;
 
+    this.time = e.timeStamp - this.time;
+    this.offset = this.drag[this.d];
+
     this.drag.x -= e.wheelDeltaX * multip;
     this.drag.y -= e.wheelDeltaY * multip;
 
+    const offset = this.drag[this.d] - this.offset;
+
+    this.scroll.sp = Math.abs(offset / this.time);
+    this.scroll.dir = Math.sign(offset);
+
+    this.time = e.timeStamp;
     this.begin();
   }
 
@@ -97,9 +110,18 @@ class Scroll {
    */
   move(e) {
     if (this.downOn) {
+      this.time = e.timeStamp - this.time;
+      this.offset = this.drag[this.d];
+
       if (this.dir) this.drag.y = drag(this.dist.y, e.pageY) + this.prev.y;
       else this.drag.x = drag(this.dist.x, e.pageX) + this.prev.x;
 
+      const offset = this.drag[this.d] - this.offset;
+
+      this.scroll.sp = Math.abs(offset / this.time);
+      this.scroll.dir = Math.sign(offset);
+
+      this.time = e.timeStamp;
       this.begin();
     }
   }
