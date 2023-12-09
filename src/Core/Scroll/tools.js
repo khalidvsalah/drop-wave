@@ -34,6 +34,8 @@ function Init() {
     window.addEventListener('pointermove', sub.obs('pointermove').cb);
     window.addEventListener('pointerup', sub.obs('pointerup').cb);
 
+    window.addEventListener('keydown', sub.obs('keydown').cb);
+
     window.addEventListener('wheel', sub.obs('wheel').cb);
     window.addEventListener('resize', sub.obs('resize').cb);
 

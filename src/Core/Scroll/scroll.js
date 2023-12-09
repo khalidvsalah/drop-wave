@@ -22,7 +22,7 @@ class Scroll {
 
     events();
 
-    this.Init();
+    this.Init(o);
     this.resize();
 
     this.time = new Date().getTime();
@@ -38,19 +38,24 @@ class Scroll {
   /**
    * Initializing the virtial scrolling class
    */
-  Init() {
+  Init(o) {
     if (this.attacher == window) {
-      this.ipointerdown = sub.add('pointerdown', this.down.bind(this));
-      this.ipointermove = sub.add('pointermove', this.move.bind(this));
+      if (o.drag !== false) {
+        this.ipointerdown = sub.add('pointerdown', this.down.bind(this));
+        this.ipointermove = sub.add('pointermove', this.move.bind(this));
+      }
       this.iwheel = sub.add('wheel', this.wheel.bind(this));
     } else {
-      this.attacher.onpointerdown = this.down.bind(this);
-      this.attacher.onpointermove = this.move.bind(this);
+      if (o.drag !== false) {
+        this.attacher.onpointerdown = this.down.bind(this);
+        this.attacher.onpointermove = this.move.bind(this);
+      }
       this.attacher.onwheel = this.wheel.bind(this);
     }
 
     this.ipointerup = sub.add('pointerup', this.up.bind(this));
     this.iresize = sub.add('resize', this.resize.bind(this));
+    if (o.key !== false) this.ikey = sub.add('keydown', this.key.bind(this));
 
     this.drag = { x: 0, y: 0 };
     this.prev = { x: 0, y: 0 };
@@ -126,6 +131,18 @@ class Scroll {
     }
   }
 
+  key(e) {
+    let offset = 0;
+
+    if (e.keyCode == 40) offset = -66.6;
+    else if (e.keyCode == 38) offset = 66.6;
+
+    this.drag.x -= offset;
+    this.drag.y -= offset;
+
+    this.begin();
+  }
+
   /**
    * End point
    */
@@ -170,20 +187,25 @@ class Scroll {
    * Remove events
    */
   destroy() {
-    this.iresize.r();
     this.iraf && this.iraf.r();
 
     if (this.attacher === window) {
-      this.ipointerdown.r();
-      this.ipointermove.r();
-      this.ipointerup.r();
+      if (o.drag !== false) {
+        this.ipointerdown.r();
+        this.ipointermove.r();
+      }
       this.iwheel.r();
     } else {
-      this.attacher.onpointerdown = null;
-      this.attacher.onpointermove = null;
-      this.attacher.onpointerup = null;
+      if (o.drag !== false) {
+        this.attacher.onpointerdown = null;
+        this.attacher.onpointermove = null;
+      }
       this.attacher.onwheel = null;
     }
+
+    this.ipointerup.r();
+    this.iresize.r();
+    if (o.key !== false) this.ikey.r();
   }
 }
 
