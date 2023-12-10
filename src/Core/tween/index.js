@@ -17,7 +17,7 @@ function Interface(els, o) {
     /**
      * Tweens staggering.
      */
-    let late = (o.late || 0) + (o.stagger || 0) * i;
+    let late = (o.late || 0) + (o.space * i || 0);
     return new Tween(node, { ...o, late });
   });
 

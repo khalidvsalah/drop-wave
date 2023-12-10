@@ -29,7 +29,7 @@ class trigger {
     if (o.scroll) {
       const node = o.target.length ? o.target[0] : o.target;
 
-      this.ps = props(node, false, o.p);
+      this.ps = props(node, false, o.scroll);
       this.ease = ease[o.ease || 'l'];
     }
     if (o.pin) {
