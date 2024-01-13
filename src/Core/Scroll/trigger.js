@@ -10,11 +10,9 @@ class trigger {
    * @param {String} subname - Loop name
    * @param {Object} dir - scolling direction
    */
-  constructor(el, o, scroll, dir) {
+  constructor(el, o, dir) {
     this.el = el;
     this.o = o;
-
-    this.coord = scroll;
 
     this.dir = dir;
     this.d = dir ? 'y' : 'x';
@@ -25,6 +23,7 @@ class trigger {
   Init(o) {
     if (!o.target) {
       o.target = this.el;
+      this.target = o.target;
     }
     if (o.scroll) {
       const node = o.target.length ? o.target[0] : o.target;
@@ -58,7 +57,7 @@ class trigger {
 
     this.iresize = sub.add('resize', this.resize.bind(this));
     this.resize();
-    this.iraf = sub.add('raf', this.raf.bind(this, this.coord));
+    this.iraf = sub.add(o.obsname, this.raf.bind(this));
   }
 
   /**
@@ -66,37 +65,43 @@ class trigger {
    */
   resize() {
     if (this.pin) this.pin.bs = bounds(this.o.target);
+
     const bs = bounds(this.el.length ? this.el[0] : this.el);
+    const screen = iSet.screen;
+
+    this.screen = this.dir ? screen.h : screen.w;
 
     if (this.dir) {
-      this.start = bs.y;
-      this.end = bs.yE;
+      this.sp = bs.y;
+      this.ep = bs.yE + this.screen;
     } else {
-      this.start = b.x;
-      this.end = b.xE;
+      this.sp = b.x;
+      this.ep = b.xE + this.screen;
     }
-
-    const screen = iSet.screen;
-    this.size = this.dir ? screen.h : screen.w;
   }
 
   /**
    * Loop
    */
-  raf(e) {
-    this.px = e[this.d] + this.size;
+  raf(coord) {
+    this.coord = coord;
+    this.px = coord[this.d] + this.screen;
 
-    let before = (this.o.start || 0) * this.size;
-    let after = (this.o.end || 0) * this.size;
+    let be = this.screen * (this.o.start || 0);
+    let af = this.screen * (this.o.end || 0);
 
     if (this.o.scroll) {
-      let start = this.start + before;
-      let end = this.end + this.size + after;
+      let start = this.sp + be;
+      let end = this.ep + af;
 
       if (start <= this.px) this.in = true;
       if (end <= this.px) this.in = false;
 
-      this.scroll(map(start, end, this.px));
+      const dist = round(map(start, end, this.px), 3);
+      this.scroll(dist);
+
+      if (this.o.pin) this.piner(dist);
+      if (this.o.raf) this.o.raf(dist, this.o.target, this.px);
     } else {
       if (before + this.start < this.px) this.fire();
     }
@@ -106,9 +111,6 @@ class trigger {
    * Animate with scrolling
    */
   scroll(t) {
-    if (this.o.pin) this.piner(t);
-    if (this.o.raf) this.o.raf(t, this.o.target, this.px);
-
     if (!this.in) return;
     this.ps.map((p) => {
       if (this.o.target.length) {
@@ -128,16 +130,19 @@ class trigger {
     this.destroy();
   }
 
+  /**
+   * Pin Function
+   */
   piner(t) {
-    const r = round(t);
-    const bs = this.pin.bs;
+    const pin = this.pin;
 
-    if (r >= this.pin.start && !this.pined) {
-      const offsetX = bs.x - this.coord.x;
-      const offsetY = bs.y - this.coord.y;
-      const clone = this.o.target.cloneNode(true);
+    if (t >= pin.start && !this.pined) {
+      const offsetX = pin.bs.x - this.coord.x;
+      const offsetY = pin.bs.y - this.coord.y;
 
-      iSet.visible(this.o.target, 'hidden');
+      const clone = this.target.cloneNode(true);
+      this.clone = clone;
+
       this.parent.appendChild(clone);
 
       clone.style.position = 'absolute';
@@ -152,17 +157,17 @@ class trigger {
       });
       ps.map(({ setV, cb }) => setV(clone, cb(1)));
 
-      this.clone = clone;
+      iSet.alpha(this.target, 0);
       this.pined = true;
-    } else if (this.px >= this.pin.end) {
-      this.parent.style.top = this.pin.end - this.px + 'px';
-    } else if (r < this.pin.start) {
-      iSet.visible(this.o.target, 'visible');
-
+    } else if (this.px >= pin.end) {
+      this.parent.style.top = pin.end - this.px + 'px';
+    } else if (t < pin.start) {
       if (this.clone && this.pined) {
         this.parent.removeChild(this.clone);
         this.pined = false;
       }
+
+      iSet.alpha(this.target, 1);
     }
   }
 

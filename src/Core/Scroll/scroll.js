@@ -25,6 +25,8 @@ class Scroll {
     this.Init(o);
     this.resize();
 
+    this.sub = sub.obs(o.obs || Symbol('foo'));
+
     this.time = new Date().getTime();
     this.offset = 0;
 
@@ -45,6 +47,7 @@ class Scroll {
         this.ipointermove = sub.add('pointermove', this.move.bind(this));
       }
       this.iwheel = sub.add('wheel', this.wheel.bind(this));
+      this.ikey = sub.add('keydown', this.key.bind(this));
     } else {
       if (o.drag !== false) {
         this.attacher.onpointerdown = this.down.bind(this);
@@ -55,7 +58,6 @@ class Scroll {
 
     this.ipointerup = sub.add('pointerup', this.up.bind(this));
     this.iresize = sub.add('resize', this.resize.bind(this));
-    if (o.key !== false) this.ikey = sub.add('keydown', this.key.bind(this));
 
     this.drag = { x: 0, y: 0 };
     this.prev = { x: 0, y: 0 };
@@ -79,7 +81,8 @@ class Scroll {
    * Handling wheel event
    */
   wheel(e) {
-    let multip = e.deltaMode == 1 ? 0.85 : 0.5;
+    this.begin();
+    let multip = e.deltaMode == 1 ? 0.83 : 0.55;
 
     this.time = e.timeStamp - this.time;
     this.offset = this.drag[this.d];
@@ -93,7 +96,6 @@ class Scroll {
     this.scroll.dir = Math.sign(offset);
 
     this.time = e.timeStamp;
-    this.begin();
   }
 
   /**
@@ -115,6 +117,8 @@ class Scroll {
    */
   move(e) {
     if (this.downOn) {
+      this.begin();
+
       this.time = e.timeStamp - this.time;
       this.offset = this.drag[this.d];
 
@@ -127,11 +131,12 @@ class Scroll {
       this.scroll.dir = Math.sign(offset);
 
       this.time = e.timeStamp;
-      this.begin();
     }
   }
 
   key(e) {
+    this.begin();
+
     let offset = 0;
 
     if (e.keyCode == 40) offset = -66.6;
@@ -139,8 +144,6 @@ class Scroll {
 
     this.drag.x -= offset;
     this.drag.y -= offset;
-
-    this.begin();
   }
 
   /**
@@ -155,7 +158,9 @@ class Scroll {
    * Add Trigger
    */
   add(target, o) {
-    const trigger = new Trigger(target, o, this.scroll, this.dir);
+    o.obsname = this.sub.name;
+    const trigger = new Trigger(target, o, this.dir);
+
     this.begin();
     return trigger;
   }
@@ -164,9 +169,10 @@ class Scroll {
     this.drag.x = clamp(0, this.w < 0 ? 0 : this.w, this.drag.x);
     this.drag.y = clamp(0, this.h < 0 ? 0 : this.h, this.drag.y);
 
-    this.scroll.x = round(lerp(this.scroll.x, this.drag.x, this.ease), 4);
-    this.scroll.y = round(lerp(this.scroll.y, this.drag.y, this.ease), 4);
+    this.scroll.x = round(lerp(this.scroll.x, this.drag.x, this.ease), 3);
+    this.scroll.y = round(lerp(this.scroll.y, this.drag.y, this.ease), 3);
 
+    if (this.sub) this.sub.cb(this.scroll);
     this.target.style.transform = `translate3d(-${this.scroll.x}px, -${this.scroll.y}px, 0)`;
 
     if (this.dir) {
@@ -178,23 +184,33 @@ class Scroll {
 
   resize() {
     this.bs = bounds(this.target);
+    const screen = iSet.screen;
 
-    this.w = this.bs.w - iSet.screen.w;
-    this.h = this.bs.h - iSet.screen.h;
+    this.drag.x = 0;
+    this.drag.y = 0;
+
+    this.scroll.x = 0;
+    this.scroll.y = 0;
+
+    this.w = this.bs.w - screen.w;
+    this.h = this.bs.h - screen.h;
   }
 
   /**
    * Remove events
    */
   destroy() {
-    this.iraf && this.iraf.r();
+    if (this.iraf) this.iraf.r();
+    if (this.sub) this.sub.r();
 
     if (this.attacher === window) {
       if (o.drag !== false) {
         this.ipointerdown.r();
         this.ipointermove.r();
       }
+
       this.iwheel.r();
+      this.ikey.r();
     } else {
       if (o.drag !== false) {
         this.attacher.onpointerdown = null;
@@ -205,7 +221,6 @@ class Scroll {
 
     this.ipointerup.r();
     this.iresize.r();
-    if (o.key !== false) this.ikey.r();
   }
 }
 
