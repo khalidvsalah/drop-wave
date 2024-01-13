@@ -113,7 +113,7 @@ function lines(text, span, width) {
 }
 function wrapper(text, node, type) {
   if (type === 1) {
-    return `<p class="line"><span>${text}</span></p>`;
+    return `<div class="line"><div class="sfx">${text}</div></div>`;
   } else if (type === 2) {
     let ele = document.createElement('span');
 
@@ -125,9 +125,9 @@ function wrapper(text, node, type) {
       ele.innerHTML = text;
     }
 
-    return `<span class="word">${ele.innerHTML}</span>`;
+    return `<div class="word" style="display: inline-block;">${ele.innerHTML}</div>`;
   } else if (type === 3) {
-    return `<span class="letter">${text}</span>`;
+    return `<div class="letter" style="display: inline-block;">${text}</div>`;
   }
 }
 
@@ -181,6 +181,7 @@ function split(node, o) {
   output(node, arr, o);
 
   return {
+    lines: node.querySelectorAll('.sfx'),
     words: node.querySelectorAll('.word'),
     letters: node.querySelectorAll('.letter')
   };
