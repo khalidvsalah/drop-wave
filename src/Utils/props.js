@@ -37,21 +37,21 @@ function dom(e, ps) {
   const results = [];
   const c = computed(e);
 
-  const dir = ps.dir === -1 ? true : false;
+  const dir = ps.dir == -1 ? true : false;
   const easef = ease[ps.ease || 'l'];
 
   c.el = e;
   c.pa = e.parentNode;
 
   for (const key of Object.entries(ps)) {
-    if (key[0] === 'dir') continue;
-    if (key[0] === 'ease') continue;
+    if (key[0] == 'dir') continue;
+    if (key[0] == 'ease') continue;
 
     const values = match(key[0]);
     const cb = values.cb(key[1], c);
 
     let easing = key[1][key[1].length - 1];
-    if (easing === undefined) easing = ease[key[1].ease];
+    if (easing == undefined) easing = ease[key[1].ease];
     else easing = ease[easing.ease];
 
     easing = easing || easef;
@@ -65,7 +65,6 @@ function dom(e, ps) {
   if (dir) results.map(({ setV, cb }) => setV(e, cb(0)));
   return results;
 }
-
 /**
  * Handling object tween.
  * @param {Object} e - targeted object.

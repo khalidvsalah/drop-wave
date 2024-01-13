@@ -139,7 +139,7 @@ const transform = (p, { transform, width, height }) => {
     const eRX = `${rxV.s + rxV.lerp * e}deg`;
     const eRY = `${ryV.s + ryV.lerp * e}deg`;
 
-    return `translate(${eX}, ${eY}) scale(${eSX}, ${eSY}) rotateX(${eRX}) rotateY(${eRY})`;
+    return `translate3d(${eX}, ${eY}, 0) scale(${eSX}, ${eSY}) rotateX(${eRX}) rotateY(${eRY})`;
   };
 };
 
