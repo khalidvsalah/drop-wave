@@ -6,6 +6,16 @@
  * @param {number}  a - alpha value
  * @return {number} clamped value
  */
+const zero = (min, a) => Math.max(min, a);
+
+/**
+ * Clamp value
+ *
+ * @param {number}  min - start value
+ * @param {number}  max - end value
+ * @param {number}  a - alpha value
+ * @return {number} clamped value
+ */
 const clamp = (min, max, a) => Math.min(Math.max(min, a), max);
 
 /**
@@ -52,4 +62,4 @@ const round = (num, pow) => {
   return Math.round(num * d) / d;
 };
 
-export { clamp, lerp, map, remap, round };
+export { clamp, lerp, map, remap, round, zero };
