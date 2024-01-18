@@ -1,5 +1,5 @@
 import ease from './Math/ease';
-import { clamp, lerp, map, remap, round } from './Math/operations';
+import { clamp, lerp, map, remap, round, zero } from './Math/math';
 import { has, bounds, computed, iSet, choke } from './Core/methods/methods';
 
 import props from './Utils/props';
@@ -18,6 +18,7 @@ export {
   map,
   remap,
   round,
+  zero,
   has,
   bounds,
   computed,

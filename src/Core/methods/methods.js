@@ -4,8 +4,8 @@ const bounds = (e) => {
   return {
     w: rect.width,
     h: rect.height,
-    x: rect.left,
-    y: rect.top,
+    x: rect.x,
+    y: rect.y,
     xE: rect.right,
     yE: rect.bottom
   };
