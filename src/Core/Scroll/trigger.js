@@ -1,4 +1,14 @@
-import { tween, bounds, sub, map, props, round, iSet, ease } from '../../index';
+import {
+  tween,
+  bounds,
+  sub,
+  map,
+  props,
+  round,
+  iSet,
+  ease,
+  zero
+} from '../../index';
 
 /**
  * Add tigger
@@ -32,27 +42,8 @@ class trigger {
       this.ease = ease[o.ease || 'l'];
     }
     if (o.pin) {
-      this.piners = iSet.id('piners');
       this.pin = o.pin;
-
-      const node = iSet.node('div');
-      const bs = bounds(o.target);
-
-      this.pin.bs = bs;
-
-      const css = `
-        position: fixed;
-        top: 0; left: 0;
-        height: 100%; width: 100%;
-      `;
-
-      node.className = 'piner';
-      node.style.cssText = css;
-
-      this.pinEnd = false;
-      this.parent = node;
-
-      this.piners.appendChild(node);
+      this.pin.target = o.pin.target || this.target;
     }
 
     this.iresize = sub.add('resize', this.resize.bind(this));
@@ -64,8 +55,6 @@ class trigger {
    * resize
    */
   resize() {
-    if (this.pin) this.pin.bs = bounds(this.o.target);
-
     const bs = bounds(this.el.length ? this.el[0] : this.el);
     const screen = iSet.screen;
 
@@ -134,40 +123,19 @@ class trigger {
    * Pin Function
    */
   piner(t) {
-    const pin = this.pin;
-
-    if (t >= pin.start && !this.pined) {
-      const offsetX = pin.bs.x - this.coord.x;
-      const offsetY = pin.bs.y - this.coord.y;
-
-      const clone = this.target.cloneNode(true);
-      this.clone = clone;
-
-      this.parent.appendChild(clone);
-
-      clone.style.position = 'absolute';
-      clone.style.top = '0';
-      clone.style.left = '0';
-
-      const ps = props(clone, false, {
-        form: {
-          x: [offsetX, 'px'],
-          y: [offsetY, 'px']
-        }
-      });
-      ps.map(({ setV, cb }) => setV(clone, cb(1)));
-
-      iSet.alpha(this.target, 0);
-      this.pined = true;
-    } else if (this.px >= pin.end) {
-      this.parent.style.top = pin.end - this.px + 'px';
-    } else if (t < pin.start) {
-      if (this.clone && this.pined) {
-        this.parent.removeChild(this.clone);
-        this.pined = false;
+    if (this.pined) {
+      if (!(this.px >= this.pin.z)) {
+        const dist = zero(0, this.px - this.pin.pxS);
+        this.pin.target.style.transform = `translate3d(${
+          this.dir ? '0px,' + dist + 'px' : dist + 'px,0px'
+        },0px)`;
       }
+    }
 
-      iSet.alpha(this.target, 1);
+    if (t < this.pin.a) this.pined = false;
+    else if (t >= this.pin.a && !this.pined) {
+      this.pin.pxS = this.px;
+      this.pined = true;
     }
   }
 
@@ -175,8 +143,6 @@ class trigger {
    * remove events
    */
   destroy() {
-    if (this.o.pin) this.piners.removeChild(this.parent);
-
     this.iraf.r();
     this.iresize.r();
   }

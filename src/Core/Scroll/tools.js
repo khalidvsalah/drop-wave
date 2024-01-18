@@ -8,7 +8,6 @@ function Init() {
     called = true;
 
     const overlay = iSet.node('div');
-    const piners = iSet.node('div');
 
     const cssText = `
       position: absolute;
@@ -21,14 +20,11 @@ function Init() {
     `;
 
     overlay.id = 'overlay';
-    piners.id = 'piners';
 
     overlay.style.cssText = cssText;
     overlay.style.zIndex = '999';
-    piners.style.cssText = cssText;
 
     document.body.appendChild(overlay);
-    document.body.appendChild(piners);
 
     window.addEventListener('pointerdown', sub.obs('pointerdown').cb);
     window.addEventListener('pointermove', sub.obs('pointermove').cb);

@@ -135,15 +135,16 @@ class Scroll {
   }
 
   key(e) {
-    this.begin();
+    if (e.keyCode == 40 || e.keyCode == 38) {
+      this.begin();
+      let offset = 0;
 
-    let offset = 0;
+      if (e.keyCode == 40) offset = -66.6;
+      else if (e.keyCode == 38) offset = 66.6;
 
-    if (e.keyCode == 40) offset = -66.6;
-    else if (e.keyCode == 38) offset = 66.6;
-
-    this.drag.x -= offset;
-    this.drag.y -= offset;
+      this.drag.x -= offset;
+      this.drag.y -= offset;
+    }
   }
 
   /**
