@@ -57,24 +57,25 @@ function filter(text) {
     }
   }
 }
-function divide(lines, output, o) {
+function domOutput(lines, output, o) {
   if (o.words) {
     const len = lines.words.length;
+    let line;
 
     if (o.ltrs) {
-      const line = lines.words.reduce((a, b, i) => {
+      line = lines.words.reduce((a, b, i) => {
         let str = '';
         for (let i = 0; i < b.length; i++) str += wrap(b[i], 3);
         return a + wrap(str + (i == len - 1 ? '' : space), 2);
       }, '');
-      output.push({ line: wrap(line, 1) });
     } else {
-      const line = lines.words.reduce((a, b, i) => {
+      line = lines.words.reduce((a, b, i) => {
         return a + wrap(b + (i == len - 1 ? '' : space), 2);
       }, '');
-
-      output.push({ line: wrap(line, 1) });
     }
+    output.push({ line: wrap(line, 1) });
+  } else {
+    output.push({ line: wrap(lines.value, 1) });
   }
 }
 
@@ -98,7 +99,7 @@ function check(value, lines, div, width, output, o) {
 
     if (div.offsetWidth > width) {
       lines.words.pop();
-      divide(lines, output, o);
+      domOutput(lines, output, o);
 
       lines.value = word;
       lines.words = [word + space];
@@ -119,7 +120,7 @@ function newline(obj, div, width, o) {
     }
   }
 
-  divide(lines, output, o);
+  domOutput(lines, output, o);
   return output;
 }
 
