@@ -3,6 +3,6 @@ import { iSet } from '../../dist/main.js';
 
 document.addEventListener('readystatechange', () => {
   if (document.readyState === 'complete') {
-    line(iSet.el('.logo'), { letters: true });
+    line(iSet.el('.logo p'), { ltrs: true });
   }
 });

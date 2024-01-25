@@ -1,4 +1,4 @@
-import { tween } from '../../dist/main.js';
+import { tween, iSet } from '../../dist/main.js';
 
 // import * as dat from '../../node_modules/dat.gui/build/dat.gui.module.js';
 
@@ -120,4 +120,13 @@ tween('.width', {
     width: [90, '%', { ease: 'o6' }],
     height: [40, '%', { ease: 'io6' }]
   }
+});
+
+const circle = iSet.el('.circle circle');
+
+tween(circle, {
+  late: 1,
+  d: 0.75,
+  ease: 'io4',
+  p: { dash: [0] }
 });

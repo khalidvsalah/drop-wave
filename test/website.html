@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <title>Oxca</title>
+    <link rel="stylesheet" href="./website.css" />
+  </head>
+  <body>
+    <section id="load">
+      <div class="layer layer1"></div>
+      <div class="layer layer2"></div>
+    </section>
+    <main id="root">
+      <section id="col1">
+        <div>
+          <p><span>Elegant</span></p>
+          <p><span>One-page</span></p>
+          <p><span>Solution</span></p>
+        </div>
+        <p class="prag">
+          Lorem ipsum dolor sit amet. Est earum laudantium qui voluptatem
+          tempora cum dicta odit non fugiat accusamus vel deleniti eveniet aut
+          quia rerum. Ut sunt officia qui accusamus expedita qui consectetur
+          vitae et deleniti consequatur 33 labore ullam 33 quia dolor.
+        </p>
+        <button type="button">↓</button>
+        <div class="images">
+          <div class="_img">
+            <img src="./_media/r03.jpg" alt="" />
+          </div>
+          <div class="_img">
+            <img src="./_media/r04.jpg" alt="" />
+          </div>
+          <div class="_img">
+            <img src="./_media/r05.jpg" alt="" />
+          </div>
+          <div class="_img">
+            <img src="./_media/r06.jpg" alt="" />
+          </div>
+          <div class="_img">
+            <img src="./_media/r07.jpg" alt="" />
+          </div>
+        </div>
+      </section>
+      <section id="col2">
+        <div>
+          <h2 class="h2-1">Building</h2>
+          <h2 class="h2-2">Digital Beauty</h2>
+        </div>
+      </section>
+      <section id="col3">
+        <div class="img_wrap cover">
+          <img src="./_media/r03.jpg" alt="" />
+        </div>
+        <div class="img_wrap cover1">
+          <img src="./_media/r04.jpg" alt="" />
+        </div>
+        <div class="img_wrap cover2">
+          <img src="./_media/r05.jpg" alt="" />
+        </div>
+        <div class="img_wrap cover3">
+          <img src="./_media/r06.jpg" alt="" />
+        </div>
+        <div class="img_wrap cover4">
+          <img src="./_media/r07.jpg" alt="" />
+        </div>
+      </section>
+      <section id="col4">
+        <div>
+          <h1>We</h1>
+          <h1>Are</h1>
+        </div>
+        <p>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam enim
+          quod id nemo alias expedita et quam quae voluptatibus asperiores
+          quisquam, at unde nobis tempore repellendus vero, odio eos laborum?
+        </p>
+      </section>
+      <section id="col5">
+        <div class="img_wrap">
+          <img src="./_media/P001.webp" alt="" />
+        </div>
+      </section>
+      <section id="col6">
+        <div class="img_wrap">
+          <img src="./_media/P003.jpg" alt="" />
+        </div>
+      </section>
+    </main>
+
+    <script type="module">
+      import { tween, iSet, scroll, ease, sub } from '../dist/main.js';
+      import line from '../dist/plugins/index.js';
+
+      function Click() {
+        {
+          const easing = ease['io3'];
+          const col1 = iSet.id('col1');
+
+          tween(iSet.id('col1'), {
+            d: 1,
+            late: 0.25,
+            ease: 'io3',
+            p: { form: { sx: [0.75], sy: [0.75] } },
+            raf: (t, e) => {
+              e.style.clipPath = `inset(0% 0% ${100 * easing(t)}% 0%)`;
+            }
+          });
+        }
+      }
+
+      function Init() {
+        const visual = new scroll(window, {
+          target: iSet.id('root'),
+          obs: 'scroll'
+        });
+
+        line(iSet.el('.prag'));
+
+        {
+          tween(iSet.els('.layer'), {
+            d: 1.25,
+            late: 0.5,
+            space: -0.075,
+            ease: 'io4',
+            p: { form: { sy: [0] } }
+          });
+          tween(iSet.els('#col1 p span'), {
+            d: 1.25,
+            late: 1.35,
+            space: 0.1,
+            ease: 'o6',
+            p: { form: { y: [0, '%'], rx: [90, 0] } }
+          });
+          tween(iSet.els('#col1 .sfx'), {
+            d: 0.75,
+            late: 1.5,
+            space: 0.05,
+            ease: 'io3',
+            p: { form: { y: [0, '%'] } }
+          });
+          tween(iSet.els('#col1 ._img'), {
+            d: 0.6,
+            late: 1.75,
+            space: 0.1,
+            ease: 'io2',
+            p: { form: { sx: [0], sy: [0] }, dir: -1 }
+          });
+        }
+        {
+          // visual.add(iSet.el('.h2-1'), {
+          //   start: 0,
+          //   end: 0,
+          //   scroll: { form: { x: [50, '%'] } }
+          // });
+          // visual.add(iSet.el('.h2-2'), {
+          //   end: 1,
+          //   scroll: { form: { x: [-50, '%'] } }
+          // });
+          // visual.add(iSet.el('.cover1'), {
+          //   start: 0.2,
+          //   ease: 'o2',
+          //   scroll: { form: { sx: [1], sy: [1] } }
+          // });
+          // visual.add(iSet.el('.cover2'), {
+          //   start: 0.35,
+          //   ease: 'o2',
+          //   scroll: { form: { sx: [1], sy: [1] } }
+          // });
+          // visual.add(iSet.el('.cover3'), {
+          //   start: 0.5,
+          //   ease: 'o2',
+          //   scroll: { form: { sx: [1], sy: [1] } }
+          // });
+          // visual.add(iSet.el('.cover4'), {
+          //   start: 0.65,
+          //   ease: 'o2',
+          //   scroll: { form: { sx: [1], sy: [1] } }
+          // });
+          // visual.add(iSet.el('#col4 div'), {
+          // scroll: { form: { y: [-30, '%'] } }
+          // });
+          visual.add(iSet.el('#col5 img'), {
+            start: 0,
+            end: 0,
+            scroll: { form: { y: [0, '%'] } }
+          });
+          // visual.add(iSet.el('#col6 img'), {
+          //   start: 0.5,
+          //   end: 1,
+          //   scroll: { form: { y: [100, '%'] } }
+          // });
+        }
+
+        iSet.el('#col1 button').addEventListener('click', Click);
+      }
+
+      document.addEventListener('readystatechange', () => {
+        if (document.readyState == 'complete') Init();
+      });
+    </script>
+  </body>
+</html>

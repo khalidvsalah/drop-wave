@@ -1,19 +1,20 @@
-import { scroll, iSet } from '../../dist/main.js';
+import { scroll, iSet, sub, raf } from '../../dist/main.js';
 
-const scoll = new scroll(window, { target: iSet.id('app') });
+const resize = sub.obs('resize').cb;
 
-scoll.add(iSet.el('.media'), {
-  p: { form: { sx: [0.5] } },
-  scroll: true,
-  pin: { start: 0.5, end: 2000 }
-  // ease: 'io3',
-  // end: -0.5
-});
+(() => {
+  window.addEventListener('pointerdown', sub.obs('pointerdown').cb);
+  window.addEventListener('pointermove', sub.obs('pointermove').cb);
+  window.addEventListener('pointerup', sub.obs('pointerup').cb);
 
-// scoll.add(iSet.el('.media'), {
-//   p: { width: [100, 'px'] },
-//   scroll: true,
-//   // pin: { start: 0.8 },
-//   // ease: 'io3'
-//   end: -0.5
-// });
+  window.addEventListener('keydown', sub.obs('keydown').cb);
+  window.addEventListener('wheel', sub.obs('wheel').cb);
+  window.addEventListener('resize', resize);
+
+  raf.push({ cb: sub.obs('raf').cb });
+})();
+
+const root = iSet.id('app');
+
+const vscroll = new scroll(window, { target: root });
+resize();

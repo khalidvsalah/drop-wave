@@ -19,14 +19,12 @@ ul {
   width: 100%;
 
   font-family: sans-serif;
-  font-size: 0.6944vw;
+  font-size: 14px;
 
   text-transform: uppercase;
 }
 
 ul .logo {
-  width: 28.8vw;
-
-  line-height: 0.75231vw;
-  letter-spacing: 0.84px;
+  width: 400px;
+  background-color: rebeccapurple;
 }
