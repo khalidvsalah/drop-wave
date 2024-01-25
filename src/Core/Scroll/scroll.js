@@ -1,6 +1,13 @@
 import { sub, bounds, clamp, lerp, round, choke, iSet } from '../../index';
-import { drag, events } from './tools';
 import Trigger from './trigger';
+
+function drag(dir, e) {
+  dir.prev = dir.end;
+  dir.end = e;
+
+  let diff = dir.end - dir.start;
+  return -diff;
+}
 
 /**
  * Creating virtual scrolling
@@ -20,17 +27,14 @@ class Scroll {
     this.dir = o.dir == undefined;
     this.d = this.dir ? 'y' : 'x';
 
-    events();
-
     this.Init(o);
-    this.resize();
 
     this.sub = sub.obs(o.obs || Symbol('foo'));
 
     this.time = new Date().getTime();
     this.offset = 0;
 
-    this.chokeEl = iSet.id('overlay');
+    this.chokeEl = iSet.el('[overlay]');
     this.choke = new choke({
       late: 0.3,
       cb: () => iSet.pointer(this.chokeEl, 'none')
@@ -185,7 +189,7 @@ class Scroll {
 
   resize() {
     this.bs = bounds(this.target);
-    const screen = iSet.screen;
+    const size = iSet.size;
 
     this.drag.x = 0;
     this.drag.y = 0;
@@ -193,8 +197,8 @@ class Scroll {
     this.scroll.x = 0;
     this.scroll.y = 0;
 
-    this.w = this.bs.w - screen.w;
-    this.h = this.bs.h - screen.h;
+    this.w = this.bs.w - size.w;
+    this.h = this.bs.h - size.h;
   }
 
   /**
