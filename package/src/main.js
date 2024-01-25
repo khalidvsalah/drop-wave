@@ -32,10 +32,11 @@ var ease = {
 };
 var ease_default = ease;
 
-// src/Math/operations.js
+// src/Math/math.js
+var zero = (min, a) => Math.max(min, a);
 var clamp = (min, max, a) => Math.min(Math.max(min, a), max);
 var lerp = (x, y, a) => (1 - a) * x + a * y;
-var map = (a, b, x) => clamp(0, 1, (x - a) / (b - a));
+var map = (a, b2, x) => clamp(0, 1, (x - a) / (b2 - a));
 var remap = (x, y, c, d3, a) => map(x, y, a) * (d3 - c) + c;
 var round = (num, pow) => {
   const d3 = pow ? Math.pow(10, pow) : 100;
@@ -49,32 +50,48 @@ var bounds = (e) => {
   return {
     w: rect.width,
     h: rect.height,
-    t: rect.top,
-    b: rect.bottom,
-    l: rect.left,
-    r: rect.right
+    x: rect.x,
+    y: rect.y,
+    xE: rect.right,
+    yE: rect.bottom
   };
 };
 var computed = (c) => window.getComputedStyle(c);
 var iSet = {
-  a: (e, v) => e.style.opacity = v,
-  d: (e, v) => e.style.display = v,
-  p: (e, v) => e.style.pointerEvents = v,
+  alpha: (e, v) => e.style.opacity = v,
+  display: (e, v) => e.style.display = v,
+  pointer: (e, v) => e.style.pointerEvents = v,
   id: (s) => document.getElementById(s),
   el: (s) => document.querySelector(s),
   els: (s) => [...document.querySelectorAll(s)],
-  get screen() {
+  sEl: (e, s) => e.querySelector(s),
+  sEls: (e, s) => [...e.querySelectorAll(s)],
+  get size() {
     return { w: window.innerWidth, h: window.innerHeight };
   },
+  position: (e, v) => e.style.position = v,
+  node: (type) => document.createElement(type),
+  text: (text) => document.createTextNode(text),
   string: (obj2) => JSON.stringify(obj2),
   visible: (e, v) => e.style.visibility = v
 };
+var choke = class {
+  constructor({ late, cb }) {
+    this.late = late * 1e3;
+    this.cb = cb;
+    this.time = 0;
+  }
+  run() {
+    clearTimeout(this.time);
+    this.time = setTimeout(this.cb, this.late);
+  }
+};
 
 // src/Utils/properties/alpha.js
-var alpha = (o, n) => {
+var alpha = (o2, n) => {
   const oV = {
     s: +n.opacity,
-    e: o[0]
+    e: o2[0]
   };
   oV.lerp = oV.e - oV.s;
   return (e) => `${oV.s + oV.lerp * e}`;
@@ -334,7 +351,7 @@ var transform = (p, { transform: transform2, width: width2, height: height2 }) =
     const eSY = `${syV.s + syV.lerp * e}`;
     const eRX = `${rxV.s + rxV.lerp * e}deg`;
     const eRY = `${ryV.s + ryV.lerp * e}deg`;
-    return `translate(${eX}, ${eY}) scale(${eSX}, ${eSY}) rotateX(${eRX}) rotateY(${eRY})`;
+    return `translate3d(${eX}, ${eY}, 0) scale(${eSX}, ${eSY}) rotateX(${eRX}) rotateY(${eRY})`;
   };
 };
 var setValue6 = (e, v) => e.style.transform = v;
@@ -344,17 +361,17 @@ var transform_default = {
 };
 
 // src/Utils/properties/blur.js
-var blur = (b, c) => {
+var blur = (b2, c) => {
   let bV;
   if (c.filter === "none") {
     bV = {
       s: 0,
-      e: b[0]
+      e: b2[0]
     };
   } else {
     bV = {
       s: +c.filter.match(/(\d.*)px/)[1],
-      e: b[0]
+      e: b2[0]
     };
   }
   bV.lerp = bV.e - bV.s;
@@ -424,19 +441,19 @@ function match(name) {
 function dom(e, ps) {
   const results = [];
   const c = computed(e);
-  const dir = ps.dir === -1 ? true : false;
+  const dir = ps.dir == -1 ? true : false;
   const easef = ease_default[ps.ease || "l"];
   c.el = e;
   c.pa = e.parentNode;
   for (const key of Object.entries(ps)) {
-    if (key[0] === "dir")
+    if (key[0] == "dir")
       continue;
-    if (key[0] === "ease")
+    if (key[0] == "ease")
       continue;
     const values = match(key[0]);
     const cb = values.cb(key[1], c);
     let easing = key[1][key[1].length - 1];
-    if (easing === void 0)
+    if (easing == void 0)
       easing = ease_default[key[1].ease];
     else
       easing = ease_default[easing.ease];
@@ -462,8 +479,8 @@ function obj(e, ps) {
   }
   return results;
 }
-function props(e, o, ps) {
-  if (!o)
+function props(e, o2, ps) {
+  if (!o2)
     return dom(e, ps);
   else
     return obj(e, ps);
@@ -482,28 +499,28 @@ var Raf = class {
    * @param {{cb: Function, d: number}} o
    * @returns {Number} - object id.
    */
-  push(o) {
-    if (o.d === 0)
-      return o.cb(1);
-    o.id = ++this.id;
-    this.items.push(o);
+  push(o2) {
+    if (o2.d === 0)
+      return o2.cb(1);
+    o2.id = ++this.id;
+    this.items.push(o2);
     if (!this.on)
       this.loop();
-    return o.id;
+    return o2.id;
   }
   update(t) {
     for (let i = 0; i < this.items.length; i++) {
-      const o = this.items[i];
-      if (o.d) {
-        if (!o.st)
-          o.st = t;
-        const time = (t - o.st) / (o.d * 1e3);
+      const o2 = this.items[i];
+      if (o2.d) {
+        if (!o2.st)
+          o2.st = t;
+        const time = (t - o2.st) / (o2.d * 1e3);
         const e = clamp(0, 1, time);
-        const cb = o.cb(e);
+        const cb = o2.cb(e);
         if (cb || e === 1)
-          this.kill(o.id);
+          this.kill(o2.id);
       } else
-        o.cb(t);
+        o2.cb(t);
     }
     this.loop();
   }
@@ -512,10 +529,10 @@ var Raf = class {
    * @param {Number} - object id.
    */
   kill(n) {
-    this.items.map((o, i) => {
-      if (o.id === n) {
-        o.id = null;
-        o.st = null;
+    this.items.map((o2, i) => {
+      if (o2.id === n) {
+        o2.id = null;
+        o2.st = null;
         this.items.splice(i, 1);
       }
     });
@@ -532,14 +549,33 @@ var Raf = class {
 };
 var raf_default = new Raf();
 
+// src/Utils/helpers/scrub.js
+function scrub(cb) {
+  const node = document.createElement("section");
+  const lProg = { start: 0, end: 0, lerp: 0.75 };
+  node.style.cssText = ` position: fixed; height: 32px; width: 32px; display: flex; align-items: center; justify-content: center; font-size: 12px; background: #333; color: #fff; border-radius: 50%; pointer-events: none; `;
+  observer_default.add("pointermove", (e) => {
+    const progress = round(e.pageX / iSet.size.w);
+    node.style.top = e.pageY + -30 + "px";
+    node.style.left = e.pageX + -30 * progress + "px";
+    node.textContent = progress;
+    lProg.start = clamp(0, 0.99999, progress);
+  });
+  observer_default.add("raf", () => {
+    lProg.end = lerp(lProg.start, lProg.end, lProg.lerp);
+    cb(lProg.end);
+  });
+  document.body.appendChild(node);
+}
+
 // src/Core/late/late.js
 var Late = class {
   /**
    * @param {{late: Number, o: Object, cb: Function}}
    */
-  constructor({ late, o, cb }) {
+  constructor({ late, o: o2, cb }) {
     this.d = late || 0;
-    this.o = o;
+    this.o = o2;
     this.cb = cb;
     this.on = false;
     this.stop = false;
@@ -579,7 +615,7 @@ var Late = class {
   }
 };
 
-// src/Core/tween/targeted.js
+// src/Core/tween/tools/targeted.js
 function element(ele) {
   this.obj = false;
   if (ele instanceof Node) {
@@ -592,7 +628,7 @@ function element(ele) {
   }
 }
 
-// src/Core/tween/stored.js
+// src/Core/tween/tools/stored.js
 var store = /* @__PURE__ */ new Map();
 function stored(node) {
   let stored2 = store.get(node);
@@ -610,11 +646,11 @@ var Tween = class {
    * @param {HTMLElement} el - targeted element
    * @param {Object} o - properties
    */
-  constructor(el, o) {
+  constructor(el, o2) {
     const sT = stored.call(this, el);
     if (!sT) {
       element.call(this, el);
-      this.init(o);
+      this.init(o2);
     } else {
       return sT;
     }
@@ -622,15 +658,17 @@ var Tween = class {
   /**
    * Setting up the class.
    */
-  init(o) {
-    this.o = o;
+  init(o2) {
+    this.o = o2;
+    this.gui = o2.gui;
     this.mode;
     this.prog = 0;
     this.elpased = 0;
-    this.d = this.o.d;
-    this.late = this.o.late;
-    this.props = this.o.p;
-    this.props.ease = this.o.ease || "l";
+    this.dir = 0;
+    this.d = o2.d;
+    this.late = o2.late;
+    this.props = o2.p;
+    this.props.ease = o2.ease || "l";
     this.lateO = { cb: this.run.bind(this), d: this.d };
     this.late = new Late({ late: this.late, o: this.lateO });
     this.properties = props_default(this.target, this.obj, this.props);
@@ -656,11 +694,11 @@ var Tween = class {
    *
    */
   control(mode, n) {
-    if (this.late.on && this.mode != mode) {
+    if (this.late.on && this.mode !== mode) {
       this.mode = mode;
-      this.late.Elp();
+      this.late.destroy();
     }
-    if (this.mode == mode)
+    if (this.mode === mode)
       return;
     this.mode = mode;
     if (mode === "r")
@@ -687,12 +725,12 @@ var Tween = class {
    * @param {number} d - update delay time.
    *
    */
-  reverse(o) {
-    this.late.d = o.late || this.late.d;
+  reverse(o2) {
+    this.late.d = o2.late || this.late.d;
     if (this.index === 0) {
-      this.start = o.start;
-      this.completed = o.completed;
-      this.raf = o.raf;
+      this.start = o2.start;
+      this.completed = o2.completed;
+      this.raf = o2.raf;
     }
     this.control("r");
   }
@@ -701,17 +739,21 @@ var Tween = class {
    *
    * @param {Object} o - The new properties.
    */
-  play(o, i) {
+  play(o2, i) {
+    if (this.gui) {
+      scrub(this.run.bind(this));
+      return;
+    }
     this.index = i;
     if (this.index === 0) {
-      this.start = o.start;
-      this.completed = o.completed;
-      this.raf = o.raf;
+      this.start = o2.start;
+      this.completed = o2.completed;
+      this.raf = o2.raf;
     }
-    if (iSet.string(this.props) !== iSet.string(o.p)) {
-      this.late.d = o.late || 0;
-      this.lateO.d = o.d;
-      this.props = o.p;
+    if (iSet.string(this.props) !== iSet.string(o2.p)) {
+      this.late.d = o2.late || 0;
+      this.lateO.d = o2.d;
+      this.props = o2.p;
       this.props.ease = this.o.ease || this.props.ease;
       this.properties = props_default(this.target, this.obj, this.props);
       this.mode = "r";
@@ -730,31 +772,31 @@ var Tween = class {
 };
 var tween_default = Tween;
 
-// src/Core/tween/tweenInterface.js
-function Interface(els, o) {
+// src/Core/tween/index.js
+function Interface(els, o2) {
   let nodes;
   if (els instanceof NodeList || Array.isArray(els))
     nodes = [...els];
   else
     nodes = [els];
   const tweens = nodes.map((node, i) => {
-    let late = (o.late || 0) + (o.stagger || 0) * i;
-    return new tween_default(node, { ...o, late });
+    let late = (o2.late || 0) + (o2.space * i || 0);
+    return new tween_default(node, { ...o2, late });
   });
-  tweens.map((tw, i) => tw.play(o, i));
+  tweens.map((tw, i) => tw.play(o2, i));
   let lates = tweens.map((tw) => tw.late.d);
   return {
     reverse: (obj2 = {}) => {
-      let late = (o.late || 0) - obj2.late;
+      let late = (o2.late || 0) - obj2.late;
       tweens.map((tw, i) => {
         obj2.late = lates[i] - late;
         tw.reverse(obj2);
       });
     },
-    play: () => tweens.map((tw, i) => tw.play(o, i))
+    play: () => tweens.map((tw, i) => tw.play(o2, i))
   };
 }
-var tweenInterface_default = Interface;
+var tween_default2 = Interface;
 
 // src/Core/methods/observer.js
 var Observer = class {
@@ -765,7 +807,7 @@ var Observer = class {
    * @param {String} name - observer name
    */
   obs(name) {
-    this.observers[name] = { items: [] };
+    this.observers[name] = { items: [], id: 0 };
     function callItem() {
       let target = this[name];
       let args = Array.prototype.slice.call(arguments);
@@ -790,11 +832,12 @@ var Observer = class {
     if (!this.observers[name])
       console.error(name);
     let items = this.observers[name].items;
-    let obj2 = { cb, id: items.length + 1, on: true };
+    let id = this.observers[name].id++;
+    let obj2 = { cb, id, on: true };
     items.push(obj2);
-    let r = (o) => {
+    let r = (o2) => {
       for (let i = 0; i < items.length; i++) {
-        if (items[i].id == o) {
+        if (items[i].id == o2.id) {
           items[i].on = false;
           items.splice(i, 1);
         }
@@ -802,7 +845,7 @@ var Observer = class {
     };
     return {
       item: obj2,
-      r: r.bind({}, obj2.id)
+      r: r.bind({}, obj2)
     };
   }
   /**
@@ -822,140 +865,124 @@ var trigger = class {
    * @param {String} subname - Loop name
    * @param {Object} dir - scolling direction
    */
-  constructor(el, o, subname, dir) {
-    this.iscroll = observer_default.add(subname, this.raf.bind(this));
-    this.iresize = observer_default.add("resize", this.resize.bind(this));
-    this.o = o;
+  constructor(el, o2, dir) {
     this.el = el;
+    this.o = o2;
     this.dir = dir;
     this.d = dir ? "y" : "x";
-    if (!o.target)
-      o.target = el;
-    if (o.scroll) {
-      const node = !o.target ? el : o.target.length ? o.target[0] : o.target;
-      this.ps = props_default(node, false, o.p);
+    this.Init(o2);
+  }
+  Init(o2) {
+    if (!o2.target) {
+      o2.target = this.el;
+      this.target = o2.target;
     }
-    if (this.o.pin) {
-      this.node = document.createElement("div");
-      this.node.className = "piner";
-      const css = ` position: absolute; top: 0; left: 0; height: 100%; width: 100%; pointer-events: none;`;
-      this.node.style.cssText = css;
-      this.end = false;
-      document.body.appendChild(this.node);
+    if (o2.scroll) {
+      const node = o2.target.length ? o2.target[0] : o2.target;
+      this.ps = props_default(node, false, o2.scroll);
+      this.ease = ease_default[o2.ease || "l"];
     }
+    if (o2.pin) {
+      this.pin = o2.pin;
+      this.pin.target = o2.pin.target || this.target;
+    }
+    this.iresize = observer_default.add("resize", this.resize.bind(this));
     this.resize();
+    this.iraf = observer_default.add(o2.obsname, this.raf.bind(this));
+  }
+  /**
+   * resize
+   */
+  resize() {
+    const bs = bounds(this.el.length ? this.el[0] : this.el);
+    const size = iSet.size;
+    this.screen = this.dir ? size.h : size.w;
+    if (this.dir) {
+      this.sp = bs.y;
+      this.ep = bs.yE + this.screen;
+    } else {
+      this.sp = b.x;
+      this.ep = b.xE + this.screen;
+    }
   }
   /**
    * Loop
    */
-  raf(e) {
-    this.px = e[this.d] + this.l;
-    let before = (this.o.start || 0) * this.l;
-    let after = (this.o.end || 0) * this.l;
+  raf(coord) {
+    this.coord = coord;
+    this.px = coord[this.d] + this.screen;
+    let be = this.screen * (this.o.start || 0);
+    let af = this.screen * (this.o.end || 0);
     if (this.o.scroll) {
-      let start = this.p + before;
-      let end = this.si + this.l + after;
+      let start = this.sp + be;
+      let end = this.ep + af;
       if (start <= this.px)
         this.in = true;
       if (end <= this.px)
         this.in = false;
-      this.scroll(map(start, end, this.px));
+      const dist = round(map(start, end, this.px), 3);
+      this.scroll(dist);
+      if (this.o.pin)
+        this.piner(dist);
+      if (this.o.raf)
+        this.o.raf(dist, this.o.target, this.px);
     } else {
-      if (before + this.p < this.px)
+      if (before + this.start < this.px)
         this.fire();
-    }
-  }
-  /**
-   * If passed fire
-   */
-  fire() {
-    if (this.o.tween)
-      tweenInterface_default(this.o.target || this.el, this.o.tween);
-    if (this.o.completed)
-      this.o.completed(this.o.target);
-    this.destroy();
-  }
-  pin(t) {
-    const r = round(t);
-    if (r >= this.o.pin.start && !this.pined) {
-      this.clone = this.o.target.cloneNode(true);
-      iSet.visible(this.o.target, "hidden");
-      this.node.appendChild(this.clone);
-      const bs = bounds(this.o.target);
-      const style = ` position: absolute; top: ${bs.t / iSet.screen.h * 100}%; left: ${bs.l / iSet.screen.w * 100}%; width: ${bs.w}px; height: ${bs.h}px; `;
-      this.clone.style.cssText = style;
-      tweenInterface_default(this.clone, { d: 0, p: { form: { y: [0, "%"], x: [0, "%"] } } });
-      this.pined = true;
-    } else if (this.px >= this.o.pin.end) {
-      this.node.style.top = this.o.pin.end - this.px + "px";
-    } else if (r < this.o.pin.start) {
-      iSet.visible(this.o.target, "visible");
-      if (this.clone && this.pined) {
-        this.node.removeChild(this.clone);
-        this.pined = false;
-      }
     }
   }
   /**
    * Animate with scrolling
    */
   scroll(t) {
-    if (this.o.pin)
-      this.pin(t);
-    this.o.raf && this.o.raf(t, this.o.target, this.px);
     if (!this.in)
       return;
-    const ti = ease_default[this.o.ease || "l"](t);
     this.ps.map((p) => {
       if (this.o.target.length) {
-        this.o.target.forEach((el) => p.setV(el, p.cb(ti)));
+        this.o.target.forEach((el) => p.setV(el, p.cb(this.ease(t))));
       } else {
-        p.setV(this.o.target, p.cb(ti));
+        p.setV(this.o.target, p.cb(this.ease(t)));
       }
     });
   }
   /**
-   * resize
+   * If passed fire
    */
-  resize() {
-    this.b = bounds(this.el.length ? this.el[0] : this.el);
-    if (this.dir) {
-      this.p = this.b.t;
-      this.si = this.b.b;
-    } else {
-      this.p = this.b.l;
-      this.si = this.b.r;
+  fire() {
+    if (this.o.tween)
+      tween_default2(this.o.target || this.el, this.o.tween);
+    if (this.o.completed)
+      this.o.completed(this.o.target);
+    this.destroy();
+  }
+  /**
+   * Pin Function
+   */
+  piner(t) {
+    if (this.pined) {
+      if (!(this.px >= this.pin.z)) {
+        const dist = zero(0, this.px - this.pin.pxS);
+        this.pin.target.style.transform = `translate3d(${this.dir ? "0px," + dist + "px" : dist + "px,0px"},0px)`;
+      }
     }
-    this.l = this.dir ? window.innerHeight : window.innerWidth;
+    if (t < this.pin.a)
+      this.pined = false;
+    else if (t >= this.pin.a && !this.pined) {
+      this.pin.pxS = this.px;
+      this.pined = true;
+    }
   }
   /**
    * remove events
    */
   destroy() {
-    if (this.node)
-      document.body.removeChild(this.node);
-    this.iscroll.r();
+    this.iraf.r();
     this.iresize.r();
   }
 };
 var trigger_default = trigger;
 
 // src/Core/scroll/scroll.js
-function globalEvents() {
-  let called = false;
-  return () => {
-    if (!called) {
-      called = true;
-      window.addEventListener("pointerdown", observer_default.obs("pointerdown").cb);
-      window.addEventListener("pointermove", observer_default.obs("pointermove").cb);
-      window.addEventListener("pointerup", observer_default.obs("pointerup").cb);
-      window.addEventListener("wheel", observer_default.obs("wheel").cb);
-      window.addEventListener("resize", observer_default.obs("resize").cb);
-      raf_default.push({ cb: observer_default.obs("raf").cb });
-    }
-  };
-}
-var fireGlobalEvents = globalEvents();
 function drag(dir, e) {
   dir.prev = dir.end;
   dir.end = e;
@@ -967,42 +994,50 @@ var Scroll = class {
    * @param {HTMLElement|Window} attacher - the parent
    * @param {Object} o - properties
    */
-  constructor(attacher, o) {
+  constructor(attacher, o2) {
     history.scrollRestoration = "manual";
     this.attacher = attacher;
-    this.target = o.target;
-    this.ease = o.ease || 0.09;
-    this.dir = o.dir == void 0;
-    fireGlobalEvents();
-    this.Init();
-    this.resize();
+    this.target = o2.target;
+    this.ease = o2.ease || 0.09;
+    this.dir = o2.dir == void 0;
+    this.d = this.dir ? "y" : "x";
+    this.Init(o2);
+    this.sub = observer_default.obs(o2.obs || Symbol("foo"));
+    this.time = (/* @__PURE__ */ new Date()).getTime();
+    this.offset = 0;
+    this.chokeEl = iSet.el("[overlay]");
+    this.choke = new choke({
+      late: 0.3,
+      cb: () => iSet.pointer(this.chokeEl, "none")
+    });
   }
   /**
    * Initializing the virtial scrolling class
    */
-  Init() {
+  Init(o2) {
     if (this.attacher == window) {
-      this.ipointerdown = observer_default.add("pointerdown", this.down.bind(this));
-      this.ipointermove = observer_default.add("pointermove", this.move.bind(this));
+      if (o2.drag !== false) {
+        this.ipointerdown = observer_default.add("pointerdown", this.down.bind(this));
+        this.ipointermove = observer_default.add("pointermove", this.move.bind(this));
+      }
       this.iwheel = observer_default.add("wheel", this.wheel.bind(this));
+      this.ikey = observer_default.add("keydown", this.key.bind(this));
     } else {
-      this.attacher.onpointerdown = this.down.bind(this);
-      this.attacher.onpointermove = this.move.bind(this);
+      if (o2.drag !== false) {
+        this.attacher.onpointerdown = this.down.bind(this);
+        this.attacher.onpointermove = this.move.bind(this);
+      }
       this.attacher.onwheel = this.wheel.bind(this);
     }
     this.ipointerup = observer_default.add("pointerup", this.up.bind(this));
-    this.lerp = { x: 0, y: 0 };
-    this.prevLerp = { x: 0, y: 0 };
-    this.prevDist = { x: 0, y: 0 };
-    this.scroll = { x: 0, y: 0 };
-    this.drag = {
-      x: { start: 0, end: 0, startPoint: 0, endPoint: 0 },
-      y: { start: 0, ende: 0, startPoint: 0, endPoint: 0 }
-    };
-    this.dist = { x: 0, y: 0 };
     this.iresize = observer_default.add("resize", this.resize.bind(this));
-    this.sscroll = observer_default.obs("scroll");
-    this.sdrag = observer_default.obs("drag");
+    this.drag = { x: 0, y: 0 };
+    this.prev = { x: 0, y: 0 };
+    this.scroll = { x: 0, y: 0 };
+    this.dist = {
+      x: { start: 0, end: 0 },
+      y: { start: 0, ende: 0 }
+    };
   }
   /**
    * Run on scolling
@@ -1016,41 +1051,56 @@ var Scroll = class {
    * Handling wheel event
    */
   wheel(e) {
-    let multiplier = e.deltaMode == 1 ? 0.85 : 0.5;
-    this.lerp.x -= e.wheelDeltaX * multiplier;
-    this.lerp.y -= e.wheelDeltaY * multiplier;
-    this.dist.x -= e.wheelDeltaX * multiplier;
-    this.dist.y -= e.wheelDeltaY * multiplier;
     this.begin();
+    let multip = e.deltaMode == 1 ? 0.83 : 0.55;
+    this.time = e.timeStamp - this.time;
+    this.offset = this.drag[this.d];
+    this.drag.x -= e.wheelDeltaX * multip;
+    this.drag.y -= e.wheelDeltaY * multip;
+    const offset = this.drag[this.d] - this.offset;
+    this.scroll.sp = Math.abs(offset / this.time);
+    this.scroll.dir = Math.sign(offset);
+    this.time = e.timeStamp;
   }
   /**
    * Starting point
    */
-  down(t) {
-    let e = t;
+  down(e) {
+    iSet.pointer(this.chokeEl, "all");
     this.downOn = true;
-    this.drag.y.start = e.pageY;
-    this.drag.x.start = e.pageX;
-    this.prevLerp.x = this.lerp.x;
-    this.prevLerp.y = this.lerp.y;
-    this.prevDist.x = this.dist.x;
-    this.prevDist.y = this.dist.y;
+    this.dist.y.start = e.pageY;
+    this.dist.x.start = e.pageX;
+    this.prev.x = this.drag.x;
+    this.prev.y = this.drag.y;
   }
   /**
    * drag / mouse-moveing
    */
-  move(t) {
-    let e = t;
+  move(e) {
     if (this.downOn) {
-      if (this.dir) {
-        this.lerp.y = drag(this.drag.y, e.pageY) + this.prevLerp.y;
-        this.dist.y = drag(this.drag.y, e.pageY) + this.prevDist.y;
-      } else {
-        this.lerp.x = drag(this.drag.x, e.pageX) + this.prevLerp.x;
-        this.dist.x = drag(this.drag.x, e.pageX) + this.prevDist.x;
-      }
-      this.sdrag.cb(this.dist);
       this.begin();
+      this.time = e.timeStamp - this.time;
+      this.offset = this.drag[this.d];
+      if (this.dir)
+        this.drag.y = drag(this.dist.y, e.pageY) + this.prev.y;
+      else
+        this.drag.x = drag(this.dist.x, e.pageX) + this.prev.x;
+      const offset = this.drag[this.d] - this.offset;
+      this.scroll.sp = Math.abs(offset / this.time);
+      this.scroll.dir = Math.sign(offset);
+      this.time = e.timeStamp;
+    }
+  }
+  key(e) {
+    if (e.keyCode == 40 || e.keyCode == 38) {
+      this.begin();
+      let offset = 0;
+      if (e.keyCode == 40)
+        offset = -66.6;
+      else if (e.keyCode == 38)
+        offset = 66.6;
+      this.drag.x -= offset;
+      this.drag.y -= offset;
     }
   }
   /**
@@ -1058,59 +1108,73 @@ var Scroll = class {
    */
   up() {
     this.downOn = false;
+    this.choke.run();
   }
   /**
    * Add Trigger
    */
-  add(target, o) {
-    const trigger2 = new trigger_default(target, o, this.sscroll.name, this.dir);
+  add(target, o2) {
+    o2.obsname = this.sub.name;
+    const trigger2 = new trigger_default(target, o2, this.dir);
     this.begin();
     return trigger2;
   }
   raf() {
-    this.lerp.x = clamp(0, this.w < 0 ? 0 : this.w, this.lerp.x);
-    this.lerp.y = clamp(0, this.h < 0 ? 0 : this.h, this.lerp.y);
-    this.scroll.x = round(lerp(this.scroll.x, this.lerp.x, this.ease), 4);
-    this.scroll.y = round(lerp(this.scroll.y, this.lerp.y, this.ease), 4);
-    this.sscroll.cb(this.scroll);
+    this.drag.x = clamp(0, this.w < 0 ? 0 : this.w, this.drag.x);
+    this.drag.y = clamp(0, this.h < 0 ? 0 : this.h, this.drag.y);
+    this.scroll.x = round(lerp(this.scroll.x, this.drag.x, this.ease), 3);
+    this.scroll.y = round(lerp(this.scroll.y, this.drag.y, this.ease), 3);
+    if (this.sub)
+      this.sub.cb(this.scroll);
     this.target.style.transform = `translate3d(-${this.scroll.x}px, -${this.scroll.y}px, 0)`;
     if (this.dir) {
-      if (round(this.scroll.y, 3) == this.lerp.y)
+      if (round(this.scroll.y, 2) == this.drag.y)
         this.iraf.r();
     } else {
-      if (round(this.scroll.x, 3) == this.lerp.x)
+      if (round(this.scroll.x, 2) == this.drag.x)
         this.iraf.r();
     }
   }
   resize() {
     this.bs = bounds(this.target);
-    this.w = this.bs.w - window.innerWidth;
-    this.h = this.bs.h - window.innerHeight;
+    const size = iSet.size;
+    this.drag.x = 0;
+    this.drag.y = 0;
+    this.scroll.x = 0;
+    this.scroll.y = 0;
+    this.w = this.bs.w - size.w;
+    this.h = this.bs.h - size.h;
   }
   /**
    * Remove events
    */
   destroy() {
-    this.iresize.r();
-    this.iraf && this.iraf.r();
-    this.sscroll.r();
-    this.sdrag.r();
-    if (this.attacher == window) {
-      this.ipointerdown.r();
-      this.ipointermove.r();
-      this.ipointerup.r();
+    if (this.iraf)
+      this.iraf.r();
+    if (this.sub)
+      this.sub.r();
+    if (this.attacher === window) {
+      if (o.drag !== false) {
+        this.ipointerdown.r();
+        this.ipointermove.r();
+      }
       this.iwheel.r();
+      this.ikey.r();
     } else {
-      this.attacher.onpointerdown = null;
-      this.attacher.onpointermove = null;
-      this.attacher.onpointerup = null;
+      if (o.drag !== false) {
+        this.attacher.onpointerdown = null;
+        this.attacher.onpointermove = null;
+      }
       this.attacher.onwheel = null;
     }
+    this.ipointerup.r();
+    this.iresize.r();
   }
 };
 var scroll_default = Scroll;
 export {
   bounds,
+  choke,
   clamp,
   computed,
   ease_default as ease,
@@ -1124,6 +1188,8 @@ export {
   remap,
   round,
   scroll_default as scroll,
+  scrub,
   observer_default as sub,
-  tweenInterface_default as tween
+  tween_default2 as tween,
+  zero
 };

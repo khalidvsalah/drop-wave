@@ -1,8 +1,26 @@
-/* @khalidvsalah | blinkwave | v0.0.1 | MIT License | https://github.com/khalidvsalah/blink-wave */ // src/Math/operations.js
+/* @khalidvsalah | blinkwave | v0.0.1 | MIT License | https://github.com/khalidvsalah/blink-wave */ // src/Math/math.js
 var clamp = (min, max, a) => Math.min(Math.max(min, a), max);
 
 // src/Core/methods/methods.js
 var computed = (c) => window.getComputedStyle(c);
+var iSet = {
+  alpha: (e, v) => e.style.opacity = v,
+  display: (e, v) => e.style.display = v,
+  pointer: (e, v) => e.style.pointerEvents = v,
+  id: (s) => document.getElementById(s),
+  el: (s) => document.querySelector(s),
+  els: (s) => [...document.querySelectorAll(s)],
+  sEl: (e, s) => e.querySelector(s),
+  sEls: (e, s) => [...e.querySelectorAll(s)],
+  get size() {
+    return { w: window.innerWidth, h: window.innerHeight };
+  },
+  position: (e, v) => e.style.position = v,
+  node: (type) => document.createElement(type),
+  text: (text) => document.createTextNode(text),
+  string: (obj) => JSON.stringify(obj),
+  visible: (e, v) => e.style.visibility = v
+};
 
 // src/Utils/raf.js
 var Raf = class {
@@ -16,28 +34,28 @@ var Raf = class {
    * @param {{cb: Function, d: number}} o
    * @returns {Number} - object id.
    */
-  push(o) {
-    if (o.d === 0)
-      return o.cb(1);
-    o.id = ++this.id;
-    this.items.push(o);
+  push(o2) {
+    if (o2.d === 0)
+      return o2.cb(1);
+    o2.id = ++this.id;
+    this.items.push(o2);
     if (!this.on)
       this.loop();
-    return o.id;
+    return o2.id;
   }
   update(t) {
     for (let i = 0; i < this.items.length; i++) {
-      const o = this.items[i];
-      if (o.d) {
-        if (!o.st)
-          o.st = t;
-        const time = (t - o.st) / (o.d * 1e3);
+      const o2 = this.items[i];
+      if (o2.d) {
+        if (!o2.st)
+          o2.st = t;
+        const time = (t - o2.st) / (o2.d * 1e3);
         const e = clamp(0, 1, time);
-        const cb = o.cb(e);
+        const cb = o2.cb(e);
         if (cb || e === 1)
-          this.kill(o.id);
+          this.kill(o2.id);
       } else
-        o.cb(t);
+        o2.cb(t);
     }
     this.loop();
   }
@@ -46,10 +64,10 @@ var Raf = class {
    * @param {Number} - object id.
    */
   kill(n) {
-    this.items.map((o, i) => {
-      if (o.id === n) {
-        o.id = null;
-        o.st = null;
+    this.items.map((o2, i) => {
+      if (o2.id === n) {
+        o2.id = null;
+        o2.st = null;
         this.items.splice(i, 1);
       }
     });
@@ -75,7 +93,7 @@ var Observer = class {
    * @param {String} name - observer name
    */
   obs(name) {
-    this.observers[name] = { items: [] };
+    this.observers[name] = { items: [], id: 0 };
     function callItem() {
       let target = this[name];
       let args = Array.prototype.slice.call(arguments);
@@ -100,11 +118,12 @@ var Observer = class {
     if (!this.observers[name])
       console.error(name);
     let items = this.observers[name].items;
-    let obj = { cb, id: items.length + 1, on: true };
+    let id = this.observers[name].id++;
+    let obj = { cb, id, on: true };
     items.push(obj);
-    let r = (o) => {
+    let r = (o2) => {
       for (let i = 0; i < items.length; i++) {
-        if (items[i].id == o) {
+        if (items[i].id == o2.id) {
           items[i].on = false;
           items.splice(i, 1);
         }
@@ -112,7 +131,7 @@ var Observer = class {
     };
     return {
       item: obj,
-      r: r.bind({}, obj.id)
+      r: r.bind({}, obj)
     };
   }
   /**
@@ -124,24 +143,8 @@ var Observer = class {
 };
 var observer_default = new Observer();
 
-// src/Core/scroll/scroll.js
-function globalEvents() {
-  let called = false;
-  return () => {
-    if (!called) {
-      called = true;
-      window.addEventListener("pointerdown", observer_default.obs("pointerdown").cb);
-      window.addEventListener("pointermove", observer_default.obs("pointermove").cb);
-      window.addEventListener("pointerup", observer_default.obs("pointerup").cb);
-      window.addEventListener("wheel", observer_default.obs("wheel").cb);
-      window.addEventListener("resize", observer_default.obs("resize").cb);
-      raf_default.push({ cb: observer_default.obs("raf").cb });
-    }
-  };
-}
-var fireGlobalEvents = globalEvents();
-
 // src/Plugins/src/line.js
+var space = " ";
 function init(div, compute) {
   document.body.append(div);
   div.style.visibility = "hidden";
@@ -154,26 +157,22 @@ function init(div, compute) {
   div.style.letterSpacing = compute.getPropertyValue("letter-spacing");
   div.style.lineHeight = compute.getPropertyValue("line-height");
 }
-var getWidth = (node) => {
-  node.style.display = "inline-block";
-  return node.offsetWidth;
-};
 function splitText(node) {
   const nodes = node.childNodes;
-  const output2 = [];
+  const output = [];
   for (let i = 0; i < nodes.length; i++) {
-    output2.push(types(nodes[i]));
+    output.push(types(nodes[i]));
   }
-  return output2;
+  return output;
 }
 function types(node) {
-  let output2;
+  let output;
   if (node.nodeType === 3) {
-    output2 = { value: node.nodeValue.split(" "), type: 3 };
+    output = { value: node.nodeValue.split(" "), type: 3 };
   } else {
-    output2 = { value: splitText(node), type: 1, node };
+    output = { value: splitText(node), type: 1, node };
   }
-  return output2;
+  return output;
 }
 function filter(text) {
   for (let i = 0; i < text.length; i++) {
@@ -191,105 +190,81 @@ function filter(text) {
     }
   }
 }
-function measure(node, key, line) {
-  const space = "&nbsp;";
-  if (node.type === 3) {
-    const word = key + space;
-    line.value += word;
-    line.words.push({ word, node: node.node });
-  } else {
-    for (let i = 0; i < key.value.length; i++) {
-      const word = key.value[i] + space;
-      line.value += word;
-      line.words.push({ word, node: node.node });
-    }
-  }
-}
-function lines(text, span, width) {
-  const line = { value: "", words: [] };
-  const output2 = [];
-  for (let i = 0; i < text.length; i++) {
-    const node = text[i];
-    for (let k = 0; k < node.value.length; k++) {
-      const key = node.value[k];
-      const prev = line.value.length - 1;
-      measure(node, key, line);
-      span.innerHTML = line.value;
-      if (span.offsetWidth > width) {
-        const sentance = line.value.substring(0, prev);
-        line.words.pop();
-        output2.push({ sentance, words: line.words });
-        if (text.length !== 1 || node.value.length !== 1) {
-          k -= 1;
-        }
-        line.value = "";
-        line.words = [];
-      }
-    }
-    if (i === text.length - 1) {
-      const sentance = line.value.substring(0, line.value.length - 1);
-      output2.push({ sentance, words: line.words });
-    }
-  }
-  return output2;
-}
-function wrapper(text, node, type) {
-  if (type === 1) {
-    return `<p class="line"><span>${text}</span></p>`;
-  } else if (type === 2) {
-    let ele = document.createElement("span");
-    if (node) {
-      const a = node.cloneNode();
-      a.innerHTML = text;
-      ele.appendChild(a);
+function domOutput(lines, output, o2) {
+  if (o2.words) {
+    const len = lines.words.length;
+    let line;
+    if (o2.ltrs) {
+      line = lines.words.reduce((a, b2, i) => {
+        let str = "";
+        for (let i2 = 0; i2 < b2.length; i2++)
+          str += wrap(b2[i2], 3);
+        return a + wrap(str + (i == len - 1 ? "" : space), 2);
+      }, "");
     } else {
-      ele.innerHTML = text;
+      line = lines.words.reduce((a, b2, i) => {
+        return a + wrap(b2 + (i == len - 1 ? "" : space), 2);
+      }, "");
     }
-    return `<span class="word">${ele.innerHTML}</span>`;
+    output.push({ line: wrap(line, 1) });
+  } else {
+    output.push({ line: wrap(lines.value, 1) });
+  }
+}
+function wrap(text, type) {
+  if (type === 1) {
+    return `<div class="tfx"><span>${text}</span></div>`;
+  } else if (type === 2) {
+    return `<span class="word">${text}</span>`;
   } else if (type === 3) {
-    return `<span class="letter">${text}</span>`;
+    return `<span class="ltr">${text}</span>`;
   }
 }
-function output(node, arr, o = {}) {
-  let sentance = "";
-  for (let i = 0; i < arr.length; i++) {
-    const key = arr[i].words;
-    for (let k = 0; k < key.length; k++) {
-      const word = key[k].word;
-      if (o.letters) {
-        let space = word.indexOf("&nbsp;") - 1;
-        let letter = "";
-        for (let j = 0; j < word.length; j++) {
-          if (space === j) {
-            letter += wrapper(word.slice(space), "", 3);
-            break;
-          } else {
-            letter += wrapper(word[j], "", 3);
-          }
-        }
-        sentance += wrapper(letter, key[k].node, 2);
-      } else {
-        sentance += wrapper(word, key[k].node, 2);
-      }
+function check(value, lines, div, width, output, o2) {
+  for (let k = 0; k < value.length; k++) {
+    const word = value[k];
+    lines.value += word;
+    div.innerHTML = lines.value;
+    lines.words.push(word);
+    if (div.offsetWidth > width) {
+      lines.words.pop();
+      domOutput(lines, output, o2);
+      lines.value = word;
+      lines.words = [word + space];
     }
-    node.innerHTML += wrapper(sentance, "", 1);
-    sentance = "";
+    lines.value += space;
   }
 }
-function split(node, o) {
+function newline(obj, div, width, o2) {
+  const lines = { value: "", words: [] };
+  const output = [];
+  for (let i = 0; i < obj.length; i++) {
+    const node = obj[i];
+    if (node.type === 3) {
+      check(node.value, lines, div, width, output, o2);
+    } else {
+    }
+  }
+  domOutput(lines, output, o2);
+  return output;
+}
+function split(node, o2) {
   let compute = computed(node);
-  let span = document.createElement("div");
-  init(span, compute);
-  const width = getWidth(node);
-  let text = splitText(node);
-  filter(text);
-  const arr = lines(text, span, width);
-  document.body.removeChild(span);
+  let div = document.createElement("div");
+  if (o2.ltrs)
+    o2.words = true;
+  init(div, compute);
+  const width = node.offsetWidth;
+  let obj = splitText(node);
+  filter(obj);
+  const output = newline(obj, div, width, o2);
   node.innerHTML = "";
-  output(node, arr, o);
+  document.body.removeChild(div);
+  output.map(({ line }) => node.innerHTML += line);
   return {
-    words: node.querySelectorAll(".word"),
-    letters: node.querySelectorAll(".letter")
+    lines: iSet.sEls(node, ".tfx"),
+    words: iSet.sEls(node, ".word"),
+    ltrs: iSet.sEls(node, ".ltr")
   };
 }
 var line_default = split;
