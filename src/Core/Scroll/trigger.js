@@ -56,9 +56,9 @@ class trigger {
    */
   resize() {
     const bs = bounds(this.el.length ? this.el[0] : this.el);
-    const screen = iSet.screen;
+    const size = iSet.size;
 
-    this.screen = this.dir ? screen.h : screen.w;
+    this.screen = this.dir ? size.h : size.w;
 
     if (this.dir) {
       this.sp = bs.y;

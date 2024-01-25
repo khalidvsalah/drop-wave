@@ -18,7 +18,9 @@ const iSet = {
   id: (s) => document.getElementById(s),
   el: (s) => document.querySelector(s),
   els: (s) => [...document.querySelectorAll(s)],
-  get screen() {
+  sEl: (e, s) => e.querySelector(s),
+  sEls: (e, s) => [...e.querySelectorAll(s)],
+  get size() {
     return { w: window.innerWidth, h: window.innerHeight };
   },
   position: (e, v) => (e.style.position = v),

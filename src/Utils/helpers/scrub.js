@@ -24,7 +24,7 @@ export default function scrub(cb) {
   `;
 
   sub.add('pointermove', (e) => {
-    const progress = round(e.pageX / iSet.screen.w);
+    const progress = round(e.pageX / iSet.size.w);
 
     node.style.top = e.pageY + -30 + 'px';
     node.style.left = e.pageX + -30 * progress + 'px';
