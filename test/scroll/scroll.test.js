@@ -15,6 +15,16 @@ const resize = sub.obs('resize').cb;
 })();
 
 const root = iSet.id('app');
+const box = iSet.el('.box');
 
 const vscroll = new scroll(window, { target: root });
+vscroll.add(box, {
+  scroll: { width: [250, 'px'] },
+  start: 0,
+  end: 0,
+  pin: {
+    a: box.offsetTop,
+    z: box.offsetTop + iSet.size.h * 0.2
+  }
+});
 resize();

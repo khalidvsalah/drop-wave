@@ -1,14 +1,4 @@
-import {
-  tween,
-  bounds,
-  sub,
-  map,
-  props,
-  round,
-  iSet,
-  ease,
-  zero
-} from '../../index';
+import { tween, bounds, sub, map, props, ease, zero } from '../../index';
 
 /**
  * Add tigger
@@ -26,6 +16,7 @@ class trigger {
 
     this.dir = dir;
     this.d = dir ? 'y' : 'x';
+    this.dE = dir ? 'yE' : 'xE';
 
     this.Init(o);
   }
@@ -55,17 +46,14 @@ class trigger {
    * resize
    */
   resize() {
-    const bs = bounds(this.el.length ? this.el[0] : this.el);
-    const size = iSet.size;
-
-    this.screen = this.dir ? size.h : size.w;
+    const bs = bounds(this.target.length ? this.target[0] : this.target);
 
     if (this.dir) {
       this.sp = bs.y;
-      this.ep = bs.yE + this.screen;
+      this.ep = bs.yE;
     } else {
-      this.sp = b.x;
-      this.ep = b.xE + this.screen;
+      this.sp = bs.x;
+      this.ep = bs.xE;
     }
   }
 
@@ -73,37 +61,30 @@ class trigger {
    * Loop
    */
   raf(coord) {
-    this.coord = coord;
-    this.px = coord[this.d] + this.screen;
+    this.coord = coord[this.d];
 
-    let be = this.screen * (this.o.start || 0);
-    let af = this.screen * (this.o.end || 0);
+    let start = this.o.start || this.sp;
+    let end = this.o.end || this.ep;
 
     if (this.o.scroll) {
-      let start = this.sp + be;
-      let end = this.ep + af;
+      if (end < this.coord || start > this.coord) this.in = false;
+      if (start <= this.coord) this.in = true;
 
-      if (start <= this.px) this.in = true;
-      if (end <= this.px) this.in = false;
-
-      const dist = round(map(start, end, this.px), 3);
-      this.scroll(dist);
+      const dist = map(start, end, this.coord);
+      if (this.in) this.scroll(dist);
 
       if (this.o.pin) this.piner(dist);
-      if (this.o.raf) this.o.raf(dist, this.o.target, this.px);
-    } else {
-      if (before + this.start < this.px) this.fire();
-    }
+      if (this.o.raf) this.o.raf(this.o.target, dist, this.coord);
+    } else if (start <= this.coord) this.fire();
   }
 
   /**
    * Animate with scrolling
    */
   scroll(t) {
-    if (!this.in) return;
-    this.ps.map((p) => {
+    this.ps.map(p => {
       if (this.o.target.length) {
-        this.o.target.forEach((el) => p.setV(el, p.cb(this.ease(t))));
+        this.o.target.forEach(el => p.setV(el, p.cb(this.ease(t))));
       } else {
         p.setV(this.o.target, p.cb(this.ease(t)));
       }
@@ -114,27 +95,27 @@ class trigger {
    * If passed fire
    */
   fire() {
-    if (this.o.tween) tween(this.o.target || this.el, this.o.tween);
-    if (this.o.completed) this.o.completed(this.o.target);
+    if (this.o.tween) tween(this.target, this.o.tween);
+    if (this.o.completed) this.o.completed(this.target);
     this.destroy();
   }
 
   /**
    * Pin Function
    */
-  piner(t) {
+  piner() {
     if (this.pined) {
-      if (!(this.px >= this.pin.z)) {
-        const dist = zero(0, this.px - this.pin.pxS);
+      if (!(this.coord >= this.pin.z)) {
+        const dist = zero(0, this.coord - this.pin.pxS);
         this.pin.target.style.transform = `translate3d(${
           this.dir ? '0px,' + dist + 'px' : dist + 'px,0px'
         },0px)`;
       }
     }
 
-    if (t < this.pin.a) this.pined = false;
-    else if (t >= this.pin.a && !this.pined) {
-      this.pin.pxS = this.px;
+    if (this.coord < this.pin.a) this.pined = false;
+    else if (this.coord >= this.pin.a && !this.pined) {
+      this.pin.pxS = this.coord;
       this.pined = true;
     }
   }

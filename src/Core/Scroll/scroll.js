@@ -191,12 +191,6 @@ class Scroll {
     this.bs = bounds(this.target);
     const size = iSet.size;
 
-    this.drag.x = 0;
-    this.drag.y = 0;
-
-    this.scroll.x = 0;
-    this.scroll.y = 0;
-
     this.w = this.bs.w - size.w;
     this.h = this.bs.h - size.h;
   }
