@@ -17,14 +17,16 @@ body,
 }
 
 #app {
+  position: absolute;
+  display: flex;
+
+  min-width: 100vw;
   will-change: transform;
-  min-height: 100vh;
 }
 
-.row,
-.about {
+.row {
   height: 100vh;
-  width: 100%;
+  width: 100vw;
 }
 
 .row1 {
@@ -41,10 +43,6 @@ body,
 
 .row3 {
   background-color: rgb(193, 28, 163);
-}
-
-.about {
-  background: rebeccapurple;
 }
 
 .box {
