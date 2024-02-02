@@ -1,4 +1,14 @@
-import { sub, bounds, clamp, lerp, round, choke, iSet } from '../../index';
+import {
+  sub,
+  bounds,
+  clamp,
+  lerp,
+  round,
+  choke,
+  iSet,
+  cssSet,
+  query
+} from '../../index';
 import Trigger from './trigger';
 
 /**
@@ -27,10 +37,10 @@ class Scroll {
     this.time = new Date().getTime();
     this.offset = 0;
 
-    this.chokeEl = iSet.el('[overlay]');
+    this.chokeEl = query.el('[overlay]');
     this.choke = new choke({
       late: 0.3,
-      cb: () => iSet.pointer(this.chokeEl, 'none')
+      cb: () => cssSet.pointer(this.chokeEl, 'none')
     });
   }
 
@@ -99,7 +109,7 @@ class Scroll {
    * Starting point
    */
   down(e) {
-    iSet.pointer(this.chokeEl, 'all');
+    cssSet.pointer(this.chokeEl, 'all');
     this.downOn = true;
 
     this.dist[this.dir].start = e[this.ePage];
@@ -165,15 +175,13 @@ class Scroll {
       this.pageSize < 0 ? 0 : this.pageSize,
       this.drag[this.dir]
     );
-
     this.scroll[this.dir] = lerp(
       this.scroll[this.dir],
       this.drag[this.dir],
       this.ease
     );
 
-    this.target.style.transform = `translate3d(-${this.scroll.x}px, -${this.scroll.y}px, 0)`;
-
+    cssSet.form(this.target, 'px', -this.scroll.x, -this.scroll.y);
     if (this.sub) this.sub.cb(this.scroll);
     if (round(this.scroll[this.dir], 2) == this.drag[this.dir]) this.iraf.r();
   }
@@ -181,7 +189,6 @@ class Scroll {
   resize() {
     this.bs = bounds(this.target);
     const size = iSet.size;
-
     if (this.dir == 'y') this.pageSize = this.bs.h - size.h;
     else this.pageSize = this.bs.w - size.w;
   }

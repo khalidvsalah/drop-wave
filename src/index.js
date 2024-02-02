@@ -1,8 +1,16 @@
 import ease from './Math/ease';
 import { clamp, lerp, map, remap, round, zero } from './Math/math';
-import { has, bounds, computed, iSet, choke } from './Core/methods/methods';
+import {
+  has,
+  bounds,
+  computed,
+  iSet,
+  cssSet,
+  query,
+  choke
+} from './Core/methods/methods';
 
-import props from './Utils/props';
+import props from './Utils/props/props';
 import raf from './Utils/raf';
 import scrub from './Utils/helpers/scrub';
 import late from './Core/late/late';
@@ -23,6 +31,8 @@ export {
   bounds,
   computed,
   iSet,
+  cssSet,
+  query,
   choke,
   props,
   raf,

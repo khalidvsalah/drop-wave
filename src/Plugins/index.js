@@ -1,2 +1,2 @@
-import line from './src/line';
+import line from './line/line';
 export default line;

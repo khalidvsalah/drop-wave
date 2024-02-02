@@ -1,4 +1,4 @@
-import { scroll, iSet, sub, raf } from '../../dist/main.js';
+import { scroll, query, sub, raf } from '../../dist/main.js';
 
 const resize = sub.obs('resize').cb;
 
@@ -14,8 +14,13 @@ const resize = sub.obs('resize').cb;
   raf.push({ cb: sub.obs('raf').cb });
 })();
 
-const root = iSet.id('app');
-const box = iSet.el('.box');
+const root = query.id('app');
+const box = query.el('.box');
+const inner = query.el('.inner');
 
-new scroll(root, { target: root, dir: 'x', drag: false });
+const vscroll = new scroll(root, { target: root, dir: 'x' });
 resize();
+vscroll.add(box, {
+  target: inner,
+  scroll: { form: [{ x: [-100, 'px'] }] }
+});

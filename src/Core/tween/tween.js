@@ -1,7 +1,7 @@
-import { late, clamp, props, iSet, scrub } from '../../index';
+import { late, clamp, props, iSet } from '../../index';
 
 import targeted from './tools/targeted';
-import stored from './tools/stored';
+import store from './tools/stored';
 
 /**
  * Tween
@@ -13,14 +13,12 @@ class Tween {
    * @param {Object} o - properties
    */
   constructor(el, o) {
-    const sT = stored.call(this, el);
+    const stored = store.call(this, el);
 
-    if (!sT) {
+    if (!stored) {
       targeted.call(this, el);
       this.init(o);
-    } else {
-      return sT;
-    }
+    } else return stored;
   }
 
   /**
@@ -29,23 +27,19 @@ class Tween {
   init(o) {
     this.o = o;
 
-    this.gui = o.gui;
-
     this.mode;
     this.prog = 0;
-    this.elpased = 0;
+    this.elapsed = 0;
     this.dir = 0;
 
     this.d = o.d;
     this.late = o.late;
 
-    this.props = o.p;
-    this.props.ease = o.ease || 'l';
-
+    this.oProps = o.p;
     this.lateO = { cb: this.run.bind(this), d: this.d };
 
     this.late = new late({ late: this.late, o: this.lateO });
-    this.properties = props(this.target, this.obj, this.props);
+    this.props = props(this.target, this.obj, o.p);
   }
 
   /**
@@ -54,15 +48,13 @@ class Tween {
    */
   run(t) {
     this.on = true;
+    this.elapsed = clamp(0, 1, this.prog + t);
 
-    this.rest = this.prog + t;
-    this.elpased = clamp(0, 1, this.rest);
+    const e = Math.abs(this.dir - this.elapsed);
+    this.props.map(({ setV, cb }) => setV(this.target, cb(e)));
 
-    this.e = Math.abs(this.dir - this.elpased);
-    this.properties.map(({ setV, cb }) => setV(this.target, cb(this.e)));
-
-    this.raf && this.raf(this.e, this.target);
-    if (this.elpased === 1) return this.destroy();
+    this.raf && this.raf(e, this.target);
+    if (this.elapsed == 1) return this.destroy();
   }
 
   /**
@@ -84,20 +76,14 @@ class Tween {
     if (mode === 'r') this.dir = 1;
     else this.dir = 0;
 
-    this.late.cb = () => {
-      if (this.start) this.start(this.target);
-    };
-
+    this.late.cb = () => this.start && this.start(this.target);
     if (this.late.on) return;
 
     if (this.on) {
       this.lateO.st = null;
-
       if (n) this.prog = 0;
-      else this.prog = 1 - this.elpased;
-    } else {
-      this.late.play();
-    }
+      else this.prog = 1 - this.elapsed;
+    } else this.late.play();
   }
 
   /**
@@ -122,33 +108,23 @@ class Tween {
    * @param {Object} o - The new properties.
    */
   play(o, i) {
-    if (this.gui) {
-      scrub(this.run.bind(this));
-      return;
-    }
-
     this.index = i;
-
     if (this.index === 0) {
       this.start = o.start;
       this.completed = o.completed;
       this.raf = o.raf;
     }
 
-    if (iSet.string(this.props) !== iSet.string(o.p)) {
+    if (iSet.string(this.oProps) != iSet.string(o.p)) {
       this.late.d = o.late || 0;
       this.lateO.d = o.d;
 
-      this.props = o.p;
-      this.props.ease = this.o.ease || this.props.ease;
-
-      this.properties = props(this.target, this.obj, this.props);
+      this.oProps = o.p;
+      this.props = props(this.target, this.obj, o.p);
 
       this.mode = 'r';
       this.control('p', true);
-    } else {
-      this.control('p');
-    }
+    } else this.control('p');
   }
 
   destroy() {

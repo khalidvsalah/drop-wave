@@ -20,20 +20,18 @@ class trigger {
    */
   constructor(el, o, dir) {
     this.el = el;
+    this.target = o.target;
+
     this.o = o;
 
     this.dir = dir;
-    this.d = dir ? 'y' : 'x';
-    this.dE = dir ? 'yE' : 'xE';
+    this.dirE = dir == 'y' ? 'yE' : 'xE';
 
     this.Init(o);
   }
 
   Init(o) {
-    if (!o.target) {
-      o.target = this.el;
-      this.target = o.target;
-    }
+    if (!o.target) this.target = this.el;
     if (o.scroll) {
       const node = o.target.length ? o.target[0] : o.target;
 
@@ -54,24 +52,14 @@ class trigger {
    * resize
    */
   resize() {
-    const bs = bounds(this.target.length ? this.target[0] : this.target);
+    const bs = bounds(this.el.length ? this.el[0] : this.el);
 
-    if (this.dir) {
-      this.sp = match(this.o.start || '+0', bs.y);
-      this.ep = match(this.o.end || '+0', bs.yE);
+    this.sp = match(this.o.start || '+0', bs[this.dir]);
+    this.ep = match(this.o.end || '+0', bs[this.dirE]);
 
-      if (this.o.pin) {
-        this.pin.start = match(this.pin.a || '+0', bs.y);
-        this.pin.end = match(this.pin.z || '+0', bs.yE);
-      }
-    } else {
-      this.sp = match(this.o.start || '+0', bs.x);
-      this.ep = match(this.o.end || '+0', bs.xE);
-
-      if (this.o.pin) {
-        this.pin.start = match(this.pin.a || '+0', bs.x);
-        this.pin.end = match(this.pin.z || '+0', bs.xE);
-      }
+    if (this.o.pin) {
+      this.pin.start = match(this.pin.a || '+0', bs[this.dir]);
+      this.pin.end = match(this.pin.z || '+0', bs[this.dirE]);
     }
   }
 
@@ -79,7 +67,7 @@ class trigger {
    * Loop
    */
   raf(coord) {
-    this.coord = coord[this.d];
+    this.coord = coord[this.dir];
 
     let s = this.sp;
     let e = this.ep;

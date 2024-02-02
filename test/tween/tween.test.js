@@ -1,4 +1,4 @@
-import { tween, iSet } from '../../dist/main.js';
+import { tween, query } from '../../dist/main.js';
 
 // import * as dat from '../../node_modules/dat.gui/build/dat.gui.module.js';
 
@@ -113,7 +113,7 @@ import { tween, iSet } from '../../dist/main.js';
 //   }
 // });
 
-tween('.width', {
+const re = tween('.width', {
   late: 1,
   d: 1.5,
   p: {
@@ -122,11 +122,15 @@ tween('.width', {
   }
 });
 
-const circle = iSet.el('.circle circle');
+setTimeout(() => {
+  re.reverse();
+}, 2000);
 
-tween(circle, {
-  late: 1,
-  d: 0.75,
-  ease: 'io4',
-  p: { dash: [0] }
-});
+const circle = query.el('.circle circle');
+
+// tween(circle, {
+//   late: 1,
+//   d: 0.75,
+//   ease: 'io4',
+//   p: { dash: [0, 1] }
+// });

@@ -1,10 +1,9 @@
 /**
- * Clamp value
+ * Zero value
  *
- * @param {number}  min - start value
- * @param {number}  max - end value
+ * @param {number}  min - min value
  * @param {number}  a - alpha value
- * @return {number} clamped value
+ * @return {number} Zero value
  */
 const zero = (min, a) => Math.max(min, a);
 

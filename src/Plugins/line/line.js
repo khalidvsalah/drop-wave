@@ -1,4 +1,4 @@
-import { computed, iSet } from '../../index';
+import { computed, query } from '../../index';
 
 const space = ' ';
 
@@ -143,9 +143,9 @@ function split(node, o) {
   output.map(({ line }) => (node.innerHTML += line));
 
   return {
-    lines: iSet.sEls(node, '.tfx'),
-    words: iSet.sEls(node, '.word'),
-    ltrs: iSet.sEls(node, '.ltr')
+    lines: query.sEls(node, '.tfx'),
+    words: query.sEls(node, '.word'),
+    ltrs: query.sEls(node, '.ltr')
   };
 }
 

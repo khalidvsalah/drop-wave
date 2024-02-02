@@ -1,4 +1,4 @@
-import { iSet } from '../../../index';
+import { query } from '../../../index';
 
 /**
  * Check element type
@@ -10,7 +10,7 @@ export default function element(ele) {
   if (ele instanceof Node) {
     this.target = ele;
   } else if (typeof ele == 'string') {
-    this.target = iSet.el(ele);
+    this.target = query.el(ele);
   } else {
     this.obj = true;
     this.target = ele;
