@@ -1,3 +1,5 @@
+import { cssSet } from '../../../index';
+
 const translateX = (p, t, w) => {
   const x = p.x;
   const value = t ? +t[4] : 0;
@@ -66,7 +68,7 @@ const scaleY = (p, t) => {
   return syV;
 };
 
-const rotateX = (p) => {
+const rotateX = p => {
   const rx = p.rx;
   const rxV = {
     s: rx ? rx[0] : 0,
@@ -77,7 +79,7 @@ const rotateX = (p) => {
 
   return rxV;
 };
-const rotateY = (p) => {
+const rotateY = p => {
   const ry = p.ry;
   const ryV = {
     s: ry ? ry[0] : 0,
@@ -89,7 +91,7 @@ const rotateY = (p) => {
   return ryV;
 };
 
-const getMatrix = (t) => {
+const getMatrix = t => {
   const matrix3D = t.match(/^matrix3d\((.+)\)$/);
   let matrix = t.match(/\((.+)\)$/);
 
@@ -118,18 +120,19 @@ const getMatrix = (t) => {
  * @return {Function}
  */
 const transform = (p, { transform, width, height }) => {
+  const props = p[0];
   const matrix = getMatrix(transform);
 
-  const xV = translateX(p, matrix, width);
-  const yV = translateY(p, matrix, height);
+  const xV = translateX(props, matrix, width);
+  const yV = translateY(props, matrix, height);
 
-  const sxV = scaleX(p, matrix);
-  const syV = scaleY(p, matrix);
+  const sxV = scaleX(props, matrix);
+  const syV = scaleY(props, matrix);
 
-  const rxV = rotateX(p, matrix);
-  const ryV = rotateY(p, matrix);
+  const rxV = rotateX(props, matrix);
+  const ryV = rotateY(props, matrix);
 
-  return (e) => {
+  return e => {
     const eX = `${xV.s + xV.lerp * e}${xV.unit}`;
     const eY = `${yV.s + yV.lerp * e}${yV.unit}`;
 
@@ -144,8 +147,4 @@ const transform = (p, { transform, width, height }) => {
 };
 
 const setValue = (e, v) => (e.style.transform = v);
-
-export default {
-  cb: transform,
-  setValue
-};
+export default { cb: transform, setValue };

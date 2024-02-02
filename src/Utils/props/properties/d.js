@@ -1,4 +1,4 @@
-import { lerp } from '../../index';
+import { lerp } from '../../../index';
 
 const length = {
   a: 7,
@@ -50,7 +50,7 @@ const d = (p, n) => {
   const s = parse(n.el.getAttribute('d'));
   const e = parse(p[0]);
 
-  return (t) => {
+  return t => {
     let st = '';
     let value = '';
 

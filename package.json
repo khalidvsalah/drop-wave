@@ -23,8 +23,8 @@
     "uglify-js": "^3.17.4"
   },
   "scripts": {
-    "prod": "node ./scripts/prod/index.js",
     "dev": "node ./scripts/dev/index.js",
+    "prod": "node ./scripts/prod/index.js",
     "test": "jest"
   },
   "type": "module"

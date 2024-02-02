@@ -34,28 +34,28 @@ var Raf = class {
    * @param {{cb: Function, d: number}} o
    * @returns {Number} - object id.
    */
-  push(o2) {
-    if (o2.d === 0)
-      return o2.cb(1);
-    o2.id = ++this.id;
-    this.items.push(o2);
+  push(o) {
+    if (o.d === 0)
+      return o.cb(1);
+    o.id = ++this.id;
+    this.items.push(o);
     if (!this.on)
       this.loop();
-    return o2.id;
+    return o.id;
   }
   update(t) {
     for (let i = 0; i < this.items.length; i++) {
-      const o2 = this.items[i];
-      if (o2.d) {
-        if (!o2.st)
-          o2.st = t;
-        const time = (t - o2.st) / (o2.d * 1e3);
+      const o = this.items[i];
+      if (o.d) {
+        if (!o.st)
+          o.st = t;
+        const time = (t - o.st) / (o.d * 1e3);
         const e = clamp(0, 1, time);
-        const cb = o2.cb(e);
+        const cb = o.cb(e);
         if (cb || e === 1)
-          this.kill(o2.id);
+          this.kill(o.id);
       } else
-        o2.cb(t);
+        o.cb(t);
     }
     this.loop();
   }
@@ -64,10 +64,10 @@ var Raf = class {
    * @param {Number} - object id.
    */
   kill(n) {
-    this.items.map((o2, i) => {
-      if (o2.id === n) {
-        o2.id = null;
-        o2.st = null;
+    this.items.map((o, i) => {
+      if (o.id === n) {
+        o.id = null;
+        o.st = null;
         this.items.splice(i, 1);
       }
     });
@@ -121,9 +121,9 @@ var Observer = class {
     let id = this.observers[name].id++;
     let obj = { cb, id, on: true };
     items.push(obj);
-    let r = (o2) => {
+    let r = (o) => {
       for (let i = 0; i < items.length; i++) {
-        if (items[i].id == o2.id) {
+        if (items[i].id == o.id) {
           items[i].on = false;
           items.splice(i, 1);
         }
@@ -190,20 +190,20 @@ function filter(text) {
     }
   }
 }
-function domOutput(lines, output, o2) {
-  if (o2.words) {
+function domOutput(lines, output, o) {
+  if (o.words) {
     const len = lines.words.length;
     let line;
-    if (o2.ltrs) {
-      line = lines.words.reduce((a, b2, i) => {
+    if (o.ltrs) {
+      line = lines.words.reduce((a, b, i) => {
         let str = "";
-        for (let i2 = 0; i2 < b2.length; i2++)
-          str += wrap(b2[i2], 3);
+        for (let i2 = 0; i2 < b.length; i2++)
+          str += wrap(b[i2], 3);
         return a + wrap(str + (i == len - 1 ? "" : space), 2);
       }, "");
     } else {
-      line = lines.words.reduce((a, b2, i) => {
-        return a + wrap(b2 + (i == len - 1 ? "" : space), 2);
+      line = lines.words.reduce((a, b, i) => {
+        return a + wrap(b + (i == len - 1 ? "" : space), 2);
       }, "");
     }
     output.push({ line: wrap(line, 1) });
@@ -220,7 +220,7 @@ function wrap(text, type) {
     return `<span class="ltr">${text}</span>`;
   }
 }
-function check(value, lines, div, width, output, o2) {
+function check(value, lines, div, width, output, o) {
   for (let k = 0; k < value.length; k++) {
     const word = value[k];
     lines.value += word;
@@ -228,36 +228,36 @@ function check(value, lines, div, width, output, o2) {
     lines.words.push(word);
     if (div.offsetWidth > width) {
       lines.words.pop();
-      domOutput(lines, output, o2);
+      domOutput(lines, output, o);
       lines.value = word;
       lines.words = [word + space];
     }
     lines.value += space;
   }
 }
-function newline(obj, div, width, o2) {
+function newline(obj, div, width, o) {
   const lines = { value: "", words: [] };
   const output = [];
   for (let i = 0; i < obj.length; i++) {
     const node = obj[i];
     if (node.type === 3) {
-      check(node.value, lines, div, width, output, o2);
+      check(node.value, lines, div, width, output, o);
     } else {
     }
   }
-  domOutput(lines, output, o2);
+  domOutput(lines, output, o);
   return output;
 }
-function split(node, o2) {
+function split(node, o) {
   let compute = computed(node);
   let div = document.createElement("div");
-  if (o2.ltrs)
-    o2.words = true;
+  if (o.ltrs)
+    o.words = true;
   init(div, compute);
   const width = node.offsetWidth;
   let obj = splitText(node);
   filter(obj);
-  const output = newline(obj, div, width, o2);
+  const output = newline(obj, div, width, o);
   node.innerHTML = "";
   document.body.removeChild(div);
   output.map(({ line }) => node.innerHTML += line);

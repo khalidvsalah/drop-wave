@@ -1,4 +1,4 @@
-import { bounds } from '../../index';
+import { bounds } from '../../../index';
 
 /**
  * Get top function
@@ -24,7 +24,7 @@ const top = (t, c) => {
   }
 
   tV.lerp = tV.e - tV.s;
-  return (e) => `${tV.s + tV.lerp * e}${tV.unit}`;
+  return e => `${tV.s + tV.lerp * e}${tV.unit}`;
 };
 
 const setValue = (e, v) => (e.style.top = v);

@@ -1,6 +1,6 @@
-import { lerp } from '../../index';
+import { lerp } from '../../../index';
 
-const d = (t) => {
+const d = t => {
   const r = [];
   const arr = t.split(' ');
   const length = arr.length;
@@ -22,7 +22,7 @@ const points = (p, n) => {
   const s = d(n.el.getAttribute('points'));
   const e = d(p[0]);
 
-  return (t) => {
+  return t => {
     let st = '';
     let value = '';
 

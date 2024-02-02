@@ -4,8 +4,6 @@ import { clamp } from '../index';
 class Raf {
   constructor() {
     this.items = [];
-    this.on = false;
-
     this.id = -1;
   }
 
@@ -15,13 +13,9 @@ class Raf {
    * @returns {Number} - object id.
    */
   push(o) {
-    if (o.d === 0) return o.cb(1);
-
     o.id = ++this.id;
-
     this.items.push(o);
     if (!this.on) this.loop();
-
     return o.id;
   }
 
@@ -32,7 +26,6 @@ class Raf {
       if (o.d) {
         if (!o.st) o.st = t;
         const time = (t - o.st) / (o.d * 1e3);
-
         const e = clamp(0, 1, time);
         const cb = o.cb(e);
 

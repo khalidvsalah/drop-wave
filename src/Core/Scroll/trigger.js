@@ -1,5 +1,13 @@
 import { tween, bounds, sub, map, props, ease, zero } from '../../index';
 
+const match = (str, bs) => {
+  let plus = str.match(/(\+|\-)(.*)/);
+  if (plus) {
+    if (plus[1] == '+') return bs + +plus[2];
+    else if (plus[1] == '-') return bs - +plus[2];
+  } else return +str;
+};
+
 /**
  * Add tigger
  */
@@ -12,20 +20,18 @@ class trigger {
    */
   constructor(el, o, dir) {
     this.el = el;
+    this.target = o.target;
+
     this.o = o;
 
     this.dir = dir;
-    this.d = dir ? 'y' : 'x';
-    this.dE = dir ? 'yE' : 'xE';
+    this.dirE = dir == 'y' ? 'yE' : 'xE';
 
     this.Init(o);
   }
 
   Init(o) {
-    if (!o.target) {
-      o.target = this.el;
-      this.target = o.target;
-    }
+    if (!o.target) this.target = this.el;
     if (o.scroll) {
       const node = o.target.length ? o.target[0] : o.target;
 
@@ -46,14 +52,14 @@ class trigger {
    * resize
    */
   resize() {
-    const bs = bounds(this.target.length ? this.target[0] : this.target);
+    const bs = bounds(this.el.length ? this.el[0] : this.el);
 
-    if (this.dir) {
-      this.sp = bs.y;
-      this.ep = bs.yE;
-    } else {
-      this.sp = bs.x;
-      this.ep = bs.xE;
+    this.sp = match(this.o.start || '+0', bs[this.dir]);
+    this.ep = match(this.o.end || '+0', bs[this.dirE]);
+
+    if (this.o.pin) {
+      this.pin.start = match(this.pin.a || '+0', bs[this.dir]);
+      this.pin.end = match(this.pin.z || '+0', bs[this.dirE]);
     }
   }
 
@@ -61,21 +67,21 @@ class trigger {
    * Loop
    */
   raf(coord) {
-    this.coord = coord[this.d];
+    this.coord = coord[this.dir];
 
-    let start = this.o.start || this.sp;
-    let end = this.o.end || this.ep;
+    let s = this.sp;
+    let e = this.ep;
 
     if (this.o.scroll) {
-      if (end < this.coord || start > this.coord) this.in = false;
-      if (start <= this.coord) this.in = true;
+      if (e < this.coord || s > this.coord) this.in = false;
+      if (s <= this.coord) this.in = true;
 
-      const dist = map(start, end, this.coord);
+      const dist = map(s, e, this.coord);
       if (this.in) this.scroll(dist);
 
-      if (this.o.pin) this.piner(dist);
-      if (this.o.raf) this.o.raf(this.o.target, dist, this.coord);
-    } else if (start <= this.coord) this.fire();
+      if (this.o.pin) this.piner();
+      if (this.o.raf) this.o.raf(this.o.target, this.coord);
+    } else if (s <= this.coord) this.fire();
   }
 
   /**
@@ -105,7 +111,7 @@ class trigger {
    */
   piner() {
     if (this.pined) {
-      if (!(this.coord >= this.pin.z)) {
+      if (!(this.coord >= this.pin.end)) {
         const dist = zero(0, this.coord - this.pin.pxS);
         this.pin.target.style.transform = `translate3d(${
           this.dir ? '0px,' + dist + 'px' : dist + 'px,0px'
@@ -113,8 +119,8 @@ class trigger {
       }
     }
 
-    if (this.coord < this.pin.a) this.pined = false;
-    else if (this.coord >= this.pin.a && !this.pined) {
+    if (this.coord < this.pin.start) this.pined = false;
+    else if (this.coord >= this.pin.start && !this.pined) {
       this.pin.pxS = this.coord;
       this.pined = true;
     }
