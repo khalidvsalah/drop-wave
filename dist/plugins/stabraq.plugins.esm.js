@@ -1,32 +1,22 @@
-/* @khalidvsalah | blinkwave | v0.0.1 | MIT License | https://github.com/khalidvsalah/blink-wave */ // src/Math/math.js
+// src/Math/math.js
 var clamp = (min, max, a) => Math.min(Math.max(min, a), max);
 
 // src/Core/methods/methods.js
 var computed = (c) => window.getComputedStyle(c);
-var iSet = {
-  alpha: (e, v) => e.style.opacity = v,
-  display: (e, v) => e.style.display = v,
-  pointer: (e, v) => e.style.pointerEvents = v,
+var query = {
   id: (s) => document.getElementById(s),
   el: (s) => document.querySelector(s),
   els: (s) => [...document.querySelectorAll(s)],
   sEl: (e, s) => e.querySelector(s),
   sEls: (e, s) => [...e.querySelectorAll(s)],
-  get size() {
-    return { w: window.innerWidth, h: window.innerHeight };
-  },
-  position: (e, v) => e.style.position = v,
   node: (type) => document.createElement(type),
-  text: (text) => document.createTextNode(text),
-  string: (obj) => JSON.stringify(obj),
-  visible: (e, v) => e.style.visibility = v
+  text: (text) => document.createTextNode(text)
 };
 
 // src/Utils/raf.js
 var Raf = class {
   constructor() {
     this.items = [];
-    this.on = false;
     this.id = -1;
   }
   /**
@@ -35,8 +25,6 @@ var Raf = class {
    * @returns {Number} - object id.
    */
   push(o) {
-    if (o.d === 0)
-      return o.cb(1);
     o.id = ++this.id;
     this.items.push(o);
     if (!this.on)
@@ -143,7 +131,7 @@ var Observer = class {
 };
 var observer_default = new Observer();
 
-// src/Plugins/src/line.js
+// src/Plugins/line/line.js
 var space = " ";
 function init(div, compute) {
   document.body.append(div);
@@ -262,9 +250,9 @@ function split(node, o) {
   document.body.removeChild(div);
   output.map(({ line }) => node.innerHTML += line);
   return {
-    lines: iSet.sEls(node, ".tfx"),
-    words: iSet.sEls(node, ".word"),
-    ltrs: iSet.sEls(node, ".ltr")
+    lines: query.sEls(node, ".tfx"),
+    words: query.sEls(node, ".word"),
+    ltrs: query.sEls(node, ".ltr")
   };
 }
 var line_default = split;

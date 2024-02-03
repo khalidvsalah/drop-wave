@@ -1,4 +1,49 @@
-/* @khalidvsalah | blinkwave | v0.0.1 | MIT License | https://github.com/khalidvsalah/blink-wave */ // src/Math/ease.js
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+
+// src/index.js
+var src_exports = {};
+__export(src_exports, {
+  bounds: () => bounds,
+  choke: () => choke,
+  clamp: () => clamp,
+  computed: () => computed,
+  cssSet: () => cssSet,
+  ease: () => ease_default,
+  has: () => has,
+  iSet: () => iSet,
+  late: () => Late,
+  lerp: () => lerp,
+  map: () => map,
+  props: () => props_default,
+  query: () => query,
+  raf: () => raf_default,
+  remap: () => remap,
+  round: () => round,
+  scroll: () => scroll_default,
+  scrub: () => scrub,
+  sub: () => observer_default,
+  tween: () => tween_default2,
+  zero: () => zero
+});
+module.exports = __toCommonJS(src_exports);
+
+// src/Math/ease.js
 var ease = {
   /**
    * Easing functions specify the rate of change of a parameter over time.
@@ -57,23 +102,28 @@ var bounds = (e) => {
   };
 };
 var computed = (c) => window.getComputedStyle(c);
-var iSet = {
+var cssSet = {
   alpha: (e, v) => e.style.opacity = v,
   display: (e, v) => e.style.display = v,
   pointer: (e, v) => e.style.pointerEvents = v,
+  position: (e, v) => e.style.position = v,
+  visible: (e, v) => e.style.visibility = v,
+  form: (e, p, x, y) => e.style.transform = `translate3d(${x + p},${y + p},0)`
+};
+var query = {
   id: (s) => document.getElementById(s),
   el: (s) => document.querySelector(s),
   els: (s) => [...document.querySelectorAll(s)],
   sEl: (e, s) => e.querySelector(s),
   sEls: (e, s) => [...e.querySelectorAll(s)],
+  node: (type) => document.createElement(type),
+  text: (text) => document.createTextNode(text)
+};
+var iSet = {
   get size() {
     return { w: window.innerWidth, h: window.innerHeight };
   },
-  position: (e, v) => e.style.position = v,
-  node: (type) => document.createElement(type),
-  text: (text) => document.createTextNode(text),
-  string: (obj2) => JSON.stringify(obj2),
-  visible: (e, v) => e.style.visibility = v
+  string: (obj2) => JSON.stringify(obj2)
 };
 var choke = class {
   constructor({ late, cb }) {
@@ -87,7 +137,7 @@ var choke = class {
   }
 };
 
-// src/Utils/properties/alpha.js
+// src/Utils/props/properties/alpha.js
 var alpha = (o, n) => {
   const oV = {
     s: +n.opacity,
@@ -102,7 +152,7 @@ var alpha_default = {
   setValue
 };
 
-// src/Utils/properties/d.js
+// src/Utils/props/properties/d.js
 var length = {
   a: 7,
   c: 6,
@@ -166,22 +216,18 @@ var d_default = {
   setValue: setValue2
 };
 
-// src/Utils/properties/dash.js
+// src/Utils/props/properties/dash.js
 var dash = (d3, n) => {
-  const dV = {
-    s: parseFloat(n.strokeDashoffset),
-    e: d3[0]
-  };
+  const length2 = n.el.getTotalLength();
+  n.el.style.strokeDasharray = length2;
+  const dV = { s: d3[0] * length2, e: d3[1] * length2 };
   dV.lerp = dV.e - dV.s;
   return (e) => `${dV.s + dV.lerp * e}`;
 };
 var setValue3 = (e, v) => e.style.strokeDashoffset = v;
-var dash_default = {
-  cb: dash,
-  setValue: setValue3
-};
+var dash_default = { cb: dash, setValue: setValue3 };
 
-// src/Utils/properties/points.js
+// src/Utils/props/properties/points.js
 var d2 = (t) => {
   const r = [];
   const arr = t.split(" ");
@@ -215,7 +261,7 @@ var points_default = {
   setValue: setValue4
 };
 
-// src/Utils/properties/top.js
+// src/Utils/props/properties/top.js
 var top = (t, c) => {
   let tV;
   if (c.top === "auto") {
@@ -241,7 +287,7 @@ var top_default = {
   setValue: setValue5
 };
 
-// src/Utils/properties/transform.js
+// src/Utils/props/properties/transform.js
 var translateX = (p, t, w) => {
   const x = p.x;
   const value = t ? +t[4] : 0;
@@ -337,13 +383,14 @@ var getMatrix = (t) => {
   return matrix;
 };
 var transform = (p, { transform: transform2, width: width2, height: height2 }) => {
+  const props2 = p[0];
   const matrix = getMatrix(transform2);
-  const xV = translateX(p, matrix, width2);
-  const yV = translateY(p, matrix, height2);
-  const sxV = scaleX(p, matrix);
-  const syV = scaleY(p, matrix);
-  const rxV = rotateX(p, matrix);
-  const ryV = rotateY(p, matrix);
+  const xV = translateX(props2, matrix, width2);
+  const yV = translateY(props2, matrix, height2);
+  const sxV = scaleX(props2, matrix);
+  const syV = scaleY(props2, matrix);
+  const rxV = rotateX(props2, matrix);
+  const ryV = rotateY(props2, matrix);
   return (e) => {
     const eX = `${xV.s + xV.lerp * e}${xV.unit}`;
     const eY = `${yV.s + yV.lerp * e}${yV.unit}`;
@@ -355,12 +402,9 @@ var transform = (p, { transform: transform2, width: width2, height: height2 }) =
   };
 };
 var setValue6 = (e, v) => e.style.transform = v;
-var transform_default = {
-  cb: transform,
-  setValue: setValue6
-};
+var transform_default = { cb: transform, setValue: setValue6 };
 
-// src/Utils/properties/blur.js
+// src/Utils/props/properties/blur.js
 var blur = (b, c) => {
   let bV;
   if (c.filter === "none") {
@@ -383,7 +427,7 @@ var blur_default = {
   setValue: setValue7
 };
 
-// src/Utils/properties/width.js
+// src/Utils/props/properties/width.js
 var width = (w, n) => {
   const parse2 = parseFloat(n.width);
   const wV = {
@@ -400,7 +444,7 @@ var width_default = {
   setValue: setValue8
 };
 
-// src/Utils/properties/height.js
+// src/Utils/props/properties/height.js
 var height = (h, n) => {
   const parse2 = parseFloat(n.height);
   const hV = {
@@ -417,47 +461,51 @@ var height_default = {
   setValue: setValue9
 };
 
-// src/Utils/props.js
-function match(name) {
-  if (name.match(/^(form)$/))
-    return transform_default;
-  else if (name.match(/^(a)$/))
-    return alpha_default;
-  else if (name.match(/^(dash)$/))
-    return dash_default;
-  else if (name.match(/^(points)$/))
-    return points_default;
-  else if (name.match(/^(d)$/))
-    return d_default;
-  else if (name.match(/^(t)$/))
-    return top_default;
-  else if (name.match(/^(blur)$/))
-    return blur_default;
-  else if (name.match(/^(width)$/))
-    return width_default;
-  else if (name.match(/^(height)$/))
-    return height_default;
+// src/Utils/props/regexs.js
+var regexs = [
+  [/^(form)$/, transform_default],
+  [/^(a)$/, alpha_default],
+  [/^(dash)$/, dash_default],
+  [/^(points)$/, points_default],
+  [/^(d)$/, d_default],
+  [/^(top)$/, top_default],
+  [/^(blur)$/, blur_default],
+  [/^(width)$/, width_default],
+  [/^(height)$/, height_default]
+];
+var regexs_default = regexs;
+
+// src/Utils/props/matches.js
+function matchs(name) {
+  const length2 = regexs_default.length;
+  for (let i = 0; i < length2; i++) {
+    const regex = regexs_default[i];
+    if (name.match(regex[0]))
+      return regex[1];
+  }
 }
+
+// src/Utils/props/props.js
 function dom(e, ps) {
   const results = [];
-  const c = computed(e);
+  const compute = computed(e);
   const dir = ps.dir == -1 ? true : false;
-  const easef = ease_default[ps.ease || "l"];
-  c.el = e;
-  c.pa = e.parentNode;
+  compute.el = e;
+  compute.pa = e.parentNode;
   for (const key of Object.entries(ps)) {
     if (key[0] == "dir")
       continue;
-    if (key[0] == "ease")
-      continue;
-    const values = match(key[0]);
-    const cb = values.cb(key[1], c);
-    let easing = key[1][key[1].length - 1];
-    if (easing == void 0)
-      easing = ease_default[key[1].ease];
-    else
-      easing = ease_default[easing.ease];
-    easing = easing || easef;
+    const values = matchs(key[0]);
+    const cb = values.cb(key[1], compute);
+    const l = key[1].length;
+    let easing = key[1][l - 1];
+    if (typeof easing == "object") {
+      if (easing.ease)
+        easing = ease_default[easing.ease];
+      else
+        easing = ease_default[ps.ease || "l"];
+    } else
+      easing = ease_default[ps.ease || "l"];
     results.push({
       setV: values.setValue,
       cb: (e2) => cb(easing(dir ? 1 - e2 : e2))
@@ -491,7 +539,6 @@ var props_default = props;
 var Raf = class {
   constructor() {
     this.items = [];
-    this.on = false;
     this.id = -1;
   }
   /**
@@ -500,8 +547,6 @@ var Raf = class {
    * @returns {Number} - object id.
    */
   push(o) {
-    if (o.d === 0)
-      return o.cb(1);
     o.id = ++this.id;
     this.items.push(o);
     if (!this.on)
@@ -553,7 +598,24 @@ var raf_default = new Raf();
 function scrub(cb) {
   const node = document.createElement("section");
   const lProg = { start: 0, end: 0, lerp: 0.75 };
-  node.style.cssText = ` position: fixed; height: 32px; width: 32px; display: flex; align-items: center; justify-content: center; font-size: 12px; background: #333; color: #fff; border-radius: 50%; pointer-events: none; `;
+  node.style.cssText = `
+    position: fixed;
+
+    height: 32px;
+    width: 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 12px;
+    
+    background: #333;
+    color: #fff;
+
+    border-radius: 50%;
+    pointer-events: none;
+  `;
   observer_default.add("pointermove", (e) => {
     const progress = round(e.pageX / iSet.size.w);
     node.style.top = e.pageY + -30 + "px";
@@ -621,7 +683,7 @@ function element(ele) {
   if (ele instanceof Node) {
     this.target = ele;
   } else if (typeof ele == "string") {
-    this.target = iSet.el(ele);
+    this.target = query.el(ele);
   } else {
     this.obj = true;
     this.target = ele;
@@ -647,31 +709,28 @@ var Tween = class {
    * @param {Object} o - properties
    */
   constructor(el, o) {
-    const sT = stored.call(this, el);
-    if (!sT) {
+    const stored2 = stored.call(this, el);
+    if (!stored2) {
       element.call(this, el);
       this.init(o);
-    } else {
-      return sT;
-    }
+    } else
+      return stored2;
   }
   /**
    * Setting up the class.
    */
   init(o) {
     this.o = o;
-    this.gui = o.gui;
     this.mode;
     this.prog = 0;
-    this.elpased = 0;
+    this.elapsed = 0;
     this.dir = 0;
     this.d = o.d;
     this.late = o.late;
-    this.props = o.p;
-    this.props.ease = o.ease || "l";
+    this.oProps = o.p;
     this.lateO = { cb: this.run.bind(this), d: this.d };
     this.late = new Late({ late: this.late, o: this.lateO });
-    this.properties = props_default(this.target, this.obj, this.props);
+    this.props = props_default(this.target, this.obj, o.p);
   }
   /**
    * Loop.
@@ -679,12 +738,11 @@ var Tween = class {
    */
   run(t) {
     this.on = true;
-    this.rest = this.prog + t;
-    this.elpased = clamp(0, 1, this.rest);
-    this.e = Math.abs(this.dir - this.elpased);
-    this.properties.map(({ setV, cb }) => setV(this.target, cb(this.e)));
-    this.raf && this.raf(this.e, this.target);
-    if (this.elpased === 1)
+    this.elapsed = clamp(0, 1, this.prog + t);
+    const e = Math.abs(this.dir - this.elapsed);
+    this.props.map(({ setV, cb }) => setV(this.target, cb(e)));
+    this.raf && this.raf(e, this.target);
+    if (this.elapsed == 1)
       return this.destroy();
   }
   /**
@@ -705,10 +763,7 @@ var Tween = class {
       this.dir = 1;
     else
       this.dir = 0;
-    this.late.cb = () => {
-      if (this.start)
-        this.start(this.target);
-    };
+    this.late.cb = () => this.start && this.start(this.target);
     if (this.late.on)
       return;
     if (this.on) {
@@ -716,10 +771,9 @@ var Tween = class {
       if (n)
         this.prog = 0;
       else
-        this.prog = 1 - this.elpased;
-    } else {
+        this.prog = 1 - this.elapsed;
+    } else
       this.late.play();
-    }
   }
   /**
    * @param {number} d - update delay time.
@@ -740,27 +794,21 @@ var Tween = class {
    * @param {Object} o - The new properties.
    */
   play(o, i) {
-    if (this.gui) {
-      scrub(this.run.bind(this));
-      return;
-    }
     this.index = i;
     if (this.index === 0) {
       this.start = o.start;
       this.completed = o.completed;
       this.raf = o.raf;
     }
-    if (iSet.string(this.props) !== iSet.string(o.p)) {
+    if (iSet.string(this.oProps) != iSet.string(o.p)) {
       this.late.d = o.late || 0;
       this.lateO.d = o.d;
-      this.props = o.p;
-      this.props.ease = this.o.ease || this.props.ease;
-      this.properties = props_default(this.target, this.obj, this.props);
+      this.oProps = o.p;
+      this.props = props_default(this.target, this.obj, o.p);
       this.mode = "r";
       this.control("p", true);
-    } else {
+    } else
       this.control("p");
-    }
   }
   destroy() {
     this.on = false;
@@ -858,7 +906,7 @@ var Observer = class {
 var observer_default = new Observer();
 
 // src/Core/scroll/trigger.js
-var match2 = (str, bs) => {
+var match = (str, bs) => {
   let plus = str.match(/(\+|\-)(.*)/);
   if (plus) {
     if (plus[1] == "+")
@@ -877,17 +925,15 @@ var trigger = class {
    */
   constructor(el, o, dir) {
     this.el = el;
+    this.target = o.target;
     this.o = o;
     this.dir = dir;
-    this.d = dir ? "y" : "x";
-    this.dE = dir ? "yE" : "xE";
+    this.dirE = dir == "y" ? "yE" : "xE";
     this.Init(o);
   }
   Init(o) {
-    if (!o.target) {
-      o.target = this.el;
-      this.target = o.target;
-    }
+    if (!o.target)
+      this.target = this.el;
     if (o.scroll) {
       const node = o.target.length ? o.target[0] : o.target;
       this.ps = props_default(node, false, o.scroll);
@@ -905,28 +951,19 @@ var trigger = class {
    * resize
    */
   resize() {
-    const bs = bounds(this.target.length ? this.target[0] : this.target);
-    if (this.dir) {
-      this.sp = match2(this.o.start || "+0", bs.y);
-      this.ep = match2(this.o.end || "+0", bs.yE);
-      if (this.o.pin) {
-        this.pin.start = match2(this.pin.a || "+0", bs.y);
-        this.pin.end = match2(this.pin.z || "+0", bs.yE);
-      }
-    } else {
-      this.sp = match2(this.o.start || "+0", bs.x);
-      this.ep = match2(this.o.end || "+0", bs.xE);
-      if (this.o.pin) {
-        this.pin.start = match2(this.pin.a || "+0", bs.x);
-        this.pin.end = match2(this.pin.z || "+0", bs.xE);
-      }
+    const bs = bounds(this.el.length ? this.el[0] : this.el);
+    this.sp = match(this.o.start || "+0", bs[this.dir]);
+    this.ep = match(this.o.end || "+0", bs[this.dirE]);
+    if (this.o.pin) {
+      this.pin.start = match(this.pin.a || "+0", bs[this.dir]);
+      this.pin.end = match(this.pin.z || "+0", bs[this.dirE]);
     }
   }
   /**
    * Loop
    */
   raf(coord) {
-    this.coord = coord[this.d];
+    this.coord = coord[this.dir];
     let s = this.sp;
     let e = this.ep;
     if (this.o.scroll) {
@@ -1011,10 +1048,10 @@ var Scroll = class {
     this.sub = observer_default.obs(o.obs || Symbol("foo"));
     this.time = (/* @__PURE__ */ new Date()).getTime();
     this.offset = 0;
-    this.chokeEl = iSet.el("[overlay]");
+    this.chokeEl = query.el("[overlay]");
     this.choke = new choke({
       late: 0.3,
-      cb: () => iSet.pointer(this.chokeEl, "none")
+      cb: () => cssSet.pointer(this.chokeEl, "none")
     });
   }
   /**
@@ -1074,7 +1111,7 @@ var Scroll = class {
    * Starting point
    */
   down(e) {
-    iSet.pointer(this.chokeEl, "all");
+    cssSet.pointer(this.chokeEl, "all");
     this.downOn = true;
     this.dist[this.dir].start = e[this.ePage];
     this.prev[this.dir] = this.drag[this.dir];
@@ -1133,7 +1170,7 @@ var Scroll = class {
       this.drag[this.dir],
       this.ease
     );
-    this.target.style.transform = `translate3d(-${this.scroll.x}px, -${this.scroll.y}px, 0)`;
+    cssSet.form(this.target, "px", -this.scroll.x, -this.scroll.y);
     if (this.sub)
       this.sub.cb(this.scroll);
     if (round(this.scroll[this.dir], 2) == this.drag[this.dir])
@@ -1177,24 +1214,3 @@ var Scroll = class {
   }
 };
 var scroll_default = Scroll;
-export {
-  bounds,
-  choke,
-  clamp,
-  computed,
-  ease_default as ease,
-  has,
-  iSet,
-  Late as late,
-  lerp,
-  map,
-  props_default as props,
-  raf_default as raf,
-  remap,
-  round,
-  scroll_default as scroll,
-  scrub,
-  observer_default as sub,
-  tween_default2 as tween,
-  zero
-};

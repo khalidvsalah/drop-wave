@@ -1,17 +1,15 @@
 {
-  "name": "oxca",
-  "version": "0.0.1",
+  "name": "stabraq",
+  "version": "1.0.0",
   "description": "A JavaScript Animation Library",
-  "main": "index.js",
-  "repository": "https://github.com/khalidvsalah/oxca.git",
-  "author": "Khalid Salah <khalidvsalah@gmail.com>",
+  "repository": "khalidvsalah/oxca.git",
+  "author": "Khalid Salah <khalidvsalah@gmail.com> (https://www.khalidsalah.com)",
   "license": "MIT",
   "devDependencies": {
-    "@babel/core": "^7.23.2",
+    "@babel/core": "^7.23.9",
     "browser-sync": "^2.29.3",
     "colors": "^1.4.0",
-    "dat.gui": "^0.7.9",
-    "esbuild": "^0.19.3",
+    "esbuild": "^0.19.12",
     "esbuild-minify-templates": "^0.11.0",
     "esbuild-plugin-babel": "^0.2.3",
     "esbuild-plugin-eslint": "^0.3.6",
@@ -24,8 +22,17 @@
   },
   "scripts": {
     "dev": "node ./scripts/dev/index.js",
-    "prod": "node ./scripts/prod/index.js",
-    "test": "jest"
+    "prod": "node ./scripts/prod/index.js"
   },
-  "type": "module"
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/stabraq.js",
+      "require": "./dist/stabraq.esm.js"
+    },
+    "./plugins": {
+      "import": "./dist/plugins/stabraq.plugins.js",
+      "require": "./dist/plugins/stabraq.plugins.esm.js"
+    }
+  }
 }

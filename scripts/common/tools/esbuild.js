@@ -7,38 +7,34 @@ import eslint from 'esbuild-plugin-eslint';
 import babel from 'esbuild-plugin-babel';
 import { minifyTemplates, writeFiles } from 'esbuild-minify-templates';
 
-const string =
-  '/* @khalidvsalah | blinkwave | v0.0.1 | MIT License | https://github.com/khalidvsalah/blink-wave */ ';
-
-function config(entry, dest, mode, config) {
+const string = `/* @khalidvsalah | Stabraq | v1.0.0 | MIT License | https://github.com/khalidvsalah/stabraq */`;
+function config(entry, options) {
   let plugins = [
-    minifyTemplates(),
-    writeFiles()
-    // eslint({ baseConfig: config }),
-    // babel(),
+    minifyTemplates()
+    // writeFiles(),
+    // eslint({ baseConfig: options.eslint }),
+    // babel()
   ];
 
-  let o = {
+  return {
     entryPoints: [entry],
     bundle: true,
-    format: 'esm',
-    plugins,
+    format: options.format,
+    // plugins,
     minify: false,
-    outfile: dest,
-    write: !mode
+    outfile: options.output
+    // write: !options.mode
   };
-
-  return o;
 }
 
-async function bundleJS(entry, dest, mode, eslint) {
+async function bundleJS(entry, options) {
   try {
-    await build(config(entry, dest, mode, eslint));
+    await build(config(entry, options));
 
-    if (mode) {
-      let file = fs.readFileSync(dest, 'utf-8');
-      fs.writeFileSync(dest, string + file, 'utf-8');
-    }
+    // if (options.mode) {
+    //   let file = fs.readFileSync(options.output, 'utf-8');
+    //   fs.writeFileSync(options.output, string + file, 'utf-8');
+    // }
   } catch (e) {
     console.error(
       e.message,
@@ -48,10 +44,24 @@ async function bundleJS(entry, dest, mode, eslint) {
 }
 
 export default (o) => {
-  o.entry.map((e, i) => {
-    let entry = e;
-    let dest = o.dest[i];
+  o.entry.map(async (e, i) => {
+    const entry = e;
+    const dests = o.dest[i];
+    const options = {
+      format: 'esm',
+      output: dests,
+      mode: o.mode,
+      eslint: o.eslint
+    };
 
-    bundleJS(entry, dest, o.mode, o.eslint).then(o.cb);
+    if (typeof dests == 'object') {
+      dests.map(async ({ format, dest }) => {
+        options.format = format;
+        options.output = dest;
+        bundleJS(entry, options);
+      });
+    } else {
+      await bundleJS(entry, options).then(o.cb);
+    }
   });
 };
