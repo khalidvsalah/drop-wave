@@ -1,5 +1,7 @@
-import { late, clamp, props, iSet } from '../../index';
-
+import { iSet } from '../methods/methods';
+import props from '../../Utils/props/props';
+import { clamp } from '../../Math/math';
+import late from '../late/late';
 import targeted from './tools/targeted';
 import store from './tools/stored';
 

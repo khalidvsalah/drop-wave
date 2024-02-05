@@ -1,5 +1,3 @@
-import { cssSet } from '../../../index';
-
 const translateX = (p, t, w) => {
   const x = p.x;
   const value = t ? +t[4] : 0;

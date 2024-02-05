@@ -1,4 +1,4 @@
-import { computed, query } from '../../index';
+import { computed, query } from '../Core/methods/methods';
 
 const space = ' ';
 

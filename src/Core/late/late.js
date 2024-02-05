@@ -1,4 +1,4 @@
-import { raf } from '../../index';
+import raf from '../../Utils/raf';
 
 /**
  * Handling Delay

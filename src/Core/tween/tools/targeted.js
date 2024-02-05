@@ -1,4 +1,4 @@
-import { query } from '../../../index';
+import { query } from '../../methods/methods';
 
 /**
  * Check element type

@@ -1,4 +1,4 @@
-import { lerp } from '../../../index';
+import { lerp } from '../../../Math/math';
 
 const length = {
   a: 7,

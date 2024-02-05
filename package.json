@@ -1,10 +1,12 @@
 {
   "name": "stabraq",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "A JavaScript Animation Library",
-  "repository": "khalidvsalah/oxca.git",
+  "repository": "khalidvsalah/stabraq.git",
   "author": "Khalid Salah <khalidvsalah@gmail.com> (https://www.khalidsalah.com)",
   "license": "MIT",
+  "main": "./dist/stabraq.js",
+  "module": "./dist/stabraq.esm.js",
   "devDependencies": {
     "@babel/core": "^7.23.9",
     "browser-sync": "^2.29.3",
@@ -17,22 +19,11 @@
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.29.0",
     "eslint-plugin-n": "^16.2.0",
-    "eslint-plugin-promise": "^6.1.1",
-    "uglify-js": "^3.17.4"
+    "eslint-plugin-promise": "^6.1.1"
   },
   "scripts": {
     "dev": "node ./scripts/dev/index.js",
     "prod": "node ./scripts/prod/index.js"
   },
-  "type": "module",
-  "exports": {
-    ".": {
-      "import": "./dist/stabraq.js",
-      "require": "./dist/stabraq.esm.js"
-    },
-    "./plugins": {
-      "import": "./dist/plugins/stabraq.plugins.js",
-      "require": "./dist/plugins/stabraq.plugins.esm.js"
-    }
-  }
+  "type": "module"
 }

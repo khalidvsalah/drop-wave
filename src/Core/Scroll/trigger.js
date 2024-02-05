@@ -1,4 +1,9 @@
-import { tween, bounds, sub, map, props, ease, zero } from '../../index';
+import sub from '../methods/observer';
+import props from '../../Utils/props/props';
+import { bounds } from '../methods/methods';
+import { map, zero } from '../../Math/math';
+import ease from '../../Math/ease';
+import tween from '../tween/index';
 
 const match = (str, bs) => {
   let plus = str.match(/(\+|\-)(.*)/);

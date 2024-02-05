@@ -1,4 +1,6 @@
-import { computed, ease } from '../../index';
+import { computed } from '../../Core/methods/methods';
+import ease from '../../Math/ease';
+
 import matches from './matches';
 
 /**

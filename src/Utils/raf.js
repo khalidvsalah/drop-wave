@@ -1,4 +1,4 @@
-import { clamp } from '../index';
+import { clamp } from '../Math/math';
 
 /** @constructor */
 class Raf {

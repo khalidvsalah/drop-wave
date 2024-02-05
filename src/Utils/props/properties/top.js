@@ -1,4 +1,4 @@
-import { bounds } from '../../../index';
+import { bounds } from '../../../Core/methods/methods';
 
 /**
  * Get top function

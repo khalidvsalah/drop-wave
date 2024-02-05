@@ -1,14 +1,7 @@
-import {
-  sub,
-  bounds,
-  clamp,
-  lerp,
-  round,
-  choke,
-  iSet,
-  cssSet,
-  query
-} from '../../index';
+import sub from '../methods/observer';
+import { choke, bounds, iSet, cssSet, query } from '../methods/methods';
+import { round, clamp, lerp } from '../../Math/math';
+
 import Trigger from './trigger';
 
 /**

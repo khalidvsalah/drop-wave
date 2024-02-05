@@ -3,38 +3,32 @@ import fs from 'fs';
 import { build } from 'esbuild';
 import colors from 'colors';
 
-import eslint from 'esbuild-plugin-eslint';
 import babel from 'esbuild-plugin-babel';
 import { minifyTemplates, writeFiles } from 'esbuild-minify-templates';
 
-const string = `/* @khalidvsalah | Stabraq | v1.0.0 | MIT License | https://github.com/khalidvsalah/stabraq */`;
+const string = `/* @khalidvsalah | Stabraq | v1.0.0 | MIT License | https://github.com/khalidvsalah/stabraq | https://www.khalidsalah.com */`;
 function config(entry, options) {
-  let plugins = [
-    minifyTemplates()
-    // writeFiles(),
-    // eslint({ baseConfig: options.eslint }),
-    // babel()
-  ];
+  let plugins = [minifyTemplates(), writeFiles(), babel()];
 
   return {
     entryPoints: [entry],
     bundle: true,
     format: options.format,
-    // plugins,
-    minify: false,
-    outfile: options.output
-    // write: !options.mode
+    plugins,
+    minify: true,
+    outfile: options.output,
+    allowOverwrite: true,
+    write: false
   };
 }
 
 async function bundleJS(entry, options) {
   try {
     await build(config(entry, options));
-
-    // if (options.mode) {
-    //   let file = fs.readFileSync(options.output, 'utf-8');
-    //   fs.writeFileSync(options.output, string + file, 'utf-8');
-    // }
+    if (options.mode) {
+      let file = fs.readFileSync(options.output, 'utf-8');
+      fs.writeFileSync(options.output, string + file, 'utf-8');
+    }
   } catch (e) {
     console.error(
       e.message,
@@ -43,7 +37,7 @@ async function bundleJS(entry, options) {
   }
 }
 
-export default (o) => {
+export default o => {
   o.entry.map(async (e, i) => {
     const entry = e;
     const dests = o.dest[i];
@@ -55,11 +49,12 @@ export default (o) => {
     };
 
     if (typeof dests == 'object') {
-      dests.map(async ({ format, dest }) => {
+      for (let i = 0; i < dests.length; i++) {
+        const { format, dest } = dests[i];
         options.format = format;
         options.output = dest;
-        bundleJS(entry, options);
-      });
+        await bundleJS(entry, options);
+      }
     } else {
       await bundleJS(entry, options).then(o.cb);
     }

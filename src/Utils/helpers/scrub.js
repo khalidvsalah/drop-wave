@@ -1,4 +1,6 @@
-import { sub, iSet, round, clamp, lerp } from '../../index.js';
+import sub from '../../Core/methods/observer.js';
+import { iSet } from '../../Core/methods/methods.js';
+import { round, clamp, lerp } from '../../Math/math.js';
 
 export default function scrub(cb) {
   const node = document.createElement('section');
@@ -23,7 +25,7 @@ export default function scrub(cb) {
     pointer-events: none;
   `;
 
-  sub.add('pointermove', (e) => {
+  sub.add('pointermove', e => {
     const progress = round(e.pageX / iSet.size.w);
 
     node.style.top = e.pageY + -30 + 'px';

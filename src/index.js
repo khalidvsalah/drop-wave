@@ -19,6 +19,8 @@ import tween from './Core/tween/index';
 import sub from './Core/methods/observer';
 import scroll from './Core/scroll/scroll';
 
+import line from './Plugins/line';
+
 export {
   ease,
   clamp,
@@ -40,5 +42,6 @@ export {
   scrub,
   tween,
   sub,
-  scroll
+  scroll,
+  line
 };
