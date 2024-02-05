@@ -3,11 +3,11 @@ import eslint from '../../common/config/eslint.js';
 
 let config = {
   src: 'src/',
-  dest: 'dist/',
+  dest: 'package/',
   langs: {
     js: {
-      entry: ['index.js', 'Plugins/index.js'],
-      dest: ['main.js', 'plugins/index.js'],
+      entry: ['index.js'],
+      dest: ['stabraq.js'],
       watch: ['index.js', '/**/*'],
       eslint
     },
