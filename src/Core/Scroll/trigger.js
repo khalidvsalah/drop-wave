@@ -59,8 +59,13 @@ class trigger {
   resize() {
     const bs = bounds(this.el.length ? this.el[0] : this.el);
 
-    this.sp = match(this.o.scroll.start || '+0', bs[this.dir]);
-    this.ep = match(this.o.scroll.end || '+0', bs[this.dirE]);
+    if (this.o.scroll) {
+      this.sp = match(this.o.scroll.start || '+0', bs[this.dir]);
+      this.ep = match(this.o.scroll.end || '+0', bs[this.dirE]);
+    } else {
+      this.sp = match(this.o.start || '+0', bs[this.dir]);
+      this.ep = match(this.o.end || '+0', bs[this.dirE]);
+    }
 
     if (this.o.pin) {
       this.pin.start = match(this.pin.a || '+0', bs[this.dir]);
