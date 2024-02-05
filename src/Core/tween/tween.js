@@ -1,6 +1,7 @@
 import { iSet } from '../methods/methods';
 import props from '../../Utils/props/props';
 import { clamp } from '../../Math/math';
+import ease from '../../Math/ease';
 import late from '../late/late';
 import targeted from './tools/targeted';
 import store from './tools/stored';
@@ -36,12 +37,16 @@ class Tween {
 
     this.d = o.d;
     this.late = o.late;
+    this.ease = ease[o.ease || 'l'];
 
     this.oProps = o.p;
     this.lateO = { cb: this.run.bind(this), d: this.d };
 
     this.late = new late({ late: this.late, o: this.lateO });
-    this.props = props(this.target, this.obj, o.p);
+    this.props = props(this.target, this.obj, {
+      ...this.oProps,
+      ease: this.ease
+    });
   }
 
   /**
@@ -122,7 +127,10 @@ class Tween {
       this.lateO.d = o.d;
 
       this.oProps = o.p;
-      this.props = props(this.target, this.obj, o.p);
+      this.props = props(this.target, this.obj, {
+        ...this.oProps,
+        ease: ease[o.ease] || this.ease
+      });
 
       this.mode = 'r';
       this.control('p', true);

@@ -14,22 +14,21 @@ function dom(e, ps) {
   const compute = computed(e);
   const dir = ps.dir == -1 ? true : false;
 
+  let easing = ps.ease;
+
   compute.el = e;
   compute.pa = e.parentNode;
 
   for (const key of Object.entries(ps)) {
     if (key[0] == 'dir') continue;
+    if (key[0] == 'ease') continue;
 
     const values = matches(key[0]);
     const cb = values.cb(key[1], compute);
     const l = key[1].length;
 
-    let easing = key[1][l - 1];
-
-    if (typeof easing == 'object') {
-      if (easing.ease) easing = ease[easing.ease];
-      else easing = ease[ps.ease || 'l'];
-    } else easing = ease[ps.ease || 'l'];
+    let nEase = key[1][l - 1];
+    if (typeof nEase == 'object' && nEase.ease) easing = ease[nEase.ease];
 
     results.push({
       setV: values.setValue,
