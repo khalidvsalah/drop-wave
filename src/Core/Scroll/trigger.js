@@ -38,8 +38,10 @@ class trigger {
   Init(o) {
     if (!o.target) this.target = this.el;
     if (o.scroll) {
-      this.ps = props(this.target, false, o.scroll);
-      this.ease = ease[o.ease || 'l'];
+      this.ps = props(this.target, false, {
+        ...o.p,
+        ease: ease[o.ease || 'l']
+      });
     }
     if (o.pin) {
       this.pin = o.pin;
@@ -57,8 +59,8 @@ class trigger {
   resize() {
     const bs = bounds(this.el.length ? this.el[0] : this.el);
 
-    this.sp = match(this.o.start || '+0', bs[this.dir]);
-    this.ep = match(this.o.end || '+0', bs[this.dirE]);
+    this.sp = match(this.o.scroll.start || '+0', bs[this.dir]);
+    this.ep = match(this.o.scroll.end || '+0', bs[this.dirE]);
 
     if (this.o.pin) {
       this.pin.start = match(this.pin.a || '+0', bs[this.dir]);
@@ -76,14 +78,10 @@ class trigger {
     let e = this.ep;
 
     if (this.o.scroll) {
-      if (e < this.coord || s > this.coord) this.in = false;
-      if (s <= this.coord) this.in = true;
-
-      const dist = map(s, e, this.coord);
-      if (this.in) this.scroll(dist);
+      this.scroll(map(s, e, this.coord));
 
       if (this.o.pin) this.piner();
-      if (this.o.raf) this.o.raf(this.o.target, this.coord);
+      if (this.o.raf) this.o.raf(this.target, this.coord);
     } else if (s <= this.coord) this.fire();
   }
 
@@ -92,11 +90,9 @@ class trigger {
    */
   scroll(t) {
     this.ps.map(p => {
-      if (this.o.target.length) {
-        this.o.target.forEach(el => p.setV(el, p.cb(this.ease(t))));
-      } else {
-        p.setV(this.o.target, p.cb(this.ease(t)));
-      }
+      if (this.target.length) {
+        this.target.forEach(el => p.setV(el, p.cb(t)));
+      } else p.setV(this.target, p.cb(t));
     });
   }
 
