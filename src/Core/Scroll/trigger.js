@@ -57,14 +57,20 @@ class trigger {
    * resize
    */
   resize() {
-    const bs = bounds(this.el.length ? this.el[0] : this.el);
+    const element = this.el.length ? this.el[0] : this.el;
+    const bs = {
+      y: element.offsetTop,
+      yE: element.offsetTop + element.offsetHeight,
+      x: element.offsetLeft,
+      xE: element.offsetLeft + element.offsetWidth
+    };
 
     if (this.o.scroll) {
-      this.sp = match(this.o.scroll.start || '+0', bs[this.dir]);
-      this.ep = match(this.o.scroll.end || '+0', bs[this.dirE]);
+      this.startpint = match(this.o.scroll.start || '+0', bs[this.dir]);
+      this.endpoint = match(this.o.scroll.end || '+0', bs[this.dirE]);
     } else {
-      this.sp = match(this.o.start || '+0', bs[this.dir]);
-      this.ep = match(this.o.end || '+0', bs[this.dirE]);
+      this.startpint = match(this.o.start || '+0', bs[this.dir]);
+      this.endpoint = match(this.o.end || '+0', bs[this.dirE]);
     }
 
     if (this.o.pin) {
@@ -79,8 +85,8 @@ class trigger {
   raf(coord) {
     this.coord = coord[this.dir];
 
-    let s = this.sp;
-    let e = this.ep;
+    let s = this.startpint;
+    let e = this.endpoint;
 
     if (this.o.scroll) {
       this.scroll(map(s, e, this.coord));
