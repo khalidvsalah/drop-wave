@@ -72,7 +72,7 @@ class Scroll {
   /**
    * Run on scolling
    */
-  begin() {
+  loop() {
     if (!this.iraf || !this.iraf.item.on) {
       this.iraf = sub.add('raf', this.raf.bind(this));
     }
@@ -82,7 +82,7 @@ class Scroll {
    * Handling wheel event
    */
   wheel(e) {
-    this.begin();
+    this.loop();
     let multip = e.deltaMode == 1 ? 0.83 : 0.55;
 
     this.time = e.timeStamp - this.time;
@@ -114,7 +114,7 @@ class Scroll {
    */
   move(e) {
     if (this.downOn) {
-      this.begin();
+      this.loop();
 
       this.time = e.timeStamp - this.time;
       this.offset = this.drag[this.dir];
@@ -133,7 +133,7 @@ class Scroll {
 
   key(e) {
     if (e.keyCode == 40 || e.keyCode == 38) {
-      this.begin();
+      this.loop();
       let offset = 0;
 
       if (e.keyCode == 40) offset = -66.6;
@@ -158,7 +158,7 @@ class Scroll {
     o.obsname = this.sub.name;
     const trigger = new Trigger(target, o, this.dir);
 
-    this.begin();
+    this.loop();
     return trigger;
   }
 
@@ -184,6 +184,7 @@ class Scroll {
     const size = iSet.size;
     if (this.dir == 'y') this.pageSize = this.bs.h - size.h;
     else this.pageSize = this.bs.w - size.w;
+    this.loop();
   }
 
   /**
