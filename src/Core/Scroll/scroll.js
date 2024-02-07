@@ -54,7 +54,6 @@ class Scroll {
         this.attacher.onpointerdown = this.down.bind(this);
         this.attacher.onpointermove = this.move.bind(this);
       }
-      if (o.wheel !== false) this.attacher.onwheel = this.wheel.bind(this);
     }
 
     this.ipointerup = sub.add('pointerup', this.up.bind(this));
@@ -207,7 +206,6 @@ class Scroll {
         this.attacher.onpointerdown = null;
         this.attacher.onpointermove = null;
       }
-      if (this.o.wheel) this.attacher.onwheel = null;
     }
 
     this.ipointerup.r();
