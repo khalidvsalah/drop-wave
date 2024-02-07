@@ -1,8 +1,9 @@
 import sub from '../methods/observer';
-import { choke, bounds, iSet, cssSet, query } from '../methods/methods';
+import { bounds, iSet, cssSet } from '../methods/methods';
 import { round, clamp, lerp } from '../../Math/math';
 
-import Trigger from './trigger';
+import trigger from './trigger';
+import events from './events';
 
 /**
  * Creating virtual scrolling
@@ -14,58 +15,18 @@ class Scroll {
    */
   constructor(attacher, o) {
     history.scrollRestoration = 'manual';
-    this.attacher = attacher;
-
     this.target = o.target;
 
     this.ease = o.ease || 0.09;
     this.dir = o.dir ? o.dir : 'y';
-    this.ePage = this.dir == 'y' ? 'pageY' : 'pageX';
-
-    this.o = o;
-    this.Init(o);
 
     this.sub = sub.obs(o.obs || Symbol('foo'));
-
-    this.time = new Date().getTime();
-    this.offset = 0;
-
-    this.chokeEl = query.el('[overlay]');
-    this.choke = new choke({
-      late: 0.3,
-      cb: () => cssSet.pointer(this.chokeEl, 'none')
-    });
-  }
-
-  /**
-   * Initializing the virtial scrolling class
-   */
-  Init(o) {
-    if (this.attacher == window) {
-      if (o.drag !== false) {
-        this.ipointerdown = sub.add('pointerdown', this.down.bind(this));
-        this.ipointermove = sub.add('pointermove', this.move.bind(this));
-      }
-      if (o.key !== false) this.ikey = sub.add('keydown', this.key.bind(this));
-      if (o.wheel !== false)
-        this.iwheel = sub.add('wheel', this.wheel.bind(this));
-    } else {
-      if (o.drag !== false) {
-        this.attacher.onpointerdown = this.down.bind(this);
-        this.attacher.onpointermove = this.move.bind(this);
-      }
-    }
-
-    this.ipointerup = sub.add('pointerup', this.up.bind(this));
     this.iresize = sub.add('resize', this.resize.bind(this));
 
-    this.drag = { x: 0, y: 0 };
-    this.prev = { x: 0, y: 0 };
-    this.scroll = { x: 0, y: 0 };
-    this.dist = {
-      x: { start: 0, end: 0 },
-      y: { start: 0, end: 0 }
-    };
+    o.dir = this.dir;
+    o.rafCb = this.loop.bind(this);
+
+    this.events = new events(attacher, o);
   }
 
   /**
@@ -77,112 +38,38 @@ class Scroll {
     }
   }
 
-  /**
-   * Handling wheel event
-   */
-  wheel(e) {
-    this.loop();
-    let multip = e.deltaMode == 1 ? 0.83 : 0.55;
-
-    this.time = e.timeStamp - this.time;
-    this.offset = this.drag[this.dir];
-
-    this.drag[this.dir] -= e.wheelDeltaY * multip;
-
-    const offset = this.drag[this.dir] - this.offset;
-
-    this.scroll.sp = Math.abs(offset / this.time);
-    this.scroll.dir = Math.sign(offset);
-
-    this.time = e.timeStamp;
-  }
-
-  /**
-   * Starting point
-   */
-  down(e) {
-    cssSet.pointer(this.chokeEl, 'all');
-    this.downOn = true;
-
-    this.dist[this.dir].start = e[this.ePage];
-    this.prev[this.dir] = this.drag[this.dir];
-  }
-
-  /**
-   * drag / mouse-moveing
-   */
-  move(e) {
-    if (this.downOn) {
-      this.loop();
-
-      this.time = e.timeStamp - this.time;
-      this.offset = this.drag[this.dir];
-
-      this.drag[this.dir] += -(e[this.ePage] - this.dist[this.dir].start);
-      this.dist[this.dir].start = e[this.ePage];
-
-      const offset = this.drag[this.dir] - this.offset;
-
-      this.scroll.sp = Math.abs(offset / this.time);
-      this.scroll.dir = Math.sign(offset);
-
-      this.time = e.timeStamp;
-    }
-  }
-
-  key(e) {
-    if (e.keyCode == 40 || e.keyCode == 38) {
-      this.loop();
-      let offset = 0;
-
-      if (e.keyCode == 40) offset = -66.6;
-      else if (e.keyCode == 38) offset = 66.6;
-
-      this.drag[this.dir] -= offset;
-    }
-  }
-
-  /**
-   * End point
-   */
-  up() {
-    this.downOn = false;
-    this.choke.run();
-  }
-
-  /**
-   * Add Trigger
-   */
   add(target, o) {
     o.obsname = this.sub.name;
-    const trigger = new Trigger(target, o, this.dir);
-
+    const tri = new trigger(target, o, this.dir);
     this.loop();
-    return trigger;
+    return tri;
   }
 
   raf() {
-    this.drag[this.dir] = clamp(
-      0,
-      this.pageSize < 0 ? 0 : this.pageSize,
-      this.drag[this.dir]
-    );
-    this.scroll[this.dir] = lerp(
-      this.scroll[this.dir],
-      this.drag[this.dir],
+    this.events.drag = clamp(0, this.pageSize, this.events.drag);
+    this.events.scroll[this.dir] = lerp(
+      this.events.scroll[this.dir],
+      this.events.drag,
       this.ease
     );
 
-    cssSet.form(this.target, 'px', -this.scroll.x, -this.scroll.y);
-    if (this.sub) this.sub.cb(this.scroll);
-    if (round(this.scroll[this.dir], 2) == this.drag[this.dir]) this.iraf.r();
+    cssSet.form(
+      this.target,
+      'px',
+      -this.events.scroll.x,
+      -this.events.scroll.y
+    );
+
+    if (this.sub) this.sub.cb(this.events.scroll);
+    if (round(this.events.scroll[this.dir], 2) == this.drag) this.iraf.r();
   }
 
   resize() {
     this.bs = bounds(this.target);
-    const size = iSet.size;
-    if (this.dir == 'y') this.pageSize = this.bs.h - size.h;
-    else this.pageSize = this.bs.w - size.w;
+
+    if (this.dir == 'y') this.pageSize = this.bs.h - iSet.size.h;
+    else this.pageSize = this.bs.w - iSet.size.w;
+
     this.loop();
   }
 
@@ -191,25 +78,10 @@ class Scroll {
    */
   destroy() {
     if (this.iraf) this.iraf.r();
-    if (this.sub) this.sub.r();
 
-    if (this.attacher === window) {
-      if (this.ipointerdown) {
-        this.ipointerdown.r();
-        this.ipointermove.r();
-      }
-
-      if (this.ikey) this.ikey.r();
-      if (this.iwheel) this.iwheel.r();
-    } else {
-      if (this.o.drag !== false) {
-        this.attacher.onpointerdown = null;
-        this.attacher.onpointermove = null;
-      }
-    }
-
-    this.ipointerup.r();
+    this.sub.r();
     this.iresize.r();
+    this.events._destroy();
   }
 }
 
