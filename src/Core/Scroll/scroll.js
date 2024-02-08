@@ -36,16 +36,7 @@ class Scroll {
     this.ease = o.ease || 0.09;
     this.dir = o.dir ? o.dir : 'y';
     this.isY = this.dir == 'y';
-
-    if (o.infinite) {
-      const childs = [...o.target.children];
-      this.kids = childs.map(kid => {
-        const a = this.isY ? kid.offsetTop : kid.offsetLeft;
-        const z = this.isY ? kid.offsetHeight : kid.offsetWidth;
-        return [kid, { a, z: a + z }];
-      });
-    }
-
+    this.infinite = o.infinite;
     this.sub = sub.obs(o.obs || Symbol('foo'));
 
     this.iresize = sub.add('resize', this.resize.bind(this));
@@ -54,7 +45,6 @@ class Scroll {
 
     o.dir = this.dir;
     o.rafCb = this.loop.bind(this);
-
     this._$E = new events(attacher, o);
   }
 
@@ -117,6 +107,15 @@ class Scroll {
 
   resize() {
     this.bs = bounds(this.target);
+
+    if (this.infinite) {
+      const childs = [...this.target.children];
+      this.kids = childs.map(kid => {
+        const a = this.isY ? kid.offsetTop : kid.offsetLeft;
+        const z = this.isY ? kid.offsetHeight : kid.offsetWidth;
+        return [kid, { a, z: a + z }];
+      });
+    }
 
     const d = this.isY ? 'h' : 'w';
     this.s = iSet.size[d];
