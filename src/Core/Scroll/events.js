@@ -84,23 +84,22 @@ export default class _events {
   }
 
   _event(e) {
-    this.time = e.timeStamp - this.time;
-    this.offset = this.drag;
+    if (e.type == 'wheel' || this.mousedown) {
+      this.time = e.timeStamp - this.time;
+      this.offset = this.drag;
 
-    if (e.type == 'wheel') {
       this.rafCb();
-      this._wheel(e);
-    } else if (this.mousedown) {
-      this.rafCb();
-      this._move(e);
+
+      if (e.type == 'wheel') this._wheel(e);
+      else if (this.mousedown) this._move(e);
+
+      const offset = this.drag - this.offset;
+
+      this.scroll.speed = Math.abs(offset / this.time);
+      this.scroll.dir = Math.sign(offset);
+
+      this.time = e.timeStamp;
     }
-
-    const offset = this.drag - this.offset;
-
-    this.scroll.speed = Math.abs(offset / this.time);
-    this.scroll.dir = Math.sign(offset);
-
-    this.time = e.timeStamp;
   }
 
   _destroy() {
