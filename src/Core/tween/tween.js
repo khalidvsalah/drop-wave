@@ -34,6 +34,8 @@ class Tween {
     this.prog = 0;
     this.elapsed = 0;
     this.dir = 0;
+    this.repeat = o.repeat;
+    this.repeated = 0;
 
     this.d = o.d;
     this.late = o.late;
@@ -140,6 +142,22 @@ class Tween {
   destroy() {
     this.on = false;
     this.prog = 0;
+
+    if (this.repeat) {
+      if (this.repeat == -1 || this.repeat > this.repeated) {
+        if (this.mode == 'p') {
+          this.reverse({
+            late: this.late.d,
+            start: this.start,
+            completed: this.completed,
+            raf: this.raf
+          });
+        } else {
+          this.play(this.o, this.index);
+          ++this.repeated;
+        }
+      }
+    }
 
     if (this.completed) this.completed(this.target);
     return true;
