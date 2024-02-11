@@ -82,7 +82,7 @@ class trigger {
    * Loop
    */
   raf(coord) {
-    this.coord = coord[this.dir];
+    this.coord = coord;
 
     let s = this.startpint;
     let e = this.endpoint;

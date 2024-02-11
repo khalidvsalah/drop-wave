@@ -63,21 +63,25 @@ class Scroll {
   }
 
   raf() {
-    if (!this.kids) {
-      this._$E.drag = clamp(0, this.dim, this._$E.drag);
-    }
-    const l = lerp(this._$E.scroll[this.dir], this._$E.drag, this.ease);
-    this._$E.scroll[this.dir] = l;
+    if (!this.kids) this._$E.scroll = clamp(0, this.dim, this._$E.scroll);
+    const l = lerp(this._$E.virtual.value, this._$E.scroll, this.ease);
 
-    if (l > this.dim) {
-      this._$E.drag = this._$E.drag - this.dim;
-      this._$E.scroll[this.dir] = l - this.dim;
-    } else if (l < 0) {
-      this._$E.drag = this.dim + this._$E.drag;
-      this._$E.scroll[this.dir] = this.dim + l;
-    }
+    this._$E.roll.virtual = lerp(
+      this._$E.roll.virtual,
+      this._$E.roll.value,
+      this.ease
+    );
+    this._$E.virtual.value = l;
 
     if (this.kids) {
+      if (l > this.dim) {
+        this._$E.scroll = this._$E.scroll - this.dim;
+        this._$E.virtual.value = l - this.dim;
+      } else if (l < 0) {
+        this._$E.scroll = this.dim + this._$E.scroll;
+        this._$E.virtual.value = this.dim + l;
+      }
+
       this.kids.map(([kid, bs]) => {
         const start = l;
         const end = start + this.s;
@@ -99,10 +103,8 @@ class Scroll {
       isYDir(this.target, -l, this.isY);
     }
 
-    if (this.sub) this.sub.cb(this._$E.scroll);
-    if (round(l, 2) == this._$E.drag) {
-      this.iraf.r();
-    }
+    if (this.sub) this.sub.cb(this._$E.virtual.value);
+    if (round(l, 2) == this._$E.scroll) this.iraf.r();
   }
 
   resize() {

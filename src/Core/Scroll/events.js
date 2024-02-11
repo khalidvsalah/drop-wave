@@ -43,25 +43,30 @@ export default class _events {
 
     this.ipointerup = sub.add('pointerup', this._up.bind(this));
 
-    this.drag = 0;
-    this.prev = 0;
-    this.dist = { start: 0, end: 0 };
-    this.scroll = { x: 0, y: 0 };
+    this.dist = 0;
+    this.scroll = 0;
+    this.virtual = { value: 0, dir: 1, speed: 1 };
+
+    this.roll = { value: 0, virtual: 0 };
   }
 
   _wheel(e) {
     let multip = e.deltaMode == 1 ? 0.83 : 0.55;
-    this.drag -= e.wheelDeltaY * multip;
+    let offset = e.wheelDeltaY * multip;
+
+    this.scroll -= offset;
+    this.roll.value -= offset;
   }
 
   _onkey(e) {
     if (e.keyCode == 40 || e.keyCode == 38) {
-      let dist = 0;
+      let offset = 0;
 
-      if (e.keyCode == 40) dist = -66.6;
-      else if (e.keyCode == 38) dist = 66.6;
+      if (e.keyCode == 40) offset = -66.6;
+      else if (e.keyCode == 38) offset = 66.6;
 
-      this.drag -= dist;
+      this.scroll -= offset;
+      this.roll.value -= offset;
     }
   }
 
@@ -69,13 +74,16 @@ export default class _events {
     cssSet.pointer(this.chokeEl, 'all');
     this.mousedown = true;
 
-    this.dist.start = e[this.ePage];
-    this.prev = this.drag;
+    this.dist = e[this.ePage];
   }
 
   _move(e) {
-    this.drag += -(e[this.ePage] - this.dist.start);
-    this.dist.start = e[this.ePage];
+    let offset = e[this.ePage] - this.dist;
+
+    this.scroll -= offset;
+    this.roll.value -= offset;
+
+    this.dist = e[this.ePage];
   }
 
   _up() {
@@ -86,17 +94,17 @@ export default class _events {
   _event(e) {
     if (e.type == 'wheel' || this.mousedown) {
       this.time = e.timeStamp - this.time;
-      this.offset = this.drag;
+      this.offset = this.scroll;
 
       this.rafCb();
 
       if (e.type == 'wheel') this._wheel(e);
       else if (this.mousedown) this._move(e);
 
-      const offset = this.drag - this.offset;
+      const offset = this.scroll - this.offset;
 
-      this.scroll.speed = Math.abs(offset / this.time);
-      this.scroll.dir = Math.sign(offset);
+      this.virtual.speed = Math.abs(offset / this.time);
+      this.virtual.dir = Math.sign(offset);
 
       this.time = e.timeStamp;
     }
