@@ -87,14 +87,13 @@ export default class _events {
   }
 
   _down(e) {
-    if (this.globalScroll) cssSet.pointer(this.chokeEl, 'all');
     this.mousedown = true;
-
     this.dist = e[this.ePage];
   }
 
   _move(e) {
     if (this.mousedown) {
+      if (this.globalScroll) cssSet.pointer(this.chokeEl, 'all');
       this.rafCb();
 
       let offset = e[this.ePage] - this.dist;
