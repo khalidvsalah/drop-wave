@@ -67,7 +67,7 @@ export default class _events {
     this.roll.value -= offset;
 
     this.virtual.dir = Math.sign(offset);
-    this.globalevents(offset);
+    this.globalevents(e, offset);
   }
 
   _onkey(e) {
@@ -82,7 +82,7 @@ export default class _events {
       this.scroll -= offset;
       this.roll.value -= offset;
 
-      this.globalevents(offset);
+      this.globalevents(e, offset);
     }
   }
 
@@ -106,7 +106,7 @@ export default class _events {
 
       this.virtual.dir = Math.sign(offset);
 
-      this.globalevents(offset);
+      this.globalevents(e, offset);
     }
   }
 
