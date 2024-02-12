@@ -35,6 +35,7 @@ export default class _events {
       }
 
       this.globalScroll = true;
+      this.globalevents = sub.obs('globalevents').cb;
     } else {
       if (options.wheel !== false) {
         this.target.onwheel = this._wheel.bind(this);
@@ -66,6 +67,7 @@ export default class _events {
     this.roll.value -= offset;
 
     this.virtual.dir = Math.sign(offset);
+    this.globalevents(offset);
   }
 
   _onkey(e) {
@@ -79,6 +81,8 @@ export default class _events {
 
       this.scroll -= offset;
       this.roll.value -= offset;
+
+      this.globalevents(offset);
     }
   }
 
@@ -101,6 +105,8 @@ export default class _events {
       this.dist = e[this.ePage];
 
       this.virtual.dir = Math.sign(offset);
+
+      this.globalevents(offset);
     }
   }
 
