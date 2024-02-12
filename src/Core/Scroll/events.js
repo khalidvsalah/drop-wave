@@ -9,9 +9,6 @@ export default class _events {
     this.rafCb = options.rafCb;
     this.ePage = options.dir == 'y' ? 'pageY' : 'pageX';
 
-    this.time = new Date().getTime();
-    this.offset = 0;
-
     setGlobalObses();
     this._init(options);
 
@@ -26,7 +23,7 @@ export default class _events {
     if (Object.is(this.target, window)) {
       if (options.drag !== false) {
         this.ipointerdown = sub.add('pointerdown', this._down.bind(this));
-        this.ipointermove = sub.add('pointermove', this._event.bind(this));
+        this.ipointermove = sub.add('pointermove', this._move.bind(this));
       }
 
       if (options.key !== false) {
@@ -34,18 +31,18 @@ export default class _events {
       }
 
       if (options.wheel !== false) {
-        this.iwheel = sub.add('wheel', this._event.bind(this));
+        this.iwheel = sub.add('wheel', this._wheel.bind(this));
       }
 
       this.globalScroll = true;
     } else {
       if (options.wheel !== false) {
-        this.target.onwheel = this._event.bind(this);
+        this.target.onwheel = this._wheel.bind(this);
       }
 
       if (options.drag !== false) {
         this.target.onpointerdown = this._down.bind(this);
-        this.target.onpointermove = this._event.bind(this);
+        this.target.onpointermove = this._move.bind(this);
       }
     }
 
@@ -53,21 +50,28 @@ export default class _events {
 
     this.dist = 0;
     this.scroll = 0;
-    this.virtual = { value: 0, dir: 1, speed: 1 };
+    this.virtual = { value: 0, dir: 1 };
+    this.speed = { value: 0, lerp: 0 };
 
     this.roll = { value: 0, virtual: 0 };
   }
 
   _wheel(e) {
+    this.rafCb();
+
     let multip = e.deltaMode == 1 ? 0.83 : 0.55;
     let offset = e.wheelDeltaY * multip;
 
     this.scroll -= offset;
     this.roll.value -= offset;
+
+    this.virtual.dir = Math.sign(offset);
   }
 
   _onkey(e) {
     if (e.keyCode == 40 || e.keyCode == 38) {
+      this.rafCb();
+
       let offset = 0;
 
       if (e.keyCode == 40) offset = -66.6;
@@ -86,39 +90,23 @@ export default class _events {
   }
 
   _move(e) {
-    let offset = e[this.ePage] - this.dist;
+    if (this.mousedown) {
+      this.rafCb();
 
-    this.scroll -= offset;
-    this.roll.value -= offset;
+      let offset = e[this.ePage] - this.dist;
 
-    this.dist = e[this.ePage];
+      this.scroll -= offset;
+      this.roll.value -= offset;
+
+      this.dist = e[this.ePage];
+
+      this.virtual.dir = Math.sign(offset);
+    }
   }
 
   _up() {
     this.mousedown = false;
     this.choke.run();
-  }
-
-  _event(e) {
-    const wheel = e.type == 'wheel';
-    const mousedown = this.mousedown;
-
-    if (wheel || mousedown) {
-      this.time = e.timeStamp - this.time;
-      this.offset = this.scroll;
-
-      this.rafCb();
-
-      if (wheel) this._wheel(e);
-      else if (mousedown) this._move(e);
-
-      const offset = this.scroll - this.offset;
-
-      this.virtual.speed = Math.abs(offset / this.time);
-      this.virtual.dir = Math.sign(offset);
-
-      this.time = e.timeStamp;
-    }
   }
 
   _destroy() {

@@ -37,9 +37,14 @@ class Scroll {
     this.isY = this.dir == 'y';
     this.infinite = o.infinite;
     this.sub = sub.obs(o.obs || Symbol('foo'));
+    this.speedEase = o.speed;
 
     o.dir = this.dir;
     o.rafCb = this.loop.bind(this);
+
+    this.time = performance.now();
+    this.offset = 0;
+    this.speed = 0;
 
     this._$E = new events(attacher, o);
 
@@ -62,49 +67,62 @@ class Scroll {
     return tri;
   }
 
-  raf() {
+  raf(t) {
     if (!this.kids) this._$E.scroll = clamp(0, this.dim, this._$E.scroll);
-    const l = lerp(this._$E.virtual.value, this._$E.scroll, this.ease);
 
+    this._$E.virtual.value = lerp(
+      this._$E.virtual.value,
+      this._$E.scroll,
+      this.ease
+    );
     this._$E.roll.virtual = lerp(
       this._$E.roll.virtual,
       this._$E.roll.value,
       this.ease
     );
-    this._$E.virtual.value = l;
+
+    const scrollLerp = this._$E.virtual.value;
+
+    const time = t - this.time;
+    const offset = scrollLerp - this.offset;
+
+    this.speed = lerp(this.speed, offset / time, this.speedEase);
 
     if (this.kids) {
-      if (l > this.dim) {
+      if (scrollLerp > this.dim) {
         this._$E.scroll = this._$E.scroll - this.dim;
-        this._$E.virtual.value = l - this.dim;
-      } else if (l < 0) {
+        this._$E.virtual.value = scrollLerp - this.dim;
+      } else if (scrollLerp < 0) {
         this._$E.scroll = this.dim + this._$E.scroll;
-        this._$E.virtual.value = this.dim + l;
+        this._$E.virtual.value = this.dim + scrollLerp;
       }
 
       this.kids.map(([kid, bs]) => {
-        const start = l;
+        const start = scrollLerp;
         const end = start + this.s;
 
-        if (l > this.dim - this.s) {
-          const offsetS = l - (this.dim - this.s) - this.s;
+        if (scrollLerp > this.dim - this.s) {
+          const offsetS = scrollLerp - (this.dim - this.s) - this.s;
           const offsetE = offsetS + this.s;
 
           if (offsetS <= bs.z && offsetE >= bs.a) {
             isYDir(kid, this.s - offsetE, this.isY);
           } else {
-            inRange(start, end, bs, kid, this.isY, l);
+            inRange(start, end, bs, kid, this.isY, scrollLerp);
           }
         } else {
-          inRange(start, end, bs, kid, this.isY, l);
+          inRange(start, end, bs, kid, this.isY, scrollLerp);
         }
       });
     } else {
-      isYDir(this.target, -l, this.isY);
+      isYDir(this.target, -scrollLerp, this.isY);
     }
 
-    if (this.sub) this.sub.cb(this._$E.virtual.value);
-    if (round(l, 2) == this._$E.scroll) this.iraf.r();
+    this.time = t;
+    this.offset = scrollLerp;
+
+    if (this.sub) this.sub.cb(scrollLerp);
+    if (round(scrollLerp, 2) == this._$E.scroll) this.iraf.r();
   }
 
   resize() {
