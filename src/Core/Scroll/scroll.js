@@ -122,7 +122,7 @@ class Scroll {
     this.offset = scrollLerp;
 
     if (this.sub) this.sub.cb(scrollLerp);
-    if (round(scrollLerp, 2) == this._$E.scroll) this.iraf.r();
+    if (round(this._$E.roll.virtual, 2) == this._$E.roll.value) this.iraf.r();
   }
 
   resize() {
