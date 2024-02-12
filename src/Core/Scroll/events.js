@@ -1,5 +1,6 @@
 import sub from '../methods/observer';
 import { choke, cssSet, query } from '../methods/methods';
+import setGlobalObses from './obses';
 
 export default class _events {
   constructor(target, options) {
@@ -11,13 +12,14 @@ export default class _events {
     this.time = new Date().getTime();
     this.offset = 0;
 
-    this.chokeEl = query.el('[overlay]');
+    setGlobalObses();
+    this._init(options);
+
+    this.chokeEl = query.el('[data-overlay]');
     this.choke = new choke({
       late: 0.3,
       cb: () => cssSet.pointer(this.chokeEl, 'none')
     });
-
-    this._init(options);
   }
 
   _init(options) {
@@ -34,7 +36,13 @@ export default class _events {
       if (options.wheel !== false) {
         this.iwheel = sub.add('wheel', this._event.bind(this));
       }
+
+      this.globalScroll = true;
     } else {
+      if (options.wheel !== false) {
+        this.target.onwheel = this._event.bind(this);
+      }
+
       if (options.drag !== false) {
         this.target.onpointerdown = this._down.bind(this);
         this.target.onpointermove = this._event.bind(this);
@@ -71,7 +79,7 @@ export default class _events {
   }
 
   _down(e) {
-    cssSet.pointer(this.chokeEl, 'all');
+    if (this.globalScroll) cssSet.pointer(this.chokeEl, 'all');
     this.mousedown = true;
 
     this.dist = e[this.ePage];
@@ -92,14 +100,17 @@ export default class _events {
   }
 
   _event(e) {
-    if (e.type == 'wheel' || this.mousedown) {
+    const wheel = e.type == 'wheel';
+    const mousedown = this.mousedown;
+
+    if (wheel || mousedown) {
       this.time = e.timeStamp - this.time;
       this.offset = this.scroll;
 
       this.rafCb();
 
-      if (e.type == 'wheel') this._wheel(e);
-      else if (this.mousedown) this._move(e);
+      if (wheel) this._wheel(e);
+      else if (mousedown) this._move(e);
 
       const offset = this.scroll - this.offset;
 

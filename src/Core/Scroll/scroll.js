@@ -30,7 +30,6 @@ class Scroll {
    * @param {Object} o - properties
    */
   constructor(attacher, o) {
-    history.scrollRestoration = 'manual';
     this.target = o.target;
 
     this.ease = o.ease || 0.09;
@@ -39,13 +38,14 @@ class Scroll {
     this.infinite = o.infinite;
     this.sub = sub.obs(o.obs || Symbol('foo'));
 
+    o.dir = this.dir;
+    o.rafCb = this.loop.bind(this);
+
+    this._$E = new events(attacher, o);
+
     this.iresize = sub.add('resize', this.resize.bind(this));
     this.iraf = sub.add('raf', this.raf.bind(this));
     this.resize();
-
-    o.dir = this.dir;
-    o.rafCb = this.loop.bind(this);
-    this._$E = new events(attacher, o);
   }
 
   /**
