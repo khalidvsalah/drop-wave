@@ -69,20 +69,13 @@ class Scroll {
 
   raf(t) {
     if (!this.kids) this._$E.scroll = clamp(0, this.dim, this._$E.scroll);
-
     this._$E.virtual.value = lerp(
       this._$E.virtual.value,
       this._$E.scroll,
       this.ease
     );
-    this._$E.roll.virtual = lerp(
-      this._$E.roll.virtual,
-      this._$E.roll.value,
-      this.ease
-    );
 
     const scrollLerp = this._$E.virtual.value;
-
     const time = t - this.time;
     const offset = scrollLerp - this.offset;
 
@@ -122,7 +115,7 @@ class Scroll {
     this.offset = scrollLerp;
 
     if (this.sub) this.sub.cb(scrollLerp);
-    if (round(this._$E.roll.virtual, 2) == this._$E.roll.value) this.iraf.r();
+    if (round(this._$E.scroll, 2) == this._$E.virtual.value) this.iraf.r();
   }
 
   resize() {

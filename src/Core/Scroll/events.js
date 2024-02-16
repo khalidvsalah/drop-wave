@@ -5,11 +5,11 @@ import setGlobalObses from './obses';
 export default class _events {
   constructor(target, options) {
     this.target = target;
+    this.options = options;
 
     this.rafCb = options.rafCb;
     this.ePage = options.dir == 'y' ? 'pageY' : 'pageX';
 
-    setGlobalObses();
     this._init(options);
 
     this.chokeEl = query.el('[data-overlay]');
@@ -20,21 +20,20 @@ export default class _events {
   }
 
   _init(options) {
+    setGlobalObses();
+
     if (Object.is(this.target, window)) {
       if (options.drag !== false) {
         this.ipointerdown = sub.add('pointerdown', this._down.bind(this));
         this.ipointermove = sub.add('pointermove', this._move.bind(this));
       }
-
       if (options.key !== false) {
         this.ikey = sub.add('keydown', this._onkey.bind(this));
       }
-
       if (options.wheel !== false) {
         this.iwheel = sub.add('wheel', this._wheel.bind(this));
       }
 
-      this.globalScroll = true;
       this.globalevents = sub.obs('globalevents').cb;
     } else {
       if (options.wheel !== false) {
@@ -53,8 +52,6 @@ export default class _events {
     this.scroll = 0;
     this.virtual = { value: 0, dir: 1 };
     this.speed = { value: 0, lerp: 0 };
-
-    this.roll = { value: 0, virtual: 0 };
   }
 
   _wheel(e) {
@@ -62,12 +59,10 @@ export default class _events {
 
     let multip = e.deltaMode == 1 ? 0.83 : 0.55;
     let offset = e.wheelDeltaY * multip;
-
     this.scroll -= offset;
-    this.roll.value -= offset;
-
     this.virtual.dir = Math.sign(offset);
-    this.globalevents(e, offset);
+
+    if (this.globalevents) this.globalevents(e, offset);
   }
 
   _onkey(e) {
@@ -75,14 +70,11 @@ export default class _events {
       this.rafCb();
 
       let offset = 0;
-
       if (e.keyCode == 40) offset = -66.6;
       else if (e.keyCode == 38) offset = 66.6;
-
       this.scroll -= offset;
-      this.roll.value -= offset;
 
-      this.globalevents(e, offset);
+      if (this.globalevents) this.globalevents(e, offset);
     }
   }
 
@@ -93,19 +85,17 @@ export default class _events {
 
   _move(e) {
     if (this.mousedown) {
-      if (this.globalScroll) cssSet.pointer(this.chokeEl, 'all');
       this.rafCb();
 
       let offset = e[this.ePage] - this.dist;
-
       this.scroll -= offset;
-      this.roll.value -= offset;
-
       this.dist = e[this.ePage];
-
       this.virtual.dir = Math.sign(offset);
 
-      this.globalevents(e, offset);
+      if (this.globalevents) {
+        cssSet.pointer(this.chokeEl, 'all');
+        this.globalevents(e, offset);
+      }
     }
   }
 
@@ -124,7 +114,7 @@ export default class _events {
       if (this.ikey) this.ikey.r();
       if (this.iwheel) this.iwheel.r();
     } else {
-      if (this.o.drag !== false) {
+      if (this.options !== false) {
         this.target.onpointerdown = null;
         this.target.onpointermove = null;
       }
