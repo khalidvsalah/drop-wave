@@ -1,4 +1,3 @@
-import raf from '../../Utils/raf';
 import sub from '../methods/observer';
 import { query } from '../methods/methods';
 
@@ -13,9 +12,6 @@ export default function setGlobalObses() {
 
     window.onkeydown = sub.obs('keydown').cb;
     window.onwheel = sub.obs('wheel').cb;
-    window.onresize = sub.obs('resize').cb;
-
-    raf.push({ cb: sub.obs('raf').cb });
 
     globalObs = true;
 
@@ -28,6 +24,7 @@ export default function setGlobalObses() {
       top: 0;
       left: 0;
       z-index: 999;
+      pointer-events: none;
     `;
 
     document.body.appendChild(overlay);
