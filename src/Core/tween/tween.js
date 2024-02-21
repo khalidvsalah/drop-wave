@@ -38,15 +38,24 @@ class Tween {
     this.d = o.d;
     this.late = o.late;
     this.ease = ease[o.ease || 'l'];
+    this.from = o.from;
+
+    Object.defineProperties(o.p, {
+      ease: {
+        value: this.ease,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
 
     this.oProps = o.p;
     this.lateO = { cb: this.run.bind(this), d: this.d };
 
-    this.late = new late({ late: this.late, o: this.lateO });
-    this.props = props(this.target, this.obj, {
-      ...this.oProps,
-      ease: this.ease
-    });
+    this.late = new late({ d: this.late, o: this.lateO });
+    this.props = props(this.target, this.isObj, o.p);
+
+    if (o.from) this.props.map(({ setV, cb }) => setV(this.target, cb(0)));
   }
 
   /**
@@ -58,7 +67,10 @@ class Tween {
     this.elapsed = clamp(0, 1, this.prog + t);
 
     const e = Math.abs(this.dir - this.elapsed);
-    this.props.map(({ setV, cb }) => setV(this.target, cb(e)));
+    this.props.map(({ setV, cb }) => {
+      const diraction = this.from ? 1 - e : e;
+      setV(this.target, cb(diraction));
+    });
 
     this.raf && this.raf(e, this.target);
     if (this.elapsed == 1) return this.destroy();
@@ -126,11 +138,17 @@ class Tween {
       this.late.d = o.late || 0;
       this.lateO.d = o.d;
 
-      this.oProps = o.p;
-      this.props = props(this.target, this.obj, {
-        ...this.oProps,
-        ease: ease[o.ease] || this.ease
+      Object.defineProperties(o.p, {
+        ease: {
+          value: ease[o.ease] || this.ease,
+          enumerable: false,
+          writable: true,
+          configurable: true
+        }
       });
+
+      this.oProps = o.p;
+      this.props = props(this.target, this.obj, o.p);
 
       this.mode = 'r';
       this.control('p', true);
