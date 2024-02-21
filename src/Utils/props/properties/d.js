@@ -1,4 +1,5 @@
 import { lerp } from '../../../Math/math';
+import ease from '../../../Math/ease';
 
 const length = {
   a: 7,
@@ -20,7 +21,6 @@ function parseValues(args) {
   const numbers = args.match(number);
   return numbers ? numbers.map(Number) : [];
 }
-
 function parse(path) {
   const data = [];
 
@@ -46,9 +46,10 @@ function parse(path) {
   return data;
 }
 
-const d = (p, n) => {
-  const s = parse(n.el.getAttribute('d'));
+const d = (p, { el }) => {
+  const s = parse(el.getAttribute('d'));
   const e = parse(p[0]);
+  const easing = ease[p[1]];
 
   return t => {
     let st = '';
@@ -59,7 +60,7 @@ const d = (p, n) => {
       const i2 = e[i];
 
       for (let k = 0; k < i1.length; k++) {
-        st += (isNaN(i1[k]) ? i1[k] : lerp(i1[k], i2[k], t)) + ' ';
+        st += (isNaN(i1[k]) ? i1[k] : lerp(i1[k], i2[k], easing(t))) + ' ';
       }
 
       value = st.trim();
@@ -70,8 +71,4 @@ const d = (p, n) => {
 };
 
 const setValue = (e, v) => e.setAttribute('d', v);
-
-export default {
-  cb: d,
-  setValue
-};
+export default { cb: d, setValue };

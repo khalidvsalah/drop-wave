@@ -18,16 +18,17 @@ const d = t => {
   return r;
 };
 
-const points = (p, n) => {
-  const s = d(n.el.getAttribute('points'));
+const points = (p, { el }) => {
+  const s = d(el.getAttribute('points'));
   const e = d(p[0]);
+  const easing = ease[p[1]];
 
   return t => {
     let st = '';
     let value = '';
 
     for (let i = 0; i < s.length; i++) {
-      st += lerp(s[i], e[i], t) + ' ';
+      st += lerp(s[i], e[i], easing(t)) + ' ';
       value = st.trim();
     }
 
@@ -36,8 +37,4 @@ const points = (p, n) => {
 };
 
 const setValue = (e, v) => e.setAttribute('points', v);
-
-export default {
-  cb: points,
-  setValue
-};
+export default { cb: points, setValue };

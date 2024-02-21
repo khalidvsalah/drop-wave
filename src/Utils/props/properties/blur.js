@@ -1,31 +1,31 @@
+import ease from '../../../Math/ease';
+
 /**
  * Get blur function
  * @param {Array} b - blur.
  * @param {Object} n - Computed Style.
  * @return {Function}
  */
-const blur = (b, c) => {
+const blur = (b, { filter }) => {
   let bV;
 
-  if (c.filter === 'none') {
+  if (filter === 'none') {
     bV = {
       s: 0,
       e: b[0]
     };
   } else {
     bV = {
-      s: +c.filter.match(/(\d.*)px/)[1],
+      s: +filter.match(/(\d.*)px/)[1],
       e: b[0]
     };
   }
 
   bV.lerp = bV.e - bV.s;
-  return (e) => bV.s + bV.lerp * e;
+  bV.ease = ease[b[1]];
+
+  return e => bV.s + bV.lerp * bV.ease(e);
 };
 
 const setValue = (e, v) => (e.style.filter = `blur(${v}px)`);
-
-export default {
-  cb: blur,
-  setValue
-};
+export default { cb: blur, setValue };

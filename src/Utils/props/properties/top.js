@@ -6,25 +6,26 @@ import { bounds } from '../../../Core/methods/methods';
  * @param {Object} n - Computed Style.
  * @return {Function}
  */
-const top = (t, c) => {
+const top = (t, { pa, top }) => {
   let tV;
-  if (c.top === 'auto') {
+  if (top === 'auto') {
     tV = {
       s: 0,
       e: t[0],
       unit: t[1] || 'px'
     };
   } else {
-    const tC = parseFloat(c.top);
+    const tC = parseFloat(top);
     tV = {
-      s: t[1] === 'px' ? tC : (tC / bounds(c.pa).h) * 100,
+      s: t[1] === 'px' ? tC : (tC / bounds(pa).h) * 100,
       e: t[0],
       unit: t[1] || 'px'
     };
   }
 
   tV.lerp = tV.e - tV.s;
-  return e => `${tV.s + tV.lerp * e}${tV.unit}`;
+  tV.ease = ease[t[2]];
+  return e => `${tV.s + tV.lerp * tV.ease(e)}${tV.unit}`;
 };
 
 const setValue = (e, v) => (e.style.top = v);

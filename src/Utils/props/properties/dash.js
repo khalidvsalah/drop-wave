@@ -1,11 +1,17 @@
-const dash = (d, n) => {
-  const length = n.el.getTotalLength();
-  n.el.style.strokeDasharray = length;
+import ease from '../../../Math/ease';
 
-  const dV = { s: d[0] * length, e: d[1] * length };
+const dash = (d, { el }) => {
+  const length = el.getTotalLength();
+  el.style.strokeDasharray = length;
+
+  const dV = {
+    s: d[0] * length,
+    e: d[1] * length,
+    ease: ease[d[2]]
+  };
 
   dV.lerp = dV.e - dV.s;
-  return e => `${dV.s + dV.lerp * e}`;
+  return e => `${dV.s + dV.lerp * dV.ease(e)}`;
 };
 
 const setValue = (e, v) => (e.style.strokeDashoffset = v);

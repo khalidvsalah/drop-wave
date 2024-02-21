@@ -37,17 +37,7 @@ class Tween {
 
     this.d = o.d;
     this.late = o.late;
-    this.ease = ease[o.ease || 'l'];
     this.from = o.from;
-
-    Object.defineProperties(o.p, {
-      ease: {
-        value: this.ease,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
 
     this.oProps = o.p;
     this.lateO = { cb: this.run.bind(this), d: this.d };
@@ -137,15 +127,6 @@ class Tween {
     if (iSet.string(this.oProps) != iSet.string(o.p)) {
       this.late.d = o.late || 0;
       this.lateO.d = o.d;
-
-      Object.defineProperties(o.p, {
-        ease: {
-          value: ease[o.ease] || this.ease,
-          enumerable: false,
-          writable: true,
-          configurable: true
-        }
-      });
 
       this.oProps = o.p;
       this.props = props(this.target, this.obj, o.p);
