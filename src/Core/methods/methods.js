@@ -35,15 +35,15 @@ const iSet = {
   string: obj => JSON.stringify(obj)
 };
 class choke {
-  constructor({ late, cb }) {
-    this.late = late * 1000;
+  constructor({ d, cb }) {
+    this.d = d * 1000;
     this.cb = cb;
     this.time = 0;
   }
 
   run() {
     clearTimeout(this.time);
-    this.time = setTimeout(this.cb, this.late);
+    this.time = setTimeout(this.cb, this.d);
   }
 }
 export { has, bounds, computed, iSet, cssSet, query, choke };

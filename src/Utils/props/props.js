@@ -9,7 +9,7 @@ import matches from './matches';
  * @param {Object} ps - properties need to be modified.
  * @return {Array}
  */
-function dom(e, ps, results, dir) {
+function dom(e, ps, results) {
   const compute = computed(e);
 
   let easing = ps.ease;
@@ -18,9 +18,6 @@ function dom(e, ps, results, dir) {
   compute.pa = e.parentNode;
 
   for (const key of Object.entries(ps)) {
-    if (key[0] == 'dir') continue;
-    if (key[0] == 'ease') continue;
-
     const values = matches(key[0]);
     const cb = values.cb(key[1], compute);
     const l = key[1].length;
@@ -28,10 +25,7 @@ function dom(e, ps, results, dir) {
     let nEase = key[1][l - 1];
     if (typeof nEase == 'object' && nEase.ease) easing = ease[nEase.ease];
 
-    results.push({
-      setV: values.setValue,
-      cb: e => cb(easing(dir ? 1 - e : e))
-    });
+    results.push({ setV: values.setValue, cb: e => cb(easing(e)) });
   }
 
   return results;
@@ -46,9 +40,6 @@ function obj(e, ps, results) {
   let easing = ps.ease;
 
   for (const key in ps) {
-    if (key == 'dir') continue;
-    if (key == 'ease') continue;
-
     const props = { s: e[key], e: ps[key][0] };
     props.lerp = props.e - props.s;
 
@@ -66,13 +57,10 @@ function obj(e, ps, results) {
 
 function props(e, o, ps) {
   const results = [];
-  const dir = ps.dir == -1 ? true : false;
   let output;
 
-  if (!o) output = dom(e, ps, results, dir);
-  else output = obj(e, ps, results, dir);
-
-  if (dir) results.map(({ setV, cb }) => setV(e, cb(0)));
+  if (!o) output = dom(e, ps, results);
+  else output = obj(e, ps, results);
 
   return output;
 }

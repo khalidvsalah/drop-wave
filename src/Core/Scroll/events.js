@@ -14,7 +14,7 @@ export default class _events {
 
     this.chokeEl = query.el('[data-overlay]');
     this.choke = new choke({
-      late: 0.3,
+      d: 0.3,
       cb: () => cssSet.pointer(this.chokeEl, 'none')
     });
   }

@@ -9,8 +9,8 @@ export default class Late {
   /**
    * @param {{late: Number, o: Object, cb: Function}}
    */
-  constructor({ late, o, cb }) {
-    this.d = late || 0;
+  constructor({ d, o, cb }) {
+    this.d = d || 0;
 
     this.o = o;
     this.cb = cb;
