@@ -57,7 +57,7 @@ function obj(e, ps, results) {
 
     results.push({
       setV: (e, v) => (e[key] = v),
-      cb: e => easing(props.s + props.lerp * e)
+      cb: e => props.s + props.lerp * easing(e)
     });
   }
 
