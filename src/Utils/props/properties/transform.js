@@ -1,94 +1,29 @@
-const translateX = (p, t, w) => {
-  const x = p.x;
-  const value = t ? +t[4] : 0;
+const translate = (x, t, w) => {
   let xV;
 
-  if (t) {
-    xV = {
-      s: x ? (x[1] === 'px' ? value : (value / parseFloat(w)) * 100) : value,
-      e: x ? x[0] : value
-    };
-  } else {
-    xV = {
-      s: 0,
-      e: x ? x[0] : 0
-    };
-  }
+  xV = {
+    s: x ? (x[1] == 'px' ? t : (t / parseFloat(w)) * 100) : t,
+    e: x ? x[0] : t,
+    unit: x ? (x[1] ? x[1] : 'px') : 'px'
+  };
 
   xV.lerp = xV.e - xV.s;
-  xV.unit = x ? (x[1] ? x[1] : 'px') : 'px';
-
   return xV;
 };
-const translateY = (p, t, h) => {
-  const y = p.y;
-  const value = t ? +t[5] : 0;
-  let yV;
-
-  if (t) {
-    yV = {
-      s: y ? (y[1] === 'px' ? value : (value / parseFloat(h)) * 100) : value,
-      e: y ? y[0] : value
-    };
-  } else {
-    yV = {
-      s: 0,
-      e: y ? y[0] : 0
-    };
-  }
-
-  yV.lerp = yV.e - yV.s;
-  yV.unit = y ? (y[1] ? y[1] : 'px') : 'px';
-
-  return yV;
-};
-
-const scaleX = (p, t) => {
-  const sx = p.sx;
-  let sxV;
-
-  if (t) sxV = { s: +t[0], e: sx ? sx[0] : +t[0] };
-  else sxV = { s: 1, e: sx ? sx[0] : 1 };
-
+const scale = (sx, t) => {
+  let sxV = { s: t, e: sx ? sx[0] : t };
   sxV.lerp = sxV.e - sxV.s;
-
   return sxV;
 };
-const scaleY = (p, t) => {
-  const sy = p.sy;
-  let syV;
-
-  if (t) syV = { s: +t[3], e: sy ? sy[0] : +t[3] };
-  else syV = { s: 1, e: sy ? sy[0] : 1 };
-
-  syV.lerp = syV.e - syV.s;
-
-  return syV;
-};
-
-const rotateX = p => {
-  const rx = p.rx;
+const rotate = rx => {
   const rxV = {
     s: rx ? rx[0] : 0,
     e: rx ? rx[1] : 0
   };
 
   rxV.lerp = rxV.e - rxV.s;
-
   return rxV;
 };
-const rotateY = p => {
-  const ry = p.ry;
-  const ryV = {
-    s: ry ? ry[0] : 0,
-    e: ry ? ry[1] : 0
-  };
-
-  ryV.lerp = ryV.e - ryV.s;
-
-  return ryV;
-};
-
 const getMatrix = t => {
   const matrix3D = t.match(/^matrix3d\((.+)\)$/);
   let matrix = t.match(/\((.+)\)$/);
@@ -121,14 +56,14 @@ const transform = (p, { transform, width, height }) => {
   const props = p[0];
   const matrix = getMatrix(transform);
 
-  const xV = translateX(props, matrix, width);
-  const yV = translateY(props, matrix, height);
+  const xV = translate(props.x, matrix ? +matrix[4] : 0, width);
+  const yV = translate(props.y, matrix ? +matrix[5] : 0, height);
 
-  const sxV = scaleX(props, matrix);
-  const syV = scaleY(props, matrix);
+  const sxV = scale(props.sx, matrix ? +matrix[0] : 1);
+  const syV = scale(props.sy, matrix ? +matrix[3] : 1);
 
-  const rxV = rotateX(props, matrix);
-  const ryV = rotateY(props, matrix);
+  const rxV = rotate(props.rx);
+  const ryV = rotate(props.ry);
 
   return e => {
     const eX = `${xV.s + xV.lerp * e}${xV.unit}`;
@@ -143,6 +78,12 @@ const transform = (p, { transform, width, height }) => {
     return `translate3d(${eX}, ${eY}, 0) scale(${eSX}, ${eSY}) rotateX(${eRX}) rotateY(${eRY})`;
   };
 };
+
+/*
+  function transform(eX){
+    return `translate3d(${eX}, ${eY}, 0)`;
+  }
+*/
 
 const setValue = (e, v) => (e.style.transform = v);
 export default { cb: transform, setValue };
