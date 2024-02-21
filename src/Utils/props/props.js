@@ -9,10 +9,8 @@ import matches from './matches';
  * @param {Object} ps - properties need to be modified.
  * @return {Array}
  */
-function dom(e, ps) {
-  const results = [];
+function dom(e, ps, results, dir) {
   const compute = computed(e);
-  const dir = ps.dir == -1 ? true : false;
 
   let easing = ps.ease;
 
@@ -36,25 +34,30 @@ function dom(e, ps) {
     });
   }
 
-  if (dir) results.map(({ setV, cb }) => setV(e, cb(0)));
   return results;
 }
+
 /**
  * Handling object tween.
  * @param {Object} e - targeted object.
  * @param {ps} ps - properties.
  */
-function obj(e, ps) {
-  const results = [];
+function obj(e, ps, results) {
+  let easing = ps.ease;
 
   for (const key in ps) {
-    const pV = { s: e[key] };
+    if (key == 'dir') continue;
+    if (key == 'ease') continue;
 
-    pV.lerp = ps[key][0] - pV.s;
+    const props = { s: e[key], e: ps[key][0] };
+    props.lerp = props.e - props.s;
+
+    let nEase = ps[key][1];
+    if (nEase) easing = ease[nEase.ease];
 
     results.push({
       setV: (e, v) => (e[key] = v),
-      cb: e => pV.s + pV.lerp * e
+      cb: e => easing(props.s + props.lerp * e)
     });
   }
 
@@ -62,8 +65,16 @@ function obj(e, ps) {
 }
 
 function props(e, o, ps) {
-  if (!o) return dom(e, ps);
-  else return obj(e, ps);
+  const results = [];
+  const dir = ps.dir == -1 ? true : false;
+  let output;
+
+  if (!o) output = dom(e, ps, results, dir);
+  else output = obj(e, ps, results, dir);
+
+  if (dir) results.map(({ setV, cb }) => setV(e, cb(0)));
+
+  return output;
 }
 
 export default props;
