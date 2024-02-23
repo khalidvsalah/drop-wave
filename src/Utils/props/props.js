@@ -1,3 +1,4 @@
+import ease from '../../Math/ease';
 import { computed } from '../../Core/methods/methods';
 import matches from './matches';
 
@@ -26,12 +27,13 @@ function dom(e, ps, results) {
  */
 function obj(e, ps, results) {
   for (const key in ps) {
-    const props = { s: e[key], e: ps[key][0] };
-    props.lerp = props.e - props.s;
+    const oV = { s: e[key], e: ps[key][0], ease: ease[ps[key][1]] };
+
+    oV.lerp = oV.e - oV.s;
 
     results.push({
       setV: (e, v) => (e[key] = v),
-      cb: e => props.s + props.lerp * e
+      cb: e => oV.s + oV.lerp * oV.ease(e)
     });
   }
 }
