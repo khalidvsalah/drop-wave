@@ -24,29 +24,23 @@ const inRange = (start, end, bs, kid, isY, l) => {
 /**
  * Creating virtual scrolling
  */
-class Scroll {
+class Scroll extends events {
   /**
    * @param {HTMLElement|Window} attacher - the parent
    * @param {Object} o - properties
    */
   constructor(attacher, o) {
-    this.target = o.target;
+    super(attacher, o);
 
     this.ease = o.ease || 0.09;
-    this.dir = o.dir ? o.dir : 'y';
-    this.isY = this.dir == 'y';
     this.infinite = o.infinite;
     this.sub = sub.obs(o.obs || Symbol('foo'));
-    this.speedEase = o.speed;
-
-    o.dir = this.dir;
-    o.rafCb = this.loop.bind(this);
-
-    this.time = performance.now();
-    this.offset = 0;
-    this.speed = 0;
-
-    this._$E = new events(attacher, o);
+    this.speed = {
+      time: performance.now(),
+      offset: 0,
+      value: 0,
+      ease: o.speed || 0.3
+    };
 
     this.iresize = sub.add('resize', this.resize.bind(this));
     this.iraf = sub.add('raf', this.raf.bind(this));
@@ -68,54 +62,50 @@ class Scroll {
   }
 
   raf(t) {
-    if (!this.kids) this._$E.scroll = clamp(0, this.dim, this._$E.scroll);
-    this._$E.virtual.value = lerp(
-      this._$E.virtual.value,
-      this._$E.scroll,
-      this.ease
+    if (!this.kids) this.scroll.value = clamp(0, this.dim, this.scroll.value);
+    this.scroll.lerp = lerp(this.scroll.lerp, this.scroll.value, this.ease);
+
+    const rounded = round(this.scroll.lerp);
+
+    this.speed.time = t - this.speed.time;
+    this.speed.offset = rounded - this.speed.offset;
+    this.speed.value = lerp(
+      this.speed.value,
+      this.speed.offset / this.speed.time,
+      this.speed.ease
     );
 
-    const scrollLerp = this._$E.virtual.value;
-    const time = t - this.time;
-    const offset = scrollLerp - this.offset;
-
-    this.speed = lerp(this.speed, offset / time, this.speedEase);
-
     if (this.kids) {
-      if (scrollLerp > this.dim) {
-        this._$E.scroll = this._$E.scroll - this.dim;
-        this._$E.virtual.value = scrollLerp - this.dim;
-      } else if (scrollLerp < 0) {
-        this._$E.scroll = this.dim + this._$E.scroll;
-        this._$E.virtual.value = this.dim + scrollLerp;
+      if (rounded > this.dim) {
+        this.scroll.value = this.scroll.value - this.dim;
+        this.scroll.lerp = rounded - this.dim;
+      } else if (rounded < 0) {
+        this.scroll.value = this.dim + this.scroll.value;
+        this.scroll.lerp = this.dim + rounded;
       }
 
       this.kids.map(([kid, bs]) => {
-        const start = scrollLerp;
+        const start = rounded;
         const end = start + this.s;
 
-        if (scrollLerp > this.dim - this.s) {
-          const offsetS = scrollLerp - (this.dim - this.s) - this.s;
+        if (rounded > this.dim - this.s) {
+          const offsetS = rounded - (this.dim - this.s) - this.s;
           const offsetE = offsetS + this.s;
 
-          if (offsetS <= bs.z && offsetE >= bs.a) {
+          if (offsetS <= bs.z && offsetE >= bs.a)
             isYDir(kid, this.s - offsetE, this.isY);
-          } else {
-            inRange(start, end, bs, kid, this.isY, scrollLerp);
-          }
-        } else {
-          inRange(start, end, bs, kid, this.isY, scrollLerp);
-        }
+          else inRange(start, end, bs, kid, this.isY, rounded);
+        } else inRange(start, end, bs, kid, this.isY, rounded);
       });
     } else {
-      isYDir(this.target, -scrollLerp, this.isY);
+      isYDir(this.target, -rounded, this.isY);
     }
 
-    this.time = t;
-    this.offset = scrollLerp;
+    this.speed.time = t;
+    this.speed.offset = rounded;
 
-    if (this.sub) this.sub.cb(scrollLerp);
-    if (round(this._$E.scroll, 2) == this._$E.virtual.value) this.iraf.r();
+    if (this.sub) this.sub.cb(rounded);
+    if (rounded == this.scroll.value) this.iraf.r();
   }
 
   resize() {
@@ -135,17 +125,6 @@ class Scroll {
 
     this.dim = this.bs[d] - (this.kids ? 0 : this.s);
     this.loop();
-  }
-
-  /**
-   * Remove events
-   */
-  destroy() {
-    this.iraf.r();
-    this.sub.r();
-    this.iresize.r();
-
-    this._$E._destroy();
   }
 }
 

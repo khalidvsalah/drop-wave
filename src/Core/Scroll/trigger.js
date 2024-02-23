@@ -36,12 +36,7 @@ class trigger {
 
   Init(o) {
     if (!o.target) this.target = this.el;
-    if (o.scroll) {
-      this.ps = props(this.target, false, {
-        ...o.p,
-        ease: ease[o.ease || 'l']
-      });
-    }
+    if (o.scroll) this.ps = o.p ? props(this.target, false, o.p) : [];
     if (o.pin) {
       this.pin = o.pin;
       this.pin.target = o.pin.target || this.target;

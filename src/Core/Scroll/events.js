@@ -3,11 +3,14 @@ import { choke, cssSet, query } from '../methods/methods';
 import setGlobalObses from './obses';
 
 export default class _events {
-  constructor(target, options) {
-    this.target = target;
+  constructor(attacher, options) {
     this.options = options;
 
-    this.rafCb = options.rafCb;
+    this.attacher = attacher;
+    this.target = options.target;
+
+    this.dir = options.dir ? options.dir : 'y';
+    this.isY = this.dir == 'y';
     this.ePage = options.dir == 'y' ? 'pageY' : 'pageX';
 
     this._init(options);
@@ -22,7 +25,7 @@ export default class _events {
   _init(options) {
     setGlobalObses();
 
-    if (Object.is(this.target, window)) {
+    if (Object.is(this.attacher, window)) {
       if (options.drag !== false) {
         this.ipointerdown = sub.add('pointerdown', this._down.bind(this));
         this.ipointermove = sub.add('pointermove', this._move.bind(this));
@@ -37,42 +40,41 @@ export default class _events {
       this.globalevents = sub.obs('globalevents').cb;
     } else {
       if (options.wheel !== false) {
-        this.target.onwheel = this._wheel.bind(this);
+        this.attacher.onwheel = this._wheel.bind(this);
       }
 
       if (options.drag !== false) {
-        this.target.onpointerdown = this._down.bind(this);
-        this.target.onpointermove = this._move.bind(this);
+        this.attacher.onpointerdown = this._down.bind(this);
+        this.attacher.onpointermove = this._move.bind(this);
       }
     }
 
     this.ipointerup = sub.add('pointerup', this._up.bind(this));
 
     this.dist = 0;
-    this.scroll = 0;
-    this.virtual = { value: 0, dir: 1 };
+    this.scroll = { value: 0, lerp: 0, dir: 1 };
     this.speed = { value: 0, lerp: 0 };
   }
 
   _wheel(e) {
-    this.rafCb();
+    this.loop();
 
     let multip = e.deltaMode == 1 ? 0.83 : 0.55;
     let offset = e.wheelDeltaY * multip;
-    this.scroll -= offset;
-    this.virtual.dir = Math.sign(offset);
+    this.scroll.value -= offset;
+    this.scroll.dir = Math.sign(offset);
 
     if (this.globalevents) this.globalevents(e, offset);
   }
 
   _onkey(e) {
     if (e.keyCode == 40 || e.keyCode == 38) {
-      this.rafCb();
+      this.loop();
 
       let offset = 0;
       if (e.keyCode == 40) offset = -66.6;
       else if (e.keyCode == 38) offset = 66.6;
-      this.scroll -= offset;
+      this.scroll.value -= offset;
 
       if (this.globalevents) this.globalevents(e, offset);
     }
@@ -85,12 +87,12 @@ export default class _events {
 
   _move(e) {
     if (this.mousedown) {
-      this.rafCb();
+      this.loop();
 
       let offset = e[this.ePage] - this.dist;
-      this.scroll -= offset;
+      this.scroll.value -= offset;
       this.dist = e[this.ePage];
-      this.virtual.dir = Math.sign(offset);
+      this.scroll.dir = Math.sign(offset);
 
       if (this.globalevents) {
         cssSet.pointer(this.chokeEl, 'all');
@@ -105,7 +107,11 @@ export default class _events {
   }
 
   _destroy() {
-    if (Object.is(this.target, window)) {
+    this.iraf.r();
+    this.sub.r();
+    this.iresize.r();
+
+    if (Object.is(this.attacher, window)) {
       if (this.ipointerdown) {
         this.ipointerdown.r();
         this.ipointermove.r();
@@ -115,8 +121,8 @@ export default class _events {
       if (this.iwheel) this.iwheel.r();
     } else {
       if (this.options !== false) {
-        this.target.onpointerdown = null;
-        this.target.onpointermove = null;
+        this.attacher.onpointerdown = null;
+        this.attacher.onpointermove = null;
       }
     }
 
