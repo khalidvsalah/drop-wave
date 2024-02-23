@@ -15,7 +15,7 @@ function config(entry, options) {
     bundle: true,
     format: options.format,
     plugins,
-    minify: true,
+    minify: options.mode,
     outfile: options.output,
     allowOverwrite: true,
     write: false
