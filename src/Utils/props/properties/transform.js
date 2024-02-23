@@ -29,7 +29,7 @@ const rotate = rx => {
 };
 const getMatrix = t => {
   const matrix3D = t.match(/^matrix3d\((.+)\)$/);
-  let matrix;
+  let matrix = t.match(/\((.+)\)$/);
 
   if (matrix3D) {
     matrix = matrix3D[1].split(', ');
@@ -42,7 +42,7 @@ const getMatrix = t => {
       matrix[13]
     ];
   } else if (matrix) {
-    matrix = t.match(/\((.+)\)$/)[1].split(', ');
+    matrix = matrix[1].split(', ');
   }
 
   return matrix;
