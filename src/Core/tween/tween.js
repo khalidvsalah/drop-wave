@@ -129,7 +129,7 @@ class Tween {
       this.lateO.d = o.d;
 
       this.oProps = o.p;
-      this.props = props(this.target, this.obj, o.p);
+      this.props = props(this.target, this.isObj, o.p);
 
       this.mode = 'r';
       this.control('p', true);
