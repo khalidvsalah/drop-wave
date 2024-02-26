@@ -11,7 +11,7 @@ export default class _events {
 
     this.dir = options.dir ? options.dir : 'y';
     this.isY = this.dir == 'y';
-    this.ePage = options.dir == 'y' ? 'pageY' : 'pageX';
+    this.ePage = this.dir == 'y' ? 'pageY' : 'pageX';
 
     this._init(options);
 

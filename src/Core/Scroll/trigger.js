@@ -79,15 +79,13 @@ class trigger {
   raf(coord) {
     this.coord = coord;
 
-    let s = this.startpint;
-    let e = this.endpoint;
-
     if (this.o.scroll) {
-      this.scroll(map(s, e, this.coord));
+      const remap = map(this.startpint, this.endpoint, this.coord);
+      this.scroll(remap);
 
       if (this.o.pin) this.piner();
-      if (this.o.raf) this.o.raf(this.target, this.coord);
-    } else if (s <= this.coord) this.fire();
+      if (this.o.raf) this.o.raf(remap, this.target, this.coord);
+    } else if (this.startpint <= this.coord) this.fire();
   }
 
   /**

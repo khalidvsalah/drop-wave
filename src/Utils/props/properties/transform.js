@@ -15,6 +15,7 @@ const scale = (sx, t) => {
   let sxV = { s: t, e: sx ? sx[0] : t };
   sxV.lerp = sxV.e - sxV.s;
   sxV.ease = ease[sx ? sx[1] : 'l'];
+
   return e => `${sxV.s + sxV.lerp * sxV.ease(e)}`;
 };
 const rotate = rx => {
@@ -33,6 +34,7 @@ const getMatrix = t => {
 
   if (matrix3D) {
     matrix = matrix3D[1].split(', ');
+
     matrix = [
       matrix[0],
       matrix[1],
