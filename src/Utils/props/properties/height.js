@@ -13,7 +13,7 @@ const height = (h, { pa, height }) => {
     s: h[1] === 'px' ? parse : (parse / pa.clientHeight) * 100,
     e: h[0],
     unit: h[1] === 'px' ? 'px' : '%',
-    ease: ease[h[2]]
+    ease: ease(h[2])
   };
 
   hV.lerp = hV.e - hV.s;

@@ -117,4 +117,7 @@ const ease = {
       : (Math.sqrt(1 - Math.pow(-2 * x + 2, 2)) + 1) / 2
 };
 
-export default ease;
+export default str => {
+  if (typeof str === 'object') return ease.custom(str);
+  else return ease[str];
+};

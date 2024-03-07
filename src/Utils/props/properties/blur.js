@@ -22,7 +22,7 @@ const blur = (b, { filter }) => {
   }
 
   bV.lerp = bV.e - bV.s;
-  bV.ease = ease[b[1]];
+  bV.ease = ease(b[1]);
 
   return e => bV.s + bV.lerp * bV.ease(e);
 };

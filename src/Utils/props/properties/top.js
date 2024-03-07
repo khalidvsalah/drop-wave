@@ -1,3 +1,4 @@
+import ease from '../../../Math/ease';
 import { bounds } from '../../../Core/methods/methods';
 
 /**
@@ -24,7 +25,7 @@ const top = (t, { pa, top }) => {
   }
 
   tV.lerp = tV.e - tV.s;
-  tV.ease = ease[t[2]];
+  tV.ease = ease(t[2]);
   return e => `${tV.s + tV.lerp * tV.ease(e)}${tV.unit}`;
 };
 

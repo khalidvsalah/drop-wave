@@ -49,7 +49,7 @@ function parse(path) {
 const d = (p, { el }) => {
   const s = parse(el.getAttribute('d'));
   const e = parse(p[0]);
-  const easing = ease[p[1]];
+  const easing = ease(p[1]);
 
   return t => {
     let st = '';

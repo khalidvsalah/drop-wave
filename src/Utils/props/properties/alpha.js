@@ -10,7 +10,7 @@ const alpha = (o, { opacity }) => {
   const oV = {
     s: +opacity,
     e: o[0],
-    ease: ease[o[1]]
+    ease: ease(o[1])
   };
 
   oV.lerp = oV.e - oV.s;

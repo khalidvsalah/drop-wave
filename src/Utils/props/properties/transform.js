@@ -6,16 +6,17 @@ const translate = (x, t, w) => {
     e: x ? x[0] : t,
     unit: x ? (x[1] ? x[1] : 'px') : 'px'
   };
-
   xV.lerp = xV.e - xV.s;
-  xV.ease = ease[x ? x[2] : 'l'];
+  if (x) xV.ease = ease(x[2]);
+  else xV.ease = ease('l');
+
   return e => `${xV.s + xV.lerp * xV.ease(e)}${xV.unit}`;
 };
 const scale = (sx, t) => {
   let sxV = { s: t, e: sx ? sx[0] : t };
   sxV.lerp = sxV.e - sxV.s;
-  sxV.ease = ease[sx ? sx[1] : 'l'];
-
+  if (sx) sxV.ease = ease(sx[1]);
+  else sxV.ease = ease('l');
   return e => `${sxV.s + sxV.lerp * sxV.ease(e)}`;
 };
 const rotate = rx => {
@@ -23,9 +24,10 @@ const rotate = rx => {
     s: rx ? rx[0] : 0,
     e: rx ? rx[1] : 0
   };
-
   rxV.lerp = rxV.e - rxV.s;
-  rxV.ease = ease[rx ? rx[2] : 'l'];
+  if (rx) rxV.ease = ease(rx[1]);
+  else rxV.ease = ease('l');
+
   return e => `${rxV.s + rxV.lerp * rxV.ease(e)}deg`;
 };
 const getMatrix = t => {

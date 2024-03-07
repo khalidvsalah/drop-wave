@@ -21,7 +21,7 @@ const d = t => {
 const points = (p, { el }) => {
   const s = d(el.getAttribute('points'));
   const e = d(p[0]);
-  const easing = ease[p[1]];
+  const easing = ease(p[1]);
 
   return t => {
     let st = '';
