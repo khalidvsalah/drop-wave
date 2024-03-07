@@ -61,4 +61,22 @@ const round = (num, pow) => {
   return Math.round(num * d) / d;
 };
 
-export { clamp, lerp, map, remap, round, zero };
+/**
+ * Get Radius
+ 
+ * @param {number}  x - X
+ * @param {number}  y - Y
+ * @return {number} Radius Value
+ */
+const dist = (x, y) => Math.sqrt(x ** 2 + y ** 2);
+
+/**
+ * Get Radius
+ 
+ * @param {number}  x - X
+ * @param {number}  y - Y
+ * @return {number} Radius Value
+ */
+const damp = (t, s, i, n = 0.50399) => lerp(t, s, 1 - Math.exp(-i * n));
+
+export { clamp, lerp, map, remap, round, zero, dist, damp };
