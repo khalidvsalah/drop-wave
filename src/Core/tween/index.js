@@ -10,7 +10,7 @@ import Tween from './tween';
 function Interface(els, o) {
   let nodes;
 
-  if (els instanceof NodeList || Array.isArray(els)) nodes = [...els];
+  if (Array.isArray(els) && !o.obj) nodes = els;
   else nodes = [els];
 
   const tweens = nodes.map((node, i) => {
@@ -29,7 +29,7 @@ function Interface(els, o) {
   /**
    * Store element late time.
    */
-  let lates = tweens.map((tw) => tw.late.d);
+  let lates = tweens.map(tw => tw.late.d);
 
   return {
     reverse: (obj = {}) => {
