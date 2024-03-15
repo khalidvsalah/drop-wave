@@ -96,7 +96,7 @@ class trigger {
     this.ps.map(p => {
       if (this.target.length) {
         this.target.forEach(el => p.setV(el, p.cb(diraction)));
-      } else p.setV(this.target, p.cb(t));
+      } else p.setV(this.target, p.cb(diraction));
     });
   }
 
