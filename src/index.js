@@ -1,5 +1,5 @@
 import ease from './Math/ease';
-import { clamp, lerp, map, remap, round, zero } from './Math/math';
+import { clamp, lerp, map, remap, round, zero, dist, damp } from './Math/math';
 import {
   has,
   bounds,
@@ -29,6 +29,8 @@ export {
   remap,
   round,
   zero,
+  dist,
+  damp,
   has,
   bounds,
   computed,

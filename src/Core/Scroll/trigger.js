@@ -1,7 +1,6 @@
 import sub from '../methods/observer';
 import props from '../../Utils/props/props';
 import { map, zero } from '../../Math/math';
-import ease from '../../Math/ease';
 import tween from '../tween/index';
 
 const match = (str, bs) => {
@@ -27,6 +26,7 @@ class trigger {
     this.target = o.target;
 
     this.o = o;
+    this.from = o.from;
 
     this.dir = dir;
     this.dirE = dir == 'y' ? 'yE' : 'xE';
@@ -92,9 +92,10 @@ class trigger {
    * Animate with scrolling
    */
   scroll(t) {
+    const diraction = this.from ? 1 - t : t;
     this.ps.map(p => {
       if (this.target.length) {
-        this.target.forEach(el => p.setV(el, p.cb(t)));
+        this.target.forEach(el => p.setV(el, p.cb(diraction)));
       } else p.setV(this.target, p.cb(t));
     });
   }
