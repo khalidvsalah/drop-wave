@@ -26,7 +26,7 @@ export default class Late {
     this.on = true;
     this.stop = false;
 
-    if (this.d == 0) {
+    if (this.d === 0) {
       this.Elp();
     } else {
       this.id = raf.push({ cb: this.loop.bind(this) });

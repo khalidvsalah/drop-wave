@@ -18,17 +18,17 @@ const d = t => {
   return r;
 };
 
-const points = (p, { el }) => {
+const points = (p, { el, easing }) => {
   const s = d(el.getAttribute('points'));
   const e = d(p[0]);
-  const easing = ease(p[1]);
+  const curve = ease(p[1] || easing);
 
   return t => {
     let st = '';
     let value = '';
 
     for (let i = 0; i < s.length; i++) {
-      st += lerp(s[i], e[i], easing(t)) + ' ';
+      st += lerp(s[i], e[i], curve(t)) + ' ';
       value = st.trim();
     }
 

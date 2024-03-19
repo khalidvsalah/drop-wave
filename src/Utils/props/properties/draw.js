@@ -1,13 +1,13 @@
 import ease from '../../../Math/ease';
 
-const dash = (d, { el }) => {
+const dash = (d, { el, easing }) => {
   const length = el.getTotalLength();
   el.style.strokeDasharray = length;
 
   const dV = {
     s: d[1] * length,
     e: d[0] * length,
-    ease: ease(d[2])
+    ease: ease(d[2] || easing)
   };
 
   dV.lerp = dV.e - dV.s;

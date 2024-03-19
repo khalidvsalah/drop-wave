@@ -6,14 +6,14 @@ import ease from '../../../Math/ease';
  * @param {Object} n - Computed Style.
  * @return {Function}
  */
-const height = (h, { pa, height }) => {
+const height = (h, { parent, height, easing }) => {
   const parse = parseFloat(height);
 
   const hV = {
-    s: h[1] === 'px' ? parse : (parse / pa.clientHeight) * 100,
+    s: h[1] === 'px' ? parse : (parse / parent.clientHeight) * 100,
     e: h[0],
     unit: h[1] === 'px' ? 'px' : '%',
-    ease: ease(h[2])
+    ease: ease(h[2] || easing)
   };
 
   hV.lerp = hV.e - hV.s;

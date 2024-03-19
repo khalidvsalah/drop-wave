@@ -46,10 +46,10 @@ function parse(path) {
   return data;
 }
 
-const d = (p, { el }) => {
+const d = (p, { el, easing }) => {
   const s = parse(el.getAttribute('d'));
   const e = parse(p[0]);
-  const easing = ease(p[1]);
+  const curve = ease(p[1] || easing);
 
   return t => {
     let st = '';
@@ -60,7 +60,7 @@ const d = (p, { el }) => {
       const i2 = e[i];
 
       for (let k = 0; k < i1.length; k++) {
-        st += (isNaN(i1[k]) ? i1[k] : lerp(i1[k], i2[k], easing(t))) + ' ';
+        st += (isNaN(i1[k]) ? i1[k] : lerp(i1[k], i2[k], curve(t))) + ' ';
       }
 
       value = st.trim();

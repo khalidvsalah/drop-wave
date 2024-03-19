@@ -6,13 +6,13 @@ import ease from '../../../Math/ease';
  * @param {Object} n - Computed Style.
  * @return {Function}
  */
-const width = (w, { pa, width }) => {
+const width = (w, { parent, width, easing }) => {
   const parse = parseFloat(width);
   const wV = {
-    s: w[1] === 'px' ? parse : (parse / pa.clientWidth) * 100,
+    s: w[1] === 'px' ? parse : (parse / parent.clientWidth) * 100,
     e: w[0],
     unit: w[1] === 'px' ? 'px' : '%',
-    ease: ease(w[2])
+    ease: ease(w[2] || easing)
   };
 
   wV.lerp = wV.e - wV.s;

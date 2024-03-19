@@ -6,7 +6,7 @@ import ease from '../../../Math/ease';
  * @param {Object} n - Computed Style.
  * @return {Function}
  */
-const blur = (b, { filter }) => {
+const blur = (b, { filter, easing }) => {
   let bV;
 
   if (filter === 'none') {
@@ -22,7 +22,7 @@ const blur = (b, { filter }) => {
   }
 
   bV.lerp = bV.e - bV.s;
-  bV.ease = ease(b[1]);
+  bV.ease = ease(b[1] || easing);
 
   return e => bV.s + bV.lerp * bV.ease(e);
 };

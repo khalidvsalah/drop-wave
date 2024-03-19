@@ -7,7 +7,7 @@ import { bounds } from '../../../Core/methods/methods';
  * @param {Object} n - Computed Style.
  * @return {Function}
  */
-const top = (t, { pa, top }) => {
+const top = (t, { parent, top, easing }) => {
   let tV;
   if (top === 'auto') {
     tV = {
@@ -18,14 +18,14 @@ const top = (t, { pa, top }) => {
   } else {
     const tC = parseFloat(top);
     tV = {
-      s: t[1] === 'px' ? tC : (tC / bounds(pa).h) * 100,
+      s: t[1] === 'px' ? tC : (tC / bounds(parent).h) * 100,
       e: t[0],
       unit: t[1] || 'px'
     };
   }
 
   tV.lerp = tV.e - tV.s;
-  tV.ease = ease(t[2]);
+  tV.ease = ease(t[2] || easing);
   return e => `${tV.s + tV.lerp * tV.ease(e)}${tV.unit}`;
 };
 

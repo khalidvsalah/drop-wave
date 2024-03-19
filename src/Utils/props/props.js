@@ -8,10 +8,12 @@ import matches from './matches';
  * @param {Object} ps - properties need to be modified.
  * @return {Array}
  */
-function dom(e, ps, results) {
+function dom(e, ps, results, easing) {
   const compute = computed(e);
+
   compute.el = e;
-  compute.pa = e.parentNode;
+  compute.parent = e.parentNode;
+  compute.easing = easing;
 
   for (const key of Object.entries(ps)) {
     const values = matches(key[0]);
@@ -25,9 +27,9 @@ function dom(e, ps, results) {
  * @param {Object} e - targeted object.
  * @param {ps} ps - properties.
  */
-function obj(e, ps, results) {
+function obj(e, ps, results, easing) {
   for (const key in ps) {
-    const oV = { s: e[key], e: ps[key][0], ease: ease(ps[key][1]) };
+    const oV = { s: e[key], e: ps[key][0], ease: ease(ps[key][1] || easing) };
 
     oV.lerp = oV.e - oV.s;
 
@@ -38,11 +40,11 @@ function obj(e, ps, results) {
   }
 }
 
-function props(e, o, ps) {
+function props(e, o, ps, easing) {
   const results = [];
 
-  if (!o) dom(e, ps, results);
-  else obj(e, ps, results);
+  if (!o) dom(e, ps, results, easing);
+  else obj(e, ps, results, easing);
 
   return results;
 }

@@ -6,11 +6,11 @@ import ease from '../../../Math/ease';
  * @param {Object} n - Computed Style.
  * @return {Function}
  */
-const alpha = (o, { opacity }) => {
+const alpha = (o, { opacity, easing }) => {
   const oV = {
     s: +opacity,
     e: o[0],
-    ease: ease(o[1])
+    ease: ease(o[1] || easing)
   };
 
   oV.lerp = oV.e - oV.s;
