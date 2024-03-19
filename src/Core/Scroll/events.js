@@ -68,15 +68,19 @@ export default class _events {
   }
 
   _onkey(e) {
-    if (e.keyCode == 40 || e.keyCode == 38) {
-      this.loop();
+    if (e.key === 'Tab') {
+      e.preventDefault();
+    } else {
+      if (e.keyCode == 40 || e.keyCode == 38) {
+        this.loop();
 
-      let offset = 0;
-      if (e.keyCode == 40) offset = -66.6;
-      else if (e.keyCode == 38) offset = 66.6;
-      this.scroll.value -= offset;
+        let offset = 0;
+        if (e.keyCode == 40) offset = -66.6;
+        else if (e.keyCode == 38) offset = 66.6;
+        this.scroll.value -= offset;
 
-      if (this.globalevents) this.globalevents(e, offset);
+        if (this.globalevents) this.globalevents(e, offset);
+      }
     }
   }
 
