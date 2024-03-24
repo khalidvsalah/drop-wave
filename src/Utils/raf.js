@@ -1,4 +1,5 @@
 import { clamp } from '../Math/math';
+import Visiability from './visiability';
 
 /** @constructor */
 class Raf {
@@ -26,10 +27,10 @@ class Raf {
       if (o.d) {
         if (!o.st) o.st = t;
         const time = (t - o.st) / (o.d * 1e3);
-        const e = clamp(0, 1, time);
-        const cb = o.cb(e);
+        const elapsed = clamp(0, 1, time);
+        o.cb(elapsed);
 
-        if (cb || e === 1) this.kill(o.id);
+        if (elapsed === 1) this.kill(o.id);
       } else o.cb(t);
     }
 
@@ -61,4 +62,7 @@ class Raf {
   }
 }
 
-export default new Raf();
+const raf = new Raf();
+new Visiability(raf);
+
+export default raf;
