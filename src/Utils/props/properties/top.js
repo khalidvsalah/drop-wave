@@ -25,7 +25,7 @@ const top = (t, { parent, top, easing }) => {
   }
 
   tV.lerp = tV.e - tV.s;
-  tV.ease = ease(t[2] || easing);
+  tV.ease = t[2] ? ease(t[2]) : easing;
   return e => `${tV.s + tV.lerp * tV.ease(e)}${tV.unit}`;
 };
 

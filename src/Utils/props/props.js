@@ -29,7 +29,11 @@ function dom(e, ps, results, easing) {
  */
 function obj(e, ps, results, easing) {
   for (const key in ps) {
-    const oV = { s: e[key], e: ps[key][0], ease: ease(ps[key][1] || easing) };
+    const oV = {
+      s: e[key],
+      e: ps[key][0],
+      ease: ps[key][1] ? ease(ps[key][1]) : easing
+    };
 
     oV.lerp = oV.e - oV.s;
 

@@ -12,7 +12,7 @@ const width = (w, { parent, width, easing }) => {
     s: w[1] === 'px' ? parse : (parse / parent.clientWidth) * 100,
     e: w[0],
     unit: w[1] === 'px' ? 'px' : '%',
-    ease: ease(w[2] || easing)
+    ease: w[2] ? ease(w[2]) : easing
   };
 
   wV.lerp = wV.e - wV.s;

@@ -7,7 +7,7 @@ const translate = (x, t, w, easing) => {
     unit: x ? (x[1] ? x[1] : 'px') : 'px'
   };
   xV.lerp = xV.e - xV.s;
-  if (x) xV.ease = ease(x[2] || easing);
+  if (x) xV.ease = x[2] ? ease(x[2]) : easing;
   else xV.ease = ease('l');
 
   return e => `${xV.s + xV.lerp * xV.ease(e)}${xV.unit}`;
@@ -15,7 +15,7 @@ const translate = (x, t, w, easing) => {
 const scale = (sx, t, easing) => {
   let sxV = { s: t, e: sx ? sx[0] : t };
   sxV.lerp = sxV.e - sxV.s;
-  if (sx) sxV.ease = ease(sx[1] || easing);
+  if (sx) sxV.ease = sx[1] ? ease(sx[1]) : easing;
   else sxV.ease = ease('l');
   return e => `${sxV.s + sxV.lerp * sxV.ease(e)}`;
 };
@@ -25,7 +25,7 @@ const rotate = (rx, easing) => {
     e: rx ? rx[1] : 0
   };
   rxV.lerp = rxV.e - rxV.s;
-  if (rx) rxV.ease = ease(rx[1] || easing);
+  if (rx) rxV.ease = rx[1] ? ease(rx[1]) : easing;
   else rxV.ease = ease('l');
 
   return e => `${rxV.s + rxV.lerp * rxV.ease(e)}deg`;

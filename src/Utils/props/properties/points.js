@@ -21,7 +21,7 @@ const d = t => {
 const points = (p, { el, easing }) => {
   const s = d(el.getAttribute('points'));
   const e = d(p[0]);
-  const curve = ease(p[1] || easing);
+  const curve = p[1] ? ease(p[1]) : easing;
 
   return t => {
     let st = '';

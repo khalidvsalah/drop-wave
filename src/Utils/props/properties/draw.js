@@ -7,7 +7,7 @@ const dash = (d, { el, easing }) => {
   const dV = {
     s: d[1] * length,
     e: d[0] * length,
-    ease: ease(d[2] || easing)
+    ease: d[2] ? ease(d[2]) : easing
   };
 
   dV.lerp = dV.e - dV.s;

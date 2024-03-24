@@ -1,3 +1,4 @@
+import ease from '../../Math/ease';
 import { iSet } from '../methods/methods';
 import props from '../../Utils/props/props';
 import { clamp } from '../../Math/math';
@@ -37,13 +38,13 @@ class Tween {
     this.d = o.d;
     this.late = o.late;
     this.from = o.from;
-    this.ease = o.ease || 'l';
+    this.ease = ease(o.ease || 'l');
 
     this.oProps = o.p;
     this.lateO = { cb: this.run.bind(this), d: this.d };
 
     this.late = new late({ d: this.late, o: this.lateO });
-    this.props = props(this.target, this.isObj, o.p, o.ease);
+    this.props = props(this.target, this.isObj, o.p, this.ease);
 
     if (o.from) this.props.map(({ setV, cb }) => setV(this.target, cb(0)));
   }
@@ -128,7 +129,7 @@ class Tween {
       this.late.d = o.late || 0;
       this.lateO.d = o.d;
 
-      this.ease = o.ease || this.ease;
+      this.ease = o.ease ? ease(o.ease) : this.ease;
       this.oProps = o.p;
       this.props = props(this.target, this.isObj, o.p, this.ease);
 
