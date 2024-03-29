@@ -20,7 +20,20 @@ function Interface(els, o) {
   else nodes = [els];
 
   const tweens = nodes.map((node, i) => {
-    return new Tween(node, { ...o, late: delay(o, {}, i) });
+    const obj = { ...o };
+
+    if (i === 0) {
+      obj.started = o.started;
+      obj.raf = o.raf;
+    } else {
+      obj.started = null;
+      obj.raf = null;
+    }
+
+    if (i === nodes.length - 1) obj.completed = o.completed;
+    else obj.completed = null;
+
+    return new Tween(node, { ...obj, late: delay(obj, {}, i) });
   });
 
   return {

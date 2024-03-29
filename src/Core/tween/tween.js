@@ -54,7 +54,10 @@ class Tween {
   }
 
   push() {
-    this.started && this.started(this.target);
+    if (this.started) {
+      this.started(this.target);
+      this.started = null;
+    }
     if (this.oProps) {
       this.props = props(this.target, this.isObj, this.oProps, this.ease);
     }
@@ -117,11 +120,14 @@ class Tween {
    * @param {Object} o - The new properties.
    */
   play(o, mode) {
+    this.started = o.started;
+    this.completed = o.completed;
+    this.raf = o.raf;
+
     if (o.late) this.late.d = o.late;
     if (o.ease) this.ease = ease(o.ease);
     if (o.d) this.dur = o.d;
 
-    console.log(o);
     if (o.p && iSet.string(this.oProps) !== iSet.string(o.p)) {
       this.oProps = o.p;
       this.control('p', true);
@@ -134,7 +140,11 @@ class Tween {
   finished() {
     this.on = false;
     raf.kill(this.id);
-    if (this.completed) this.completed(this.target);
+    if (this.completed) {
+      this.completed(this.target);
+      this.completed = null;
+      this.raf = null;
+    }
   }
 }
 
