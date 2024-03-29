@@ -1,6 +1,7 @@
 import ease from '../../Math/ease';
 import { iSet } from '../methods/methods';
 import props from '../../Utils/props/props';
+import raf from '../../Utils/raf';
 import { clamp } from '../../Math/math';
 import late from '../late/late';
 import targeted from './tools/targeted';
@@ -15,38 +16,26 @@ class Tween {
    * @param {HTMLElement} el - targeted element
    * @param {Object} o - properties
    */
-  constructor(el, o) {
-    const stored = store.call(this, el);
+  constructor(element, o) {
+    const stored = store(element, this);
 
     if (!stored) {
-      targeted.call(this, el);
-      this.init(o);
-    } else return stored;
+      targeted.call(this, element);
+      this.init();
+      this.play(o);
+    } else stored.play(o);
   }
 
   /**
    * Setting up the class.
    */
-  init(o) {
-    this.o = o;
-
-    this.mode;
-    this.prog = 0;
+  init() {
     this.elapsed = 0;
-    this.dir = 0;
-
-    this.d = o.d;
-    this.late = o.late;
-    this.from = o.from;
-    this.ease = ease(o.ease || 'l');
-
-    this.oProps = o.p;
-    this.lateO = { cb: this.run.bind(this), d: this.d };
-
-    this.late = new late({ d: this.late, o: this.lateO });
-    this.props = props(this.target, this.isObj, o.p, this.ease);
-
-    if (o.from) this.props.map(({ setV, cb }) => setV(this.target, cb(0)));
+    this.dur = 0.5;
+    this.prog = 0;
+    this.props = [];
+    this.late = new late({ cb: this.push.bind(this) });
+    // if (o.from) this.props.map(({ setV, cb }) => setV(this.target, cb(0)));
   }
 
   /**
@@ -58,13 +47,19 @@ class Tween {
     this.elapsed = clamp(0, 1, this.prog + t);
 
     const e = Math.abs(this.dir - this.elapsed);
-    this.props.map(({ setV, cb }) => {
-      const diraction = this.from ? 1 - e : e;
-      setV(this.target, cb(diraction));
-    });
+    this.props.map(({ setV, cb }) => setV(this.target, cb(e)));
 
     this.raf && this.raf(e, this.target);
-    if (this.elapsed == 1) return this.destroy();
+    if (this.elapsed === 1) this.finished();
+  }
+
+  push() {
+    this.started && this.started(this.target);
+    if (this.oProps) {
+      this.props = props(this.target, this.isObj, this.oProps, this.ease);
+    }
+    this.rafObj = { cb: this.run.bind(this), d: this.dur };
+    this.id = raf.push(this.rafObj);
   }
 
   /**
@@ -73,77 +68,73 @@ class Tween {
    * @param {Boolean} n - check if the properties has changed.
    *
    */
-  control(mode, n) {
-    if (this.late.on && this.mode !== mode) {
+  control(mode, newV) {
+    if (this.mode !== mode) {
       this.mode = mode;
-      this.late.destroy();
+      if (mode === 'r') this.dir = 1;
+      else this.dir = 0;
+
+      if (this.late.on) this.late.destroy();
+      else {
+        if (this.on) {
+          if (newV) {
+            this.late.play();
+            this.prog = 0;
+          } else {
+            this.rafObj.st = null;
+            this.prog = 1 - this.elapsed;
+          }
+        } else {
+          this.late.play();
+          this.prog = 0;
+        }
+      }
+    } else if (newV) {
+      if (this.late.on) this.late.destroy();
+      this.late.play();
     }
-
-    //  && !this.obj
-    if (this.mode === mode) return;
-    this.mode = mode;
-
-    if (mode === 'r') this.dir = 1;
-    else this.dir = 0;
-
-    this.late.cb = () => this.start && this.start(this.target);
-    if (this.late.on) return;
-
-    if (this.on) {
-      this.lateO.st = null;
-      if (n) this.prog = 0;
-      else this.prog = 1 - this.elapsed;
-    } else this.late.play();
   }
 
-  /**
-   * @param {number} d - update delay time.
-   *
-   */
-  reverse(o) {
-    this.late.d = o.late || this.late.d;
+  // /**
+  //  * @param {number} d - update delay time.
+  //  *
+  //  */
+  // reverse(o) {
+  //   this.late.d = o.late || this.late.d;
 
-    if (this.index === 0) {
-      this.start = o.start;
-      this.completed = o.completed;
-      this.raf = o.raf;
-    }
+  //   if (this.index === 0) {
+  //     this.start = o.start;
+  //     this.completed = o.completed;
+  //     this.raf = o.raf;
+  //   }
 
-    this.control('r');
-  }
+  //   this.control('r');
+  // }
 
   /**
    * (Checkt/Update) properties object
    *
    * @param {Object} o - The new properties.
    */
-  play(o, i) {
-    this.index = i;
-    if (this.index === 0) {
-      this.start = o.start;
-      this.completed = o.completed;
-      this.raf = o.raf;
-    }
+  play(o, mode) {
+    if (o.late) this.late.d = o.late;
+    if (o.ease) this.ease = ease(o.ease);
+    if (o.d) this.dur = o.d;
 
-    if (iSet.string(this.oProps) != iSet.string(o.p)) {
-      this.late.d = o.late || 0;
-      this.lateO.d = o.d;
-
-      this.ease = o.ease ? ease(o.ease) : this.ease;
+    console.log(o);
+    if (o.p && iSet.string(this.oProps) !== iSet.string(o.p)) {
       this.oProps = o.p;
-      this.props = props(this.target, this.isObj, o.p, this.ease);
-
-      this.mode = 'r';
       this.control('p', true);
-    } else this.control('p');
+    } else {
+      this.oProps = o.p;
+      this.control(mode, false);
+    }
   }
 
-  destroy() {
+  finished() {
     this.on = false;
-    this.prog = 0;
-
+    raf.kill(this.id);
     if (this.completed) this.completed(this.target);
-    return true;
   }
 }
 

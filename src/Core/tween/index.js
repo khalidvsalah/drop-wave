@@ -1,5 +1,11 @@
 import Tween from './tween';
 
+const delay = (o, obj, idx) => {
+  const space = typeof obj.space === 'number' ? obj.space : o.space || 0;
+  const late = typeof obj.late === 'number' ? obj.late : o.late;
+  return late + space * idx;
+};
+
 /**
  * Tween Interface.
  *
@@ -14,32 +20,22 @@ function Interface(els, o) {
   else nodes = [els];
 
   const tweens = nodes.map((node, i) => {
-    /**
-     * Tweens staggering.
-     */
-    let late = (o.late || 0) + (o.space * i || 0);
-    return new Tween(node, { ...o, late });
+    return new Tween(node, { ...o, late: delay(o, {}, i) });
   });
-
-  /**
-   * Play.
-   */
-  tweens.map((tw, i) => tw.play(o, i));
-
-  /**
-   * Store element late time.
-   */
-  let lates = tweens.map(tw => tw.late.d);
 
   return {
     reverse: (obj = {}) => {
-      let late = (o.late || 0) - obj.late;
-      tweens.map((tw, i) => {
-        obj.late = lates[i] - late;
-        tw.reverse(obj);
-      });
+      const length = tweens.length;
+      for (let i = 0; i < length; i++) {
+        const idx = length - i - 1;
+        tweens[i].play({ late: delay(o, obj, idx), d: obj.d }, 'r');
+      }
     },
-    play: () => tweens.map((tw, i) => tw.play(o, i))
+    play: (obj = {}) => {
+      tweens.map((tween, i) => {
+        tween.play({ late: delay(o, obj, i), d: obj.d }, 'p');
+      });
+    }
   };
 }
 
