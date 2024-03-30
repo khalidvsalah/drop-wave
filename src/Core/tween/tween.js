@@ -83,21 +83,11 @@ class Tween {
     const roll = this.queue[this.call];
 
     if (roll.oProps) {
-      if (!compare(this.oProps, roll.oProps)) {
-        this.late = new late({ cb: this.push.bind(this, roll), d: roll.late });
-        this.late.play();
-      } else this.reverse(roll);
-    } else if (this.mode !== roll.mode) this.reverse(roll);
-  }
-
-  reverse(roll) {
-    if (this.late.on) this.late.destroy();
-    else if (this.on) {
-      this.dir = roll.dir;
-      this.mode = roll.mode;
-      this.rafObj.st = null;
-      this.prog = 1 - this.elapsed;
-    } else {
+      if (compare(this.oProps, roll.oProps)) roll.oProps = undefined;
+      this.late = new late({ cb: this.push.bind(this, roll), d: roll.late });
+      this.late.play();
+    } else if (this.mode !== roll.mode) {
+      if (this.late.on) this.late.destroy();
       this.late = new late({ cb: this.push.bind(this, roll), d: roll.late });
       this.late.play();
     }
