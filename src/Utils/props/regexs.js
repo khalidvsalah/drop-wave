@@ -13,17 +13,22 @@ import top from './properties/top';
 import width from './properties/width';
 import height from './properties/height';
 
+import circle from './properties/circle';
+import polygon from './properties/polygon';
+
 const regexs = [
   [/^(form)$/, transform],
   [/^(a)$/, alpha],
+  [/^(width)$/, width],
+  [/^(height)$/, height],
+  [/^(top)$/, top],
+  [/^(blur)$/, blur],
   [/^(draw)$/, draw],
   [/^(dash)$/, dash],
   [/^(points)$/, points],
   [/^(d)$/, d],
-  [/^(top)$/, top],
-  [/^(blur)$/, blur],
-  [/^(width)$/, width],
-  [/^(height)$/, height]
+  [/^(circle)$/, circle],
+  [/^(polygon)$/, polygon]
 ];
 
 export default regexs;
