@@ -77,7 +77,7 @@ class trigger {
    * Loop
    */
   raf(coord) {
-    this.coord = coord;
+    this.coord = coord[this.dir];
 
     if (this.o.scroll) {
       const remap = map(this.startpint, this.endpoint, this.coord);

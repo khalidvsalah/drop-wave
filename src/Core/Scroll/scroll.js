@@ -104,7 +104,7 @@ class Scroll extends events {
     this.speed.time = t;
     this.speed.offset = rounded;
 
-    if (this.sub) this.sub.cb(rounded);
+    if (this.sub) this.sub.cb(this.scroll);
     if (rounded == this.scroll.value) this.iraf.r();
   }
 
