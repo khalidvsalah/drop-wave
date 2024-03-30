@@ -1,9 +1,24 @@
 import Tween from './tween';
 
-const delay = (o, obj, idx) => {
-  const space = typeof obj.space === 'number' ? obj.space : o.space || 0;
-  const late = typeof obj.late === 'number' ? obj.late : o.late;
-  return late + space * idx;
+const events = (o, i, length) => {
+  const obj = { ...o };
+
+  if (i !== 0) {
+    obj.started = null;
+    obj.raf = null;
+  }
+
+  if (i !== length) obj.completed = null;
+  obj.late = o.late + o.space * i;
+
+  return obj;
+};
+const change = (obj, o) => {
+  o.d = typeof obj.d === 'number' ? obj.d : o.d || 0.5;
+  o.late = typeof obj.late === 'number' ? obj.late : o.late || 0;
+  o.space = typeof obj.space === 'number' ? obj.space : o.space || 0;
+  o.ease = obj.ease ? obj.ease : o.ease || 'l';
+  o.p = obj.p;
 };
 
 /**
@@ -19,37 +34,25 @@ function Interface(els, o) {
   if (Array.isArray(els) && !o.obj) nodes = els;
   else nodes = [els];
 
-  const tweens = nodes.map((node, i) => {
-    const obj = { ...o };
+  const tweens = nodes.map(node => new Tween(node));
+  const length = tweens.length - 1;
 
-    if (i === 0) {
-      obj.started = o.started;
-      obj.raf = o.raf;
-    } else {
-      obj.started = null;
-      obj.raf = null;
-    }
-
-    if (i === nodes.length - 1) obj.completed = o.completed;
-    else obj.completed = null;
-
-    return new Tween(node, { ...obj, late: delay(obj, {}, i) });
-  });
-
-  return {
+  const methods = {
     reverse: (obj = {}) => {
-      const length = tweens.length;
-      for (let i = 0; i < length; i++) {
-        const idx = length - i - 1;
-        tweens[i].play({ late: delay(o, obj, idx), d: obj.d }, 'r');
+      change(obj, o);
+      for (let i = 0; i <= length; i++) {
+        const idx = length - i;
+        tweens[i].play(events(o, idx, length), 'r');
       }
     },
     play: (obj = {}) => {
-      tweens.map((tween, i) => {
-        tween.play({ late: delay(o, obj, i), d: obj.d }, 'p');
-      });
+      change(obj, o);
+      tweens.map((tween, i) => tween.play(events(o, i, length), 'p'));
     }
   };
+
+  methods.play(o);
+  return methods;
 }
 
 export default Interface;

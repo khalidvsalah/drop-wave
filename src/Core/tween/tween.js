@@ -1,11 +1,11 @@
 import ease from '../../Math/ease';
-import { iSet } from '../methods/methods';
 import props from '../../Utils/props/props';
 import raf from '../../Utils/raf';
 import { clamp } from '../../Math/math';
 import late from '../late/late';
 import targeted from './tools/targeted';
 import store from './tools/stored';
+import compare from './tools/compare';
 
 /**
  * Tween
@@ -16,25 +16,24 @@ class Tween {
    * @param {HTMLElement} el - targeted element
    * @param {Object} o - properties
    */
-  constructor(element, o) {
+  constructor(element) {
     const stored = store(element, this);
-
-    if (!stored) {
-      targeted.call(this, element);
-      this.init();
-      this.play(o);
-    } else stored.play(o);
+    return stored;
   }
 
   /**
    * Setting up the class.
    */
-  init() {
-    this.elapsed = 0;
-    this.dur = 0.5;
-    this.prog = 0;
+  init(element) {
+    targeted.call(this, element);
+
+    this.call = -1;
+
     this.props = [];
-    this.late = new late({ cb: this.push.bind(this) });
+    this.queue = [];
+
+    this.prog = 0;
+    this.elapsed = 0;
     // if (o.from) this.props.map(({ setV, cb }) => setV(this.target, cb(0)));
   }
 
@@ -53,15 +52,24 @@ class Tween {
     if (this.elapsed === 1) this.finished();
   }
 
-  push() {
+  push(roll) {
+    this.destroy();
+
+    this.dir = roll.dir;
+    this.mode = roll.mode;
+
     if (this.started) {
       this.started(this.target);
       this.started = null;
     }
-    if (this.oProps) {
-      this.props = props(this.target, this.isObj, this.oProps, this.ease);
-    }
-    this.rafObj = { cb: this.run.bind(this), d: this.dur };
+
+    if (roll.oProps) {
+      this.oProps = roll.oProps;
+      this.props = props(this.target, this.isObj, roll.oProps, ease(roll.ease));
+      this.prog = 0;
+    } else this.prog = 1 - this.elapsed;
+
+    this.rafObj = { cb: this.run.bind(this), d: roll.d };
     this.id = raf.push(this.rafObj);
   }
 
@@ -71,48 +79,29 @@ class Tween {
    * @param {Boolean} n - check if the properties has changed.
    *
    */
-  control(mode, newV) {
-    if (this.mode !== mode) {
-      this.mode = mode;
-      if (mode === 'r') this.dir = 1;
-      else this.dir = 0;
+  control() {
+    const roll = this.queue[this.call];
 
-      if (this.late.on) this.late.destroy();
-      else {
-        if (this.on) {
-          if (newV) {
-            this.late.play();
-            this.prog = 0;
-          } else {
-            this.rafObj.st = null;
-            this.prog = 1 - this.elapsed;
-          }
-        } else {
-          this.late.play();
-          this.prog = 0;
-        }
-      }
-    } else if (newV) {
-      if (this.late.on) this.late.destroy();
+    if (roll.oProps) {
+      if (!compare(this.oProps, roll.oProps)) {
+        this.late = new late({ cb: this.push.bind(this, roll), d: roll.late });
+        this.late.play();
+      } else this.reverse(roll);
+    } else if (this.mode !== roll.mode) this.reverse(roll);
+  }
+
+  reverse(roll) {
+    if (this.late.on) this.late.destroy();
+    else if (this.on) {
+      this.dir = roll.dir;
+      this.mode = roll.mode;
+      this.rafObj.st = null;
+      this.prog = 1 - this.elapsed;
+    } else {
+      this.late = new late({ cb: this.push.bind(this, roll), d: roll.late });
       this.late.play();
     }
   }
-
-  // /**
-  //  * @param {number} d - update delay time.
-  //  *
-  //  */
-  // reverse(o) {
-  //   this.late.d = o.late || this.late.d;
-
-  //   if (this.index === 0) {
-  //     this.start = o.start;
-  //     this.completed = o.completed;
-  //     this.raf = o.raf;
-  //   }
-
-  //   this.control('r');
-  // }
 
   /**
    * (Checkt/Update) properties object
@@ -120,26 +109,31 @@ class Tween {
    * @param {Object} o - The new properties.
    */
   play(o, mode) {
+    this.call++;
+
     this.started = o.started;
     this.completed = o.completed;
     this.raf = o.raf;
 
-    if (o.late) this.late.d = o.late;
-    if (o.ease) this.ease = ease(o.ease);
-    if (o.d) this.dur = o.d;
+    this.queue.push({
+      d: o.d,
+      late: o.late,
+      ease: o.ease,
+      oProps: o.p,
+      mode,
+      dir: mode === 'r' ? 1 : 0
+    });
 
-    if (o.p && iSet.string(this.oProps) !== iSet.string(o.p)) {
-      this.oProps = o.p;
-      this.control('p', true);
-    } else {
-      this.oProps = o.p;
-      this.control(mode, false);
-    }
+    this.control();
+  }
+
+  destroy() {
+    this.on = false;
+    raf.kill(this.id);
   }
 
   finished() {
-    this.on = false;
-    raf.kill(this.id);
+    this.destroy();
     if (this.completed) {
       this.completed(this.target);
       this.completed = null;
