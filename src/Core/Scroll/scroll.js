@@ -62,7 +62,8 @@ class Scroll extends events {
   }
 
   raf(t) {
-    if (!this.kids) this.scroll.value = clamp(0, this.dim, this.scroll.value);
+    if (!this.kids)
+      this.scroll.value = round(clamp(0, this.dim, this.scroll.value));
     this.scroll.lerp = lerp(this.scroll.lerp, this.scroll.value, this.ease);
 
     const rounded = round(this.scroll.lerp);
@@ -104,8 +105,9 @@ class Scroll extends events {
     this.speed.time = t;
     this.speed.offset = rounded;
 
+    console.log(rounded, this.scroll.value);
     if (this.sub) this.sub.cb(this.scroll);
-    if (rounded == this.scroll.value) this.iraf.r();
+    if (rounded === this.scroll.value) this.iraf.r();
   }
 
   resize() {
