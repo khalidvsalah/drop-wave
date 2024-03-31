@@ -48,7 +48,8 @@ function Interface(els, o) {
     play: (obj = {}) => {
       change(obj, o);
       tweens.map((tween, i) => tween.play(events(o, i, length), 'p'));
-    }
+    },
+    tweens
   };
 
   methods.play(o);
