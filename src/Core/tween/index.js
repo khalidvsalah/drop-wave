@@ -49,6 +49,7 @@ function Interface(els, o) {
       change(obj, o);
       tweens.map((tween, i) => tween.play(events(o, i, length), 'p'));
     },
+    destroy: () => tweens.map(tween => tween.late.destroy()),
     tweens
   };
 
