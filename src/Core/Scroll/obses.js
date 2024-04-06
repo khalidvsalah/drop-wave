@@ -16,7 +16,7 @@ export default function setGlobalObses() {
     globalObs = true;
 
     const overlay = query.node('div');
-    overlay.setAttribute('data-overlay', '');
+    overlay.id = 'overlay';
     overlay.style.cssText = `
       height: 100%;
       width: 100%;
