@@ -47,6 +47,12 @@ class Scroll extends events {
     this.resize();
   }
 
+  set target(element) {
+    this.target = element;
+    this.resize();
+    this.scroll.lerp = 0;
+  }
+
   /**
    * Run on scolling
    */
