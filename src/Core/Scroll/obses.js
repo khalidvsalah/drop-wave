@@ -14,19 +14,5 @@ export default function setGlobalObses() {
     window.onwheel = sub.obs('wheel').cb;
 
     globalObs = true;
-
-    const overlay = query.node('div');
-    overlay.id = 'overlay';
-    overlay.style.cssText = `
-      height: 100%;
-      width: 100%;
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 999;
-      pointer-events: none;
-    `;
-
-    document.body.appendChild(overlay);
   }
 }
