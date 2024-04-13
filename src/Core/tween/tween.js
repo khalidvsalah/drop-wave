@@ -1,6 +1,6 @@
 import ease from '../../Math/ease';
 import props from '../../Utils/props/props';
-import raf from '../../Utils/raf';
+import raf from '../../Utils/raf/raf';
 import { clamp } from '../../Math/math';
 import late from '../late/late';
 import targeted from './tools/targeted';
@@ -45,10 +45,11 @@ class Tween {
     this.on = true;
     this.elapsed = clamp(0, 1, this.prog + t);
 
-    const e = Math.abs(this.dir - this.elapsed);
-    this.props.map(({ setV, cb }) => setV(this.target, cb(e)));
+    const dir = Math.abs(this.dir - this.elapsed);
+    const from = Math.abs(dir - this.from);
+    this.props.map(({ setV, cb }) => setV(this.target, cb(from)));
 
-    this.raf && this.raf(e, this.target);
+    this.raf && this.raf(dir, this.target);
     if (this.elapsed === 1) this.finished();
   }
 
@@ -57,6 +58,7 @@ class Tween {
 
     this.dir = roll.dir;
     this.mode = roll.mode;
+    this.from = roll.from ? 1 : 0;
 
     if (this.started) {
       this.started(this.target);
@@ -81,12 +83,13 @@ class Tween {
    */
   control() {
     const roll = this.queue[this.call];
-
-    if (roll.oProps) {
-      if (compare(this.oProps, roll.oProps)) roll.oProps = undefined;
+    if (compare(this.oProps, roll.oProps)) roll.oProps = undefined;
+    else {
       this.late = new late({ cb: this.push.bind(this, roll), d: roll.late });
       this.late.play();
-    } else if (this.mode !== roll.mode) {
+    }
+
+    if (this.mode !== roll.mode) {
       if (this.late.on) this.late.destroy();
       this.late = new late({ cb: this.push.bind(this, roll), d: roll.late });
       this.late.play();
@@ -111,6 +114,7 @@ class Tween {
       ease: o.ease,
       oProps: o.p,
       mode,
+      from: o.from,
       dir: mode === 'r' ? 1 : 0
     });
 

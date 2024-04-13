@@ -1,4 +1,4 @@
-import raf from '../../Utils/raf';
+import raf from '../../Utils/raf/raf';
 
 /**
  * Handling Delay
@@ -9,6 +9,7 @@ export default class Late {
   /**
    * @param {{late: Number, o: Object, cb: Function}}
    */
+
   constructor({ d, o, cb }) {
     this.d = d || 0;
 
@@ -22,7 +23,6 @@ export default class Late {
    * Push to the Raf.
    */
   play() {
-    // console.log('late', this.d);
     this.on = true;
     if (this.d === 0) this.Elp();
     else this.id = raf.push({ cb: this.loop.bind(this), d: this.d });

@@ -1,6 +1,6 @@
 {
   "name": "stabraq",
-  "version": "0.0.92",
+  "version": "0.0.94",
   "description": "A JavaScript Animation Library",
   "repository": "khalidvsalah/stabraq.git",
   "author": "Khalid Salah <khalidvsalah@gmail.com> (https://www.khalidsalah.com)",
@@ -23,8 +23,7 @@
   },
   "scripts": {
     "dev": "node ./scripts/dev/index.js",
-    "prod": "node ./scripts/prod/index.js",
-    "push": "bash bash/push.sh"
+    "prod": "node ./scripts/prod/index.js"
   },
   "type": "module"
 }

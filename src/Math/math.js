@@ -1,13 +1,4 @@
 /**
- * Zero value
- *
- * @param {number}  min - min value
- * @param {number}  a - alpha value
- * @return {number} Zero value
- */
-const zero = (min, a) => Math.max(min, a);
-
-/**
  * Clamp value
  *
  * @param {number}  min - start value
@@ -22,7 +13,7 @@ const clamp = (min, max, a) => Math.min(Math.max(min, a), max);
  
  * @param {number}  x - start value
  * @param {number}  y - end value
- * @param {number}  a - alpha value
+ * @param {number}  a - ease value
  * @return {number} lerp value
  */
 const lerp = (x, y, a) => (1 - a) * x + a * y;
@@ -71,12 +62,14 @@ const round = (num, pow) => {
 const dist = (x, y) => Math.sqrt(x ** 2 + y ** 2);
 
 /**
- * Get Radius
+ * Calculate damp
  
- * @param {number}  x - X
- * @param {number}  y - Y
- * @return {number} Radius Value
+ * @param {number}  t - start value
+ * @param {number}  s - end value
+ * @param {number}  i - ease value
+ * @param {number}  n - exp
+ * @return {number} damp Value
  */
 const damp = (t, s, i, n = 0.50399) => lerp(t, s, 1 - Math.exp(-i * n));
 
-export { clamp, lerp, map, remap, round, zero, dist, damp };
+export { clamp, lerp, map, remap, round, dist, damp };

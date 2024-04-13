@@ -1,5 +1,5 @@
-import sub from '../../Core/methods/observer.js';
-import { iSet } from '../../Core/methods/methods.js';
+import sub from '../../Core/Observer/observer.js';
+import win from '../../Utils/methods/window.js';
 import { round, clamp, lerp } from '../../Math/math.js';
 
 export default function scrub(cb) {
@@ -25,8 +25,8 @@ export default function scrub(cb) {
     pointer-events: none;
   `;
 
-  sub.add('pointermove', e => {
-    const progress = round(e.pageX / iSet.size.w);
+  sub.add('pointermove').onChange(e => {
+    const progress = round(e.pageX / win.screen.w);
 
     node.style.top = e.pageY + -30 + 'px';
     node.style.left = e.pageX + -30 * progress + 'px';

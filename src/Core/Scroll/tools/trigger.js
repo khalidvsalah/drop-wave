@@ -1,9 +1,9 @@
-import sub from '../methods/observer';
-import props from '../../Utils/props/props';
-import { map, zero } from '../../Math/math';
-import tween from '../tween/index';
+import observer from '../../Observer/observer';
+import props from '../../../Utils/props/props';
+import { map } from '../../../Math/math';
+import tween from '../../tween/index';
 
-const match = (str, bs) => {
+const match = (str = '+0', bs) => {
   let plus = str.match(/(\+|\-)(.*)/);
   if (plus) {
     if (plus[1] == '+') return bs + +plus[2];
@@ -14,37 +14,38 @@ const match = (str, bs) => {
 /**
  * Add tigger
  */
-class trigger {
+class Trigger {
   /**
    * @param {HTMLElement} el - targeted element
    * @param {Object} o - properties
    * @param {String} subname - Loop name
    * @param {Object} dir - scolling direction
    */
-  constructor(el, o, dir) {
+  constructor(el, o) {
     this.el = el;
     this.target = o.target;
 
     this.o = o;
-    this.from = o.from;
+    this.pin = o.pin;
+    this.scroll = o.scroll;
+    this.from = o.from ? 1 : 0;
 
-    this.dir = dir;
-    this.dirE = dir == 'y' ? 'yE' : 'xE';
+    this.dir = o.dir;
+    this.dirE = o.dir === 'y' ? 'yE' : 'xE';
 
     this.Init(o);
   }
 
   Init(o) {
     if (!o.target) this.target = this.el;
-    if (o.scroll) this.ps = o.p ? props(this.target, false, o.p) : [];
-    if (o.pin) {
-      this.pin = o.pin;
-      this.pin.target = o.pin.target || this.target;
-    }
+    if (o.scroll) this.ps = props(this.target, false, o.p);
+    if (o.pin) this.pin.target = o.pin.target || this.target;
 
-    this.iresize = sub.add('resize', this.resize.bind(this));
+    this.iraf = observer.subscribe(o.obsname).onChange(this.raf.bind(this));
+    this.iresize = observer
+      .subscribe('resize')
+      .onChange(this.resize.bind(this));
     this.resize();
-    this.iraf = sub.add(o.obsname, this.raf.bind(this));
   }
 
   /**
@@ -59,17 +60,17 @@ class trigger {
       xE: element.offsetLeft + element.offsetWidth
     };
 
-    if (this.o.scroll) {
-      this.startpint = match(this.o.scroll.start || '+0', bs[this.dir]);
-      this.endpoint = match(this.o.scroll.end || '+0', bs[this.dirE]);
+    if (this.scroll) {
+      this.startpint = match(this.scroll.start, bs[this.dir]);
+      this.endpoint = match(this.scroll.end, bs[this.dirE]);
     } else {
-      this.startpint = match(this.o.start || '+0', bs[this.dir]);
-      this.endpoint = match(this.o.end || '+0', bs[this.dirE]);
+      this.startpint = match(this.o.start, bs[this.dir]);
+      this.endpoint = match(this.o.end, bs[this.dirE]);
     }
 
-    if (this.o.pin) {
-      this.pin.start = match(this.pin.a || '+0', bs[this.dir]);
-      this.pin.end = match(this.pin.z || '+0', bs[this.dirE]);
+    if (this.pin) {
+      this.pin.start = match(this.pin.a, bs[this.dir]);
+      this.pin.end = match(this.pin.z, bs[this.dirE]);
     }
   }
 
@@ -77,12 +78,11 @@ class trigger {
    * Loop
    */
   raf(coord) {
-    this.coord = coord[this.dir];
+    this.coord = coord.lerp;
 
     if (this.o.scroll) {
       const remap = map(this.startpint, this.endpoint, this.coord);
-      this.scroll(remap);
-
+      this.onScroll(remap);
       if (this.o.pin) this.piner();
       if (this.o.raf) this.o.raf(remap, this.target, this.coord);
     } else if (this.startpint <= this.coord) this.fire();
@@ -91,12 +91,12 @@ class trigger {
   /**
    * Animate with scrolling
    */
-  scroll(t) {
-    const diraction = this.from ? 1 - t : t;
+  onScroll(t) {
+    const diraction = Math.abs(t - this.from);
     this.ps.map(p => {
-      if (this.target.length) {
+      if (this.target.length)
         this.target.forEach(el => p.setV(el, p.cb(diraction)));
-      } else p.setV(this.target, p.cb(diraction));
+      else p.setV(this.target, p.cb(diraction));
     });
   }
 
@@ -115,7 +115,7 @@ class trigger {
   piner() {
     if (this.pined) {
       if (!(this.coord >= this.pin.end)) {
-        const dist = zero(0, this.coord - this.pin.pxS);
+        const dist = Math.max(0, this.coord - this.pin.pxS);
         this.pin.target.style.transform = `translate3d(${
           this.dir ? '0px,' + dist + 'px' : dist + 'px,0px'
         },0px)`;
@@ -138,4 +138,4 @@ class trigger {
   }
 }
 
-export default trigger;
+export default Trigger;

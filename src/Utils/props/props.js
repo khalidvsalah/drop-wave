@@ -1,6 +1,6 @@
 import ease from '../../Math/ease';
-import { computed } from '../../Core/methods/methods';
-import matches from './matches';
+import { computed } from '../methods/eleProps';
+import matches from './tools/matches';
 
 /**
  * Get Array of properties function

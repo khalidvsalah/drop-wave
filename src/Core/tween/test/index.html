@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Root</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+        width: 100%;
+
+        overflow: hidden;
+      }
+
+      #root {
+        height: 100%;
+        background: #111;
+      }
+
+      .box {
+        height: 100px;
+        width: 100px;
+
+        background-color: rebeccapurple;
+      }
+
+      .box2 {
+        position: absolute;
+        top: 0;
+        left: 25%;
+        background-color: rgb(231, 91, 66);
+      }
+
+      .box3 {
+        position: absolute;
+        top: 0;
+        left: 40%;
+        background-color: rgb(83, 231, 66);
+      }
+
+      .box4 {
+        position: absolute;
+        top: 0;
+        left: 65%;
+        background-color: rgb(94, 32, 90);
+      }
+
+      .box5 {
+        position: absolute;
+        top: 200px;
+        width: 100px;
+
+        background-color: rgb(32, 94, 94);
+        transform: rotate(2deg, 3deg);
+      }
+
+      .box7 {
+        position: absolute;
+        top: 400px;
+        width: 100px;
+
+        background-color: rgb(194, 144, 216);
+        transform: rotate(2deg, 3deg);
+      }
+
+      circle {
+        fill: transparent;
+        stroke: #fff;
+        stroke-width: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <main id="root">
+      <div class="box box1">
+        <svg viewBox="0 0 120 120">
+          <circle cx="60" cy="59.911" r="42.5"></circle>
+        </svg>
+      </div>
+      <div class="box box2"></div>
+      <div class="box box3"></div>
+      <div class="box box4"></div>
+      <div class="box box5"></div>
+      <div class="box box6"></div>
+      <div class="box box7"></div>
+    </main>
+    <script type="module">
+      import {
+        tween,
+        query,
+        observer,
+        raf
+      } from '../../../../dist/stabraq.esm.js';
+
+      document.onvisibilitychange = observer.create('visibilitychange').cb;
+
+      window.onresize = observer.create('resize').cb;
+
+      window.onpointerdown = observer.create('pointerdown').cb;
+      window.onpointermove = observer.create('pointermove').cb;
+      window.onpointerup = observer.create('pointerup').cb;
+
+      window.onkeydown = observer.create('keydown').cb;
+      window.onwheel = observer.create('wheel').cb;
+
+      raf.push({ cb: observer.create('raf').cb });
+
+      // /*
+      //  * Tween
+      //  */
+      {
+        tween(query.el('.box1'), {
+          late: 1,
+          d: 0.75,
+          p: {
+            width: [25, '%'],
+            height: [25, '%']
+          }
+        });
+
+        tween(query.el('circle'), {
+          late: 1,
+          d: 0.75,
+          ease: 'io6',
+          p: { dash: [0, 1] }
+        });
+
+        // Tween Another Point
+        setTimeout(() => {
+          tween(query.el('.box1'), {
+            late: 1,
+            d: 1,
+            p: {
+              width: [100, 'px', 'o4'],
+              height: [100, 'px', 'io3']
+            }
+          });
+        }, 1600);
+      }
+
+      // /*
+      //  * Tween Reverse
+      //  */
+      {
+        const box2 = tween(query.el('.box2'), {
+          late: 1,
+          d: 0.6,
+          p: { move: { y: [300, 'px', 'o4'] } }
+        });
+
+        setTimeout(() => box2.reverse(), 1800);
+      }
+
+      // /*
+      //  * Quick Tween Reverse
+      //  */
+      {
+        let reverse = false;
+        let box3;
+
+        query.el('.box3').onclick = e => {
+          if (!reverse) {
+            box3 = tween(e.target, {
+              d: 0.6,
+              p: { move: { sx: [1.5, 'o4'], sy: [1.5, 'o4'] } }
+            });
+          } else box3.reverse();
+          reverse = !reverse;
+        };
+      }
+
+      // /*
+      //  * Quick Tween Reverse
+      //  */
+      {
+        tween(query.el('.box4'), {
+          d: 0.6,
+          p: { move: { sx: [1.5, 'o4'], sy: [1.5, 'o4'] } }
+        });
+      }
+
+      // /*
+      //  * Dir Tween
+      //  */
+      {
+        tween(query.el('.box5'), {
+          d: 1,
+          from: true,
+          p: { move: { x: [222, '%', 'io6'] } }
+        });
+      }
+
+      // /*
+      //  * Object Tween Reverse
+      //  */
+      {
+        const obj = {
+          mesh: { position: { y: { value: -4054.488033932804 } } }
+        };
+
+        tween(obj.mesh.position.y, {
+          d: 1,
+          obj: true,
+          p: { value: [0, 'io4'] }
+        });
+
+        setTimeout(() => {
+          console.log(obj);
+        }, 1000);
+      }
+
+      // /*
+      //  * Custom ease Tween
+      //  */
+      {
+        tween(query.el('.box7'), {
+          d: 1,
+          p: { move: { x: [400, 'px', [0.8, 0, 0.1, 1]] } }
+        });
+      }
+
+      // /*
+      //  * Array Class Tween
+      //  */
+      {
+        class Vec3 extends Array {
+          constructor(x = 0, y = x, z = x) {
+            super(x, y, z);
+          }
+        }
+
+        const vec3 = new Vec3(1, 2, 3);
+        // tween(vec3, {
+        //   d: 1,
+        //   p: { x: [1] }
+        // });
+      }
+    </script>
+  </body>
+</html>
