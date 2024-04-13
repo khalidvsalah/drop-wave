@@ -19,6 +19,7 @@ import observer from './Core/Observer/observer';
 import scroll from './Core/scroll/scroll';
 
 import line from './Plugins/line/line';
+import agent from './Utils/userAgent/agent';
 
 export {
   ease,
@@ -44,5 +45,6 @@ export {
   tween,
   observer,
   scroll,
-  line
+  line,
+  agent
 };
