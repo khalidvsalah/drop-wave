@@ -2,7 +2,7 @@ import ease from './Math/ease';
 import { clamp, lerp, map, remap, round, dist, damp } from './Math/math';
 
 import { isHas, toString } from './Utils/methods/object';
-import { bounds, computed } from './Utils/methods/eleProps';
+import { bounds, computed } from './Utils/methods/coordinate';
 
 import win from './Utils/methods/window';
 import css from './Utils/methods/css';
@@ -19,7 +19,6 @@ import observer from './Core/Observer/observer';
 import scroll from './Core/scroll/scroll';
 
 import line from './Plugins/line/line';
-import agent from './Utils/userAgent/agent';
 
 export {
   ease,
@@ -45,6 +44,5 @@ export {
   tween,
   observer,
   scroll,
-  line,
-  agent
+  line
 };

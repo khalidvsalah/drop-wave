@@ -9,6 +9,14 @@ const bounds = e => {
     yE: rect.bottom
   };
 };
+const offset = element => {
+  return {
+    y: element.offsetTop,
+    yE: element.offsetTop + element.offsetHeight,
+    x: element.offsetLeft,
+    xE: element.offsetLeft + element.offsetWidth
+  };
+};
 const computed = c => window.getComputedStyle(c);
 
-export { bounds, computed };
+export { bounds, computed, offset };

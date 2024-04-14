@@ -1,14 +1,20 @@
 import observer from '../../Observer/observer';
 import props from '../../../Utils/props/props';
 import { map } from '../../../Math/math';
+import { offset } from '../../../Utils/methods/coordinate';
 import tween from '../../tween/index';
 
 const match = (str = '+0', bs) => {
-  let plus = str.match(/(\+|\-)(.*)/);
-  if (plus) {
-    if (plus[1] == '+') return bs + +plus[2];
-    else if (plus[1] == '-') return bs - +plus[2];
-  } else return +str;
+  let plus;
+
+  if (Array.isArray(str)) {
+    plus = offset(str[0]).y + str[1];
+    return plus;
+  } else {
+    plus = str.toString().match(/(\+|\-)(.*)/);
+    if (plus[1] === '+') return bs + +plus[2];
+    else if (plus[1] === '-') return bs - +plus[2];
+  }
 };
 
 /**
@@ -53,12 +59,7 @@ class Trigger {
    */
   resize() {
     const element = this.el.length ? this.el[0] : this.el;
-    const bs = {
-      y: element.offsetTop,
-      yE: element.offsetTop + element.offsetHeight,
-      x: element.offsetLeft,
-      xE: element.offsetLeft + element.offsetWidth
-    };
+    const bs = offset(element);
 
     if (this.scroll) {
       this.startpint = match(this.scroll.start, bs[this.dir]);

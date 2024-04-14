@@ -1,5 +1,5 @@
 import ease from '../../Math/ease';
-import { computed } from '../methods/eleProps';
+import { computed } from '../methods/coordinate';
 import matches from './tools/matches';
 
 /**

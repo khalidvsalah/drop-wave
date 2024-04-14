@@ -1,7 +1,7 @@
 import observer from '../Observer/observer';
 import win from '../../Utils/methods/window';
 import css from '../../Utils/methods/css';
-import { bounds } from '../../Utils/methods/eleProps';
+import { bounds } from '../../Utils/methods/coordinate';
 import { round, clamp, lerp } from '../../Math/math';
 
 import Trigger from './tools/trigger';

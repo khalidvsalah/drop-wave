@@ -1,5 +1,5 @@
 import query from '../../Utils/methods/query';
-import { computed } from '../../Utils/methods/eleProps';
+import { computed } from '../../Utils/methods/coordinate';
 
 const space = ' ';
 

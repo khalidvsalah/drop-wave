@@ -1,5 +1,5 @@
 import ease from '../../../Math/ease';
-import { bounds } from '../../methods/eleProps';
+import { bounds } from '../../methods/coordinate';
 
 /**
  * Get top function
