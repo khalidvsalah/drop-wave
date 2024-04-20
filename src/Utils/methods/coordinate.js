@@ -10,11 +10,18 @@ const bounds = e => {
   };
 };
 const offset = element => {
+  var width = element.offsetWidth,
+    height = element.offsetHeight,
+    left = element.offsetLeft,
+    top = element.offsetTop;
+
   return {
-    y: element.offsetTop,
-    yE: element.offsetTop + element.offsetHeight,
-    x: element.offsetLeft,
-    xE: element.offsetLeft + element.offsetWidth
+    w: width,
+    h: height,
+    y: top,
+    yE: top + height,
+    x: left,
+    xE: left + width
   };
 };
 const computed = c => window.getComputedStyle(c);
