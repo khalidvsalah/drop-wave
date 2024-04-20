@@ -2,7 +2,7 @@ import ease from './Math/ease';
 import { clamp, lerp, map, remap, round, dist, damp } from './Math/math';
 
 import { isHas, toString } from './Utils/methods/object';
-import { bounds, computed } from './Utils/methods/coordinate';
+import { bounds, computed, offset } from './Utils/methods/coordinate';
 
 import win from './Utils/methods/window';
 import css from './Utils/methods/css';
@@ -33,6 +33,7 @@ export {
   toString,
   bounds,
   computed,
+  offset,
   win,
   css,
   query,
