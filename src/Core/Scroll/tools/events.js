@@ -70,8 +70,6 @@ export default class Events {
   }
 
   _wheel(e) {
-    this.loop();
-
     let multip = e.deltaMode === 1 ? 0.83 : 0.55;
     let offset = e.wheelDeltaY * multip;
     this.scroll.value -= offset;
@@ -82,8 +80,6 @@ export default class Events {
     if (e.key === 'Tab') e.preventDefault();
     else {
       if (e.keyCode === 40 || e.keyCode === 38) {
-        this.loop();
-
         let offset = 0;
         if (e.keyCode === 40) offset = -66.6;
         else if (e.keyCode === 38) offset = 66.6;
@@ -100,8 +96,6 @@ export default class Events {
 
   _move(e) {
     if (this.mousedown) {
-      this.loop();
-
       let offset = e[this.pageDir] - this.dist;
       this.scroll.value -= offset;
       this.dist = e[this.pageDir];

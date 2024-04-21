@@ -18,10 +18,10 @@ const offset = element => {
   return {
     w: width,
     h: height,
-    y: top,
-    yE: top + height,
     x: left,
-    xE: left + width
+    xE: left + width,
+    y: top,
+    yE: top + height
   };
 };
 const computed = c => window.getComputedStyle(c);
