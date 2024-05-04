@@ -31,7 +31,7 @@ const change = (obj, o) => {
 function Interface(els, o) {
   let nodes;
 
-  if (Array.isArray(els) && !o.obj) nodes = els;
+  if (Array.isArray(els) && typeof els[0] !== 'number') nodes = els;
   else nodes = [els];
 
   const tweens = nodes.map(node => new Tween(node));
