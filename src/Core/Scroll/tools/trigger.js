@@ -17,15 +17,10 @@ const match = (str = '+0', bs) => {
   }
 };
 
-/**
- * Add tigger
- */
 class Trigger {
   /**
    * @param {HTMLElement} el - targeted element
-   * @param {Object} o - properties
-   * @param {String} subname - Loop name
-   * @param {Object} dir - scolling direction
+   * @param {object} o - properties
    */
   constructor(el, o) {
     this.el = el;
@@ -42,22 +37,27 @@ class Trigger {
     this.Init(o);
   }
 
+  /**
+   * Initializing the class
+   *
+   * @param {object} o - properties
+   */
   Init(o) {
     if (!o.target) this.target = this.el;
     if (o.scroll) this.ps = props(this.target, false, o.p);
     if (o.pin) this.pin.target = o.pin.target || this.target;
 
-    this.iraf = observer.subscribe(o.obsname).onChange(this.raf.bind(this));
+    this.iraf = observer.subscribe(o.obsname).onChange(this._raf.bind(this));
     this.iresize = observer
       .subscribe('resize')
-      .onChange(this.resize.bind(this));
-    this.resize();
+      .onChange(this._resize.bind(this));
+    this._resize();
   }
 
   /**
-   * resize
+   * event: window on resize
    */
-  resize() {
+  _resize() {
     const element = this.el.length ? this.el[0] : this.el;
     const bs = offset(element);
 
@@ -77,8 +77,10 @@ class Trigger {
 
   /**
    * Loop
+   *
+   * @param {object} coord - scroll positon info
    */
-  raf(coord) {
+  _raf(coord) {
     this.coord = coord.lerp;
 
     if (this.o.scroll) {
@@ -90,7 +92,9 @@ class Trigger {
   }
 
   /**
-   * Animate with scrolling
+   * onScroll
+   *
+   * @param {number} t - mapped value from 0 => scroll end poition [0, 1]
    */
   onScroll(t) {
     const diraction = Math.abs(t - this.from);
@@ -102,7 +106,7 @@ class Trigger {
   }
 
   /**
-   * If passed fire
+   * Fire completed fun on passing
    */
   fire() {
     if (this.o.tween) tween(this.target, this.o.tween);
@@ -111,7 +115,7 @@ class Trigger {
   }
 
   /**
-   * Pin Function
+   * Pin HTMLElement on the page
    */
   piner() {
     if (this.pined) {

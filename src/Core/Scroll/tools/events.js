@@ -4,6 +4,12 @@ import query from '../../../Utils/methods/query';
 import css from '../../../Utils/methods/css';
 
 export default class Events {
+  /**
+   *  Class for handling scroll events
+   *
+   * @param {HTMLElement|Window} attacher - eventTarget
+   * @param {object} options - properties
+   */
   constructor(attacher, options) {
     this.options = options;
 
@@ -28,6 +34,11 @@ export default class Events {
     this.scroll = { value: 0, lerp: 0, dir: 1 };
   }
 
+  /**
+   *  subscribing to global events and attach event to targted element
+   *
+   * @param {object} options - properties
+   */
   _events(options) {
     if (Object.is(this.attacher, window)) {
       if (options.drag !== false) {
@@ -69,6 +80,9 @@ export default class Events {
       .onChange(this._resize.bind(this));
   }
 
+  /**
+   *  Wheel
+   */
   _wheel(e) {
     let multip = e.deltaMode === 1 ? 0.83 : 0.55;
     let offset = e.wheelDeltaY * multip;
@@ -76,6 +90,9 @@ export default class Events {
     this.scroll.dir = Math.sign(offset);
   }
 
+  /**
+   *  Keydown
+   */
   _onkey(e) {
     if (e.key === 'Tab') e.preventDefault();
     else {
@@ -89,11 +106,17 @@ export default class Events {
     }
   }
 
+  /**
+   *  mousedown
+   */
   _down(e) {
     this.mousedown = true;
     this.dist = e[this.pageDir];
   }
 
+  /**
+   *  mousemove
+   */
   _move(e) {
     if (this.mousedown) {
       let offset = e[this.pageDir] - this.dist;
@@ -105,11 +128,17 @@ export default class Events {
     }
   }
 
+  /**
+   *  mouseup
+   */
   _up() {
     this.mousedown = false;
     this.choke.run();
   }
 
+  /**
+   *  unsubscribe
+   */
   _destroy() {
     this.iraf.r();
     this.iresize.r();

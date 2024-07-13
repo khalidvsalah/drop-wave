@@ -1,10 +1,20 @@
+/** @typedef {(element:HTMLElement, value:string)=> string} */
+/**
+ * @typedef {Object} CSS
+ * @property {CSSProp} alpha
+ * @property {CSSProp} display
+ * @property {CSSProp} pointer
+ * @property {CSSProp} position
+ * @property {CSSProp} visible
+ */
+
+/** @type {CSS} */
 const css = {
-  alpha: (e, v) => (e.style.opacity = v),
-  display: (e, v) => (e.style.display = v),
-  pointer: (e, v) => (e.style.pointerEvents = v),
-  position: (e, v) => (e.style.position = v),
-  visible: (e, v) => (e.style.visibility = v),
-  form: (e, p, x, y) => (e.style.transform = `translate3d(${x + p},${y + p},0)`)
+  alpha: (element, value) => (element.style.opacity = value),
+  display: (element, value) => (element.style.display = value),
+  pointer: (element, value) => (element.style.pointerEvents = value),
+  position: (element, value) => (element.style.position = value),
+  visible: (element, value) => (element.style.visibility = value)
 };
 
 export default css;

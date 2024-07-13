@@ -7,9 +7,8 @@ import raf from '../../Utils/raf/raf';
  */
 export default class Late {
   /**
-   * @param {{late: Number, o: Object, cb: Function}}
+   * @param {{late: number, o: object, cb: Function}}
    */
-
   constructor({ d, o, cb }) {
     this.d = d || 0;
 
@@ -19,9 +18,6 @@ export default class Late {
     this.on = false;
   }
 
-  /**
-   * Push to the Raf.
-   */
   play() {
     this.on = true;
     if (this.d === 0) this.Elp();
@@ -37,9 +33,6 @@ export default class Late {
     if (t === 1) this.Elp();
   }
 
-  /**
-   * On compeletion.
-   */
   Elp() {
     this.on = false;
     if (this.o) raf.push(this.o);

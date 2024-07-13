@@ -1,6 +1,9 @@
 export default class Choke {
   #time = 0;
 
+  /**
+   * @param {{d: Number, cb: Function}}
+   */
   constructor({ d, cb }) {
     this.d = d * 1000;
     this.cb = cb;

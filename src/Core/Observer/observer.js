@@ -5,7 +5,7 @@ class Observer {
   #observers = {};
 
   /**
-   * @param {String} name - observer name
+   * @param {string} name - observer name
    */
   create(name) {
     this.#observers[name] = { items: [], id: 0 };
@@ -35,7 +35,7 @@ class Observer {
     if (!this.#observers[name]) console.error(name);
 
     let items = this.#observers[name].items;
-    let id = this.#observers[name].id++;
+    let id = ++this.#observers[name].id;
     let obj = { cb, id, subscribed: true };
 
     items.push(obj);
@@ -53,7 +53,7 @@ class Observer {
       onChange: cb => {
         obj.cb = cb;
         return {
-          r: remove.bind({}, obj),
+          r: () => remove(obj),
           item: obj
         };
       }

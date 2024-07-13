@@ -1,8 +1,3 @@
-/**
- * @typedef {Object} - easing function
- * @property {Function} - functions take a rate and return a
- */
-
 const cB0 = aA1 => 3 * aA1;
 const cB1 = (aA1, aA2) => 1 - cB0(aA2) + cB0(aA1);
 const cB2 = (aA1, aA2) => cB0(aA2) - 6 * aA1;
@@ -75,15 +70,8 @@ const custom = arr => {
 };
 
 const ease = {
-  /**
-   * Easing functions specify the rate of change of a parameter over time.
-   *
-   * @link   https://easings.net/
-   * @param {number} t - (Time \ Rate).
-   * @returns {number} The Eased Value.
-   */
   custom,
-  l: t => t,
+  l: x => x,
   i1: x => 1 - Math.cos((x * Math.PI) / 2),
   o1: x => Math.sin((x * Math.PI) / 2),
   io1: x => -(Math.cos(Math.PI * x) - 1) / 2,
@@ -117,7 +105,14 @@ const ease = {
       : (Math.sqrt(1 - Math.pow(-2 * x + 2, 2)) + 1) / 2
 };
 
-export default str => {
+/**
+ * Entry Point
+ *
+ * @param {object|string} str
+ * @returns {Function}
+ */
+const Ease = str => {
   if (typeof str === 'object') return ease.custom(str);
   else return ease[str];
 };
+export default Ease;

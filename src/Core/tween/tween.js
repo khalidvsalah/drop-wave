@@ -4,25 +4,22 @@ import raf from '../../Utils/raf/raf';
 import { clamp } from '../../Math/math';
 import late from '../late/late';
 import targeted from './tools/targeted';
-import store from './tools/stored';
+import stored from './tools/stored';
 import compare from './tools/compare';
 
-/**
- * Tween
- *  @constructor
- */
 class Tween {
   /**
-   * @param {HTMLElement} el - targeted element
-   * @param {Object} o - properties
+   * Tween
+   *
+   * @param {HTMLElement} element - tweened element
    */
   constructor(element) {
-    const stored = store(element, this);
-    return stored;
+    const isStored = stored(element, this);
+    return isStored;
   }
 
   /**
-   * Setting up the class.
+   * @param {HTMLElement} element - tweened element
    */
   init(element) {
     targeted.call(this, element);
@@ -38,8 +35,9 @@ class Tween {
   }
 
   /**
-   * Loop.
-   * @param {Number} t - elapsed time.
+   * Looping over targeted element tweens.
+   *
+   * @param {number} t - time.
    */
   run(t) {
     this.on = true;
@@ -53,6 +51,11 @@ class Tween {
     if (this.elapsed === 1) this.finished();
   }
 
+  /**
+   * Fire Next update
+   *
+   * @param {object} roll - time.
+   */
   push(roll) {
     this.destroy();
 
@@ -76,10 +79,7 @@ class Tween {
   }
 
   /**
-   * Controaling animation (forward, reversed).
-   * @param {String} m - the mode.
-   * @param {Boolean} n - check if the properties has changed.
-   *
+   * Handling class actions [play, reverse, updates]
    */
   control() {
     const roll = this.queue[this.call];
@@ -97,9 +97,10 @@ class Tween {
   }
 
   /**
-   * (Checkt/Update) properties object
+   * Update properties object
    *
-   * @param {Object} o - The new properties.
+   * @param {object} o - The new properties.
+   * @param {string} mode - [play: forward, reverse].
    */
   play(o, mode) {
     this.call++;
@@ -121,11 +122,17 @@ class Tween {
     this.control();
   }
 
+  /**
+   * destroy tweening
+   */
   destroy() {
     this.on = false;
     raf.kill(this.id);
   }
 
+  /**
+   * After tweening finished
+   */
   finished() {
     this.destroy();
     if (this.completed) {

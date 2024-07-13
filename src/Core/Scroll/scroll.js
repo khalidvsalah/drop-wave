@@ -1,16 +1,32 @@
 import observer from '../Observer/observer';
 import win from '../../Utils/methods/window';
-import css from '../../Utils/methods/css';
 import { bounds } from '../../Utils/methods/coordinate';
 import { clamp, damp } from '../../Math/math';
 
 import Trigger from './tools/trigger';
 import events from './tools/events';
 
+const form = (e, p, x, y) =>
+  (e.style.transform = `translate3d(${x + p},${y + p},0)`);
+
+/**
+ * @param {HTMLElement} dom
+ * @param {number} value
+ * @param {boolean} isY
+ */
 const isYDir = (dom, value, isY) => {
-  if (isY) css.form(dom, 'px', 0, value);
-  else css.form(dom, 'px', value, 0);
+  if (isY) form(dom, 'px', 0, value);
+  else form(dom, 'px', value, 0);
 };
+
+/**
+ * @param {number} start
+ * @param {number} end
+ * @param {object} bs
+ * @param {HTMLElement} kid
+ * @param {boolean} isY
+ * @param {number} l
+ */
 const inRange = (start, end, bs, kid, isY, l) => {
   if (start <= bs.z && end >= bs.a) {
     isYDir(kid, -l, isY);
@@ -23,13 +39,10 @@ const inRange = (start, end, bs, kid, isY, l) => {
   }
 };
 
-/**
- * Creating virtual scrolling
- */
 class Scroll extends events {
   /**
-   * @param {HTMLElement|Window} attacher - the parent
-   * @param {Object} o - properties
+   * @param {HTMLElement|Window} attacher - eventTarget
+   * @param {object} o - properties
    */
   constructor(attacher, o) {
     super(attacher, o);
@@ -48,12 +61,24 @@ class Scroll extends events {
     this.iraf = observer.subscribe('raf').onChange(this._raf.bind(this));
   }
 
+  /**
+   * Scroll Trigger
+   *
+   * @param {HTMLElement} target - eventTarget
+   * @param {object} o - properties
+   * @returns {object}
+   */
   add(target, o) {
     o.obsname = this.observer.name;
     o.dir = this.dir;
     return new Trigger(target, o);
   }
 
+  /**
+   * Loop
+   *
+   * @param {number} t - eventTarget
+   */
   _raf(t) {
     if (!this.infinite)
       this.scroll.value = clamp(0, this.dim, this.scroll.value);
@@ -95,11 +120,12 @@ class Scroll extends events {
     this.speed.time = t;
     this.speed.offset = this.scroll.lerp;
 
-    console.log(this.scroll.lerp);
-
     this.observer.cb(this.scroll);
   }
 
+  /**
+   * event: window on resize
+   */
   _resize() {
     this.bs = bounds(this.target);
 

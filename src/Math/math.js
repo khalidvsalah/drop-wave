@@ -1,8 +1,8 @@
 /**
  * Clamp value
  *
- * @param {number}  min - start value
- * @param {number}  max - end value
+ * @param {number}  min - min value
+ * @param {number}  max - max value
  * @param {number}  a - alpha value
  * @return {number} clamped value
  */
@@ -71,5 +71,4 @@ const dist = (x, y) => Math.sqrt(x ** 2 + y ** 2);
  * @return {number} damp Value
  */
 const damp = (t, s, i, n = 0.50399) => lerp(t, s, 1 - Math.exp(-i * n));
-
 export { clamp, lerp, map, remap, round, dist, damp };
