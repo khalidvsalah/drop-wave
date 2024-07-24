@@ -5,25 +5,26 @@
   "repository": "khalidvsalah/stabraq.git",
   "author": "Khalid Salah <khalidvsalah@gmail.com> (https://www.khalidsalah.com)",
   "license": "MIT",
-  "main": "./dist/stabraq.js",
-  "module": "./dist/stabraq.esm.js",
+  "main": "./src/index.js",
   "devDependencies": {
     "@babel/core": "^7.23.9",
+    "@babel/preset-env": "^7.24.8",
+    "@parcel/babel-preset-env": "^2.12.0",
+    "babel-eslint": "^10.1.0",
+    "babel-jest": "^29.7.0",
     "browser-sync": "^2.29.3",
     "colors": "^1.4.0",
-    "esbuild": "^0.19.12",
-    "esbuild-minify-templates": "^0.11.0",
-    "esbuild-plugin-babel": "^0.2.3",
-    "esbuild-plugin-eslint": "^0.3.6",
-    "eslint": "^8.52.0",
-    "eslint-config-standard": "^17.1.0",
-    "eslint-plugin-import": "^2.29.0",
-    "eslint-plugin-n": "^16.2.0",
-    "eslint-plugin-promise": "^6.1.1"
+    "eslint": "^9.7.0",
+    "eslint-plugin-import": "^2.29.1",
+    "jest": "^29.7.0",
+    "jsdom": "^24.1.0",
+    "parcel": "^2.12.0"
   },
   "scripts": {
     "dev": "node ./scripts/dev/index.js",
-    "prod": "node ./scripts/prod/index.js"
-  },
-  "type": "module"
+    "prod": "node ./scripts/prod/index.js",
+    "test": "jest --watch",
+    "parcel": "parcel ./__test__/index.html",
+    "lint": "eslint src/ --config .eslintrc"
+  }
 }
