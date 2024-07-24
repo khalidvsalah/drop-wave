@@ -1,4 +1,4 @@
-export default class Choke {
+export class choke {
   #time = 0;
 
   /**

@@ -18,17 +18,16 @@ const d = t => {
   return r;
 };
 
-const points = (p, { el, easing }) => {
-  const s = d(el.getAttribute('points'));
-  const e = d(p[0]);
-  const curve = p[1] ? ease(p[1]) : easing;
+const points = (p, { element }) => {
+  const start = d(element.getAttribute('points'));
+  const end = d(p[0]);
 
   return t => {
     let st = '';
     let value = '';
 
     for (let i = 0; i < s.length; i++) {
-      st += lerp(s[i], e[i], curve(t)) + ' ';
+      st += lerp(s[i], e[i], t) + ' ';
       value = st.trim();
     }
 
@@ -36,5 +35,5 @@ const points = (p, { el, easing }) => {
   };
 };
 
-const setValue = (e, v) => e.setAttribute('points', v);
-export default { cb: points, setValue };
+const setValue = (element, value) => element.setAttribute('points', value);
+export default { property: points, setValue };

@@ -1,4 +1,4 @@
-import sub from '../../Core/Observer/observer.js';
+import sub from '../states/states.js';
 import win from '../../Utils/methods/window.js';
 import { round, clamp, lerp } from '../../Math/math.js';
 

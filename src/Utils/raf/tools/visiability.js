@@ -1,16 +1,16 @@
-import observer from '../../../Core/Observer/observer';
+import { states } from '../../states/states';
 
 class Visiability {
   constructor() {}
 
   init(raf) {
     if (!this.raf) {
-      observer.subscribe('visibilitychange').onChange(this.#change.bind(this));
+      states.subscribe('visibilitychange', this.change.bind(this));
       this.raf = raf;
     }
   }
 
-  #change() {
+  change() {
     const now = performance.now();
     if (document.hidden) this.hide = now;
     else this.raf.items.map(item => (item.st += now - this.hide));

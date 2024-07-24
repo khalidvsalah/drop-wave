@@ -12,7 +12,7 @@
  */
 
 /** @type {QUERY} */
-const query = {
+export const query = {
   id: str => document.getElementById(str),
   el: str => document.querySelector(str),
   els: str => [...document.querySelectorAll(str)],
@@ -21,5 +21,3 @@ const query = {
   node: str => document.createElement(str),
   text: str => document.createTextNode(str)
 };
-
-export default query;

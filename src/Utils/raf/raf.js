@@ -1,7 +1,6 @@
 import { clamp } from '../../Math/math';
-import Visiability from './tools/visiability';
+import visiability from './tools/visiability';
 
-/** @constructor */
 class Raf {
   constructor() {
     this.items = [];
@@ -18,7 +17,7 @@ class Raf {
     this.items.push(o);
     if (!this.on) {
       this.loop();
-      Visiability.init(this);
+      visiability.init(this);
     }
     return o.id;
   }
@@ -65,6 +64,4 @@ class Raf {
   }
 }
 
-const raf = new Raf();
-
-export default raf;
+export const raf = new Raf();
