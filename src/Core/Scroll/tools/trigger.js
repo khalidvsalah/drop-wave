@@ -1,8 +1,8 @@
-import observer from '../../Observer/observer';
-import props from '../../../Utils/props/props';
+import { states } from '../../../Utils/states/states';
+import { prepare } from '../../../Utils/props/prepare';
 import { map } from '../../../Math/math';
 import { offset } from '../../../Utils/methods/coordinate';
-import tween from '../../tween/index';
+import { tween } from '../../tween/tween';
 
 const match = (str = '+0', bs) => {
   let plus;
@@ -44,13 +44,11 @@ class Trigger {
    */
   Init(o) {
     if (!o.target) this.target = this.el;
-    if (o.scroll) this.ps = props(this.target, false, o.p);
+    if (o.scroll) this.ps = prepare(this.target, false, o.p);
     if (o.pin) this.pin.target = o.pin.target || this.target;
 
-    this.iraf = observer.subscribe(o.obsname).onChange(this._raf.bind(this));
-    this.iresize = observer
-      .subscribe('resize')
-      .onChange(this._resize.bind(this));
+    this.iraf = states.subscribe(o.obsname, this._raf.bind(this));
+    this.iresize = states.subscribe('resize', this._resize.bind(this));
     this._resize();
   }
 
@@ -85,18 +83,18 @@ class Trigger {
 
     if (this.o.scroll) {
       const remap = map(this.startpint, this.endpoint, this.coord);
-      this.onScroll(remap);
+      this._scroll(remap);
       if (this.o.pin) this.piner();
       if (this.o.raf) this.o.raf(remap, this.target, this.coord);
     } else if (this.startpint <= this.coord) this.fire();
   }
 
   /**
-   * onScroll
+   * _scroll
    *
    * @param {number} t - mapped value from 0 => scroll end poition [0, 1]
    */
-  onScroll(t) {
+  _scroll(t) {
     const diraction = Math.abs(t - this.from);
     this.ps.map(p => {
       if (this.target.length)
@@ -111,7 +109,7 @@ class Trigger {
   fire() {
     if (this.o.tween) tween(this.target, this.o.tween);
     if (this.o.completed) this.o.completed(this.target);
-    this.destroy();
+    this._destroy();
   }
 
   /**
@@ -137,9 +135,9 @@ class Trigger {
   /**
    * remove events
    */
-  destroy() {
-    this.iraf.r();
-    this.iresize.r();
+  _destroy() {
+    this.iraf.remove();
+    this.iresize.remove();
   }
 }
 
