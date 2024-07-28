@@ -12,12 +12,12 @@ class States {
     store.set(name, { cbs: new Set() });
 
     return {
-      notify: () => {
+      notify: (...args) => {
         let { cbs } = store.get(name);
-        let args = Array.from(arguments);
-        cbs.forEach(cb => cb(args));
+        cbs.forEach(cb => cb(...args));
       },
-      remove: () => store.delete(name)
+      remove: () => store.delete(name),
+      name
     };
   }
 

@@ -1,4 +1,4 @@
-/** @typedef {w: Number, h: Number, x: Number, y: Number, xE: Number, yE: Number} Coordinates*/
+/** @typedef {{w:number, h:number, x:number, y:number, xE:number, yE:number}} Coordinates*/
 
 /**
  * getBoundingClientRect.

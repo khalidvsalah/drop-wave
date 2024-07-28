@@ -5,10 +5,9 @@ import clipPath from './components/clipPath';
 
 // svg
 import draw from './components/draw';
-// import d from './components/d';
 
 const regexs = [
-  [/^(transform)/, transform],
+  [/^(transform|move)/, transform],
   [/^(opacity|alpha)/, opacity],
   [/^(clip|clipPath)/, clipPath],
   [/^(draw)/, draw]
@@ -18,15 +17,20 @@ const regexs = [
 ];
 
 /**
- * @param {string} propertyName - property name
- * @param {{property:Function, setValue:Function}} obj
+ * @param {string} shortName - property name
+ * @param {{cssName:string, callback:()=> Function}} options
  */
-export const addProperty = (propertyName, obj) => {
-  if (match(propertyName)) {
-    throw new Error(`${propertyName} is already registered`);
+export const register = (shortName, options) => {
+  if (match(shortName)) {
+    throw new Error(`${shortName} is already registered`);
   } else {
-    const regex = new RegExp('^(' + propertyName + ')');
-    regexs.push([regex, obj]);
+    const regex = new RegExp('^(' + shortName + ')');
+    const component = {
+      callback: options.callback,
+      setValue: element => value => (element.style[options.cssName] = value)
+    };
+
+    regexs.push([regex, component]);
   }
 };
 
@@ -56,8 +60,8 @@ function dom(element, ps) {
   info.parent = element.parentNode;
 
   for (const [regex, obj] of Object.entries(ps)) {
-    const { setValue, property } = match(regex);
-    results.push({ setValue, cb: property(obj, info) });
+    const { setValue, callback } = match(regex);
+    results.push({ setValue: setValue(element), cb: callback(obj, info) });
   }
 
   return results;
@@ -94,17 +98,24 @@ function elementType(element) {
   if (element instanceof Node) return { obj: false, element };
   else if (typeof element === 'string')
     return { obj: false, element: query.el(element) };
-
   return { obj: true, element };
 }
 
-/**
- * @param {HTMLElement} e - targeted element.
- * @param {object} ps - properties.
- * @param {Function} easing
- * @returns {Array} array of tweens functions.
- */
-export function props(element, ps) {
-  if (elementType(element).obj) return obj(element, ps);
-  else return dom(element, ps);
+export class prepare {
+  /**
+   * @param {HTMLElement} element - targeted element.
+   */
+  constructor(element) {
+    this.obj = elementType(element);
+    this.target = this.obj.element;
+  }
+
+  /**
+   * @param {object} ps - properties.
+   * @returns {Array} array of tweens functions.
+   */
+  props(ps) {
+    if (this.obj.obj) return obj(this.obj.element, ps);
+    else return dom(this.obj.element, ps);
+  }
 }

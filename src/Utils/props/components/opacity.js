@@ -7,5 +7,5 @@ const opacity = p => {
   return t => `${p[0] + lerp * t}`;
 };
 
-const setValue = (element, value) => (element.style.opacity = value);
-export default { property: opacity, setValue };
+const setValue = element => value => (element.style.opacity = value);
+export default { callback: opacity, setValue };

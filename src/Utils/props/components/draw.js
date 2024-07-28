@@ -5,5 +5,5 @@ const draw = (p, { element }) => {
   return t => `${(p[0] + lerp * t) * length}`;
 };
 
-const setValue = (element, value) => (element.style.strokeDashoffset = value);
-export default { property: draw, setValue };
+const setValue = element => value => (element.style.strokeDashoffset = value);
+export default { callback: draw, setValue };

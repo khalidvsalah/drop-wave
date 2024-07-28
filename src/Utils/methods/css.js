@@ -6,6 +6,7 @@
  * @property {CSSProp} pointer
  * @property {CSSProp} position
  * @property {CSSProp} visible
+ * @property {CSSProp} transform
  */
 
 /** @type {CSS} */
@@ -14,5 +15,6 @@ export const setProp = {
   display: (element, value) => (element.style.display = value),
   pointer: (element, value) => (element.style.pointerEvents = value),
   position: (element, value) => (element.style.position = value),
-  visible: (element, value) => (element.style.visibility = value)
+  visible: (element, value) => (element.style.visibility = value),
+  transform: (element, value) => (element.style.transform = value)
 };

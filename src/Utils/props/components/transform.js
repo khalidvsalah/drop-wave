@@ -49,5 +49,5 @@ const transform = p => {
   else return arr[0];
 };
 
-const setValue = (element, value) => (element.style.transform = value);
-export default { property: transform, setValue };
+const setValue = element => value => (element.style.transform = value);
+export default { callback: transform, setValue };

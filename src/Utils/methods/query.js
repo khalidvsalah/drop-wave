@@ -15,9 +15,9 @@
 export const query = {
   id: str => document.getElementById(str),
   el: str => document.querySelector(str),
-  els: str => [...document.querySelectorAll(str)],
+  els: str => document.querySelectorAll(str),
   sEl: (element, str) => element.querySelector(str),
-  sEls: (element, str) => [...element.querySelectorAll(str)],
+  sEls: (element, str) => element.querySelectorAll(str),
   node: str => document.createElement(str),
   text: str => document.createTextNode(str)
 };
