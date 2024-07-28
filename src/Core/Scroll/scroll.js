@@ -3,152 +3,10 @@ import { choke } from '../../Utils/methods/choke';
 import { query } from '../../Utils/methods/query';
 import { win } from '../../Utils/methods/window';
 import { setProp } from '../../Utils/methods/css';
+import { bounds } from '../../Utils/methods/coordinate';
+import { clamp, damp } from '../../Math/math';
 
-// import { bounds } from '../../Utils/methods/coordinate';
-// import { clamp, damp } from '../../Math/math';
-
-// import Trigger from './tools/trigger';
-
-// const form = (e, p, x, y) =>
-//   (e.style.transform = `translate3d(${x + p},${y + p},0)`);
-
-// /**
-//  * @param {HTMLElement} dom
-//  * @param {number} value
-//  * @param {boolean} isY
-//  */
-// const isYDir = (dom, value, isY) => {
-//   if (isY) form(dom, 'px', 0, value);
-//   else form(dom, 'px', value, 0);
-// };
-
-// /**
-//  * @param {number} start
-//  * @param {number} end
-//  * @param {object} bs
-//  * @param {HTMLElement} kid
-//  * @param {boolean} isY
-//  * @param {number} l
-//  */
-// const inRange = (start, end, bs, kid, isY, l) => {
-//   if (start <= bs.z && end >= bs.a) {
-//     isYDir(kid, -l, isY);
-//     bs.out = false;
-//   } else {
-//     if (!bs.out) {
-//       isYDir(kid, -l, isY);
-//       bs.out = true;
-//     }
-//   }
-// };
-
-// export class scroll extends events {
-//   /**
-//    * @param {HTMLElement|Window} attacher - eventTarget
-//    * @param {object} o - properties
-//    */
-//   constructor(attacher, o) {
-//     super(attacher, o);
-
-//     this.infinite = o.infinite;
-//     this.ease = o.ease || 0.09;
-
-//     this.speed = {
-//       time: performance.now(),
-//       offset: 0,
-//       value: 0,
-//       ease: o.speed || 0.3
-//     };
-
-//     this._resize();
-//     this.iraf = states.subscribe('raf', this._raf.bind(this));
-//   }
-
-//   /**
-//    * Scroll Trigger
-//    *
-//    * @param {HTMLElement} target - eventTarget
-//    * @param {object} o - properties
-//    * @returns {object}
-//    */
-//   add(target, o) {
-//     o.obsname = this.states.name;
-//     o.dir = this.dir;
-//     return new Trigger(target, o);
-//   }
-
-//   /**
-//    * Loop
-//    *
-//    * @param {number} t - eventTarget
-//    */
-//   _raf(t) {
-//     if (!this.infinite)
-//       this.scroll.value = clamp(0, this.dim, this.scroll.value);
-//     this.scroll.lerp = damp(this.scroll.lerp, this.scroll.value, this.ease);
-
-//     this.speed.time = t - this.speed.time;
-//     this.speed.offset = this.scroll.lerp - this.speed.offset;
-//     this.speed.value = damp(
-//       this.speed.value,
-//       this.speed.offset / this.speed.time,
-//       this.speed.ease
-//     );
-
-//     if (this.infinite) {
-//       if (this.scroll.lerp > this.dim) {
-//         this.scroll.value = this.scroll.value - this.dim;
-//         this.scroll.lerp = this.scroll.lerp - this.dim;
-//       } else if (this.scroll.lerp < 0) {
-//         this.scroll.value = this.dim + this.scroll.value;
-//         this.scroll.lerp = this.dim + this.scroll.lerp;
-//       }
-
-//       this.infinite.map(([kid, bs]) => {
-//         const start = this.scroll.lerp;
-//         const end = start + this.screen;
-
-//         if (this.scroll.lerp > this.dim - this.screen) {
-//           const offsetS =
-//             this.scroll.lerp - (this.dim - this.screen) - this.screen;
-//           const offsetE = offsetS + this.screen;
-
-//           if (offsetS <= bs.z && offsetE >= bs.a)
-//             isYDir(kid, this.screen - offsetE, this.isY);
-//           else inRange(start, end, bs, kid, this.isY, this.scroll.lerp);
-//         } else inRange(start, end, bs, kid, this.isY, this.scroll.lerp);
-//       });
-//     } else isYDir(this.target, -this.scroll.lerp, this.isY);
-
-//     this.speed.time = t;
-//     this.speed.offset = this.scroll.lerp;
-
-//     this.states.cb(this.scroll);
-//   }
-
-//   /**
-//    * event: window on resize
-//    */
-//   _resize() {
-//     this.bs = bounds(this.target);
-
-//     if (this.infinite) {
-//       const childs = [...this.target.children];
-//       this.infinite = childs.map(kid => {
-//         const a = this.isY ? kid.offsetTop : kid.offsetLeft;
-//         const z = this.isY ? kid.offsetHeight : kid.offsetWidth;
-//         return [kid, { a, z: a + z }];
-//       });
-//     }
-
-//     const d = this.isY ? 'h' : 'w';
-//     this.screen = win.screen[d];
-
-//     this.dim = this.bs[d] - (this.infinite ? 0 : this.screen);
-//   }
-// }
-
-// pin:{start:string, end:string}
+import { trigger } from './trigger';
 
 /**
  * Scroll options
@@ -165,10 +23,44 @@ import { setProp } from '../../Utils/methods/css';
  * }} SCROLL_OPTIONS
  */
 
+/**
+ * Trigger options
+ * @typedef {{
+ * container:HTMLElement,
+ * animate:object,
+ * tween:object,
+ * scroll: boolean,
+ * start:string|number,
+ * end:string|number,
+ * pin:{start:string|number, end:start|number},
+ * onUpdate:Function
+ * }} TRIGGER_OPTIONS
+ */
+
+const isYDir = (element, value, isYaxis) => {
+  if (isYaxis) {
+    setProp.transform(element, `translate3d(0, ${value}px, 0)`);
+  } else {
+    setProp.transform(element, `translate3d(${value}px, 0, 0)`);
+  }
+};
+const inRange = (start, end, coords, kid, isYaxis, l) => {
+  if (start <= coords.size && end >= coords.axis) {
+    isYDir(kid, -l, isYaxis);
+    coords.out = false;
+  } else {
+    if (!coords.out) {
+      isYDir(kid, -l, isYaxis);
+      coords.out = true;
+    }
+  }
+};
+
 class events {
   init({ drag, key, wheel }) {
     if (Object.is(this.container, window)) {
       this.global = true;
+      window.history.scrollRestoration = 'manual';
 
       if (drag) {
         this.ipointerdown = states.subscribe(
@@ -196,12 +88,14 @@ class events {
       }
     }
 
+    this.ipointerup = states.subscribe('pointerup', this._up.bind(this));
+
     this.overlay = query.node('div');
     win.body.appendChild(this.overlay);
 
     this.overlay.id = 'overlay';
     this.overlay.style.cssText = `
-      position: absolute; z-index: 999;
+      position: fixed; z-index: 999;
       top: 0; left: 0;
       width: 100vw; height: 100vh;
       pointer-events: none;
@@ -241,14 +135,14 @@ class events {
 
   _down(e) {
     this.mousedown = true;
-    this.dist = e[this.pageDir];
+    this.dist = e[this.vertical];
   }
 
   _move(e) {
     if (this.mousedown) {
-      let offset = e[this.pageDir] - this.dist;
+      let offset = e[this.vertical] - this.dist;
       this.scroll.value -= offset;
-      this.dist = e[this.pageDir];
+      this.dist = e[this.vertical];
       this.scroll.dir = Math.sign(offset);
 
       if (this.global) setProp.pointer(this.overlay, 'all');
@@ -261,8 +155,11 @@ class events {
   }
 
   _destroy() {
-    this.iraf.remove();
+    this.iupdate.remove();
     this.iresize.remove();
+
+    this.ipointerup.remove();
+    this.states.remove();
 
     if (this.global) {
       if (this.ipointerdown) {
@@ -273,29 +170,24 @@ class events {
       if (this.ikey) this.ikey.remove();
       if (this.iwheel) this.iwheel.remove();
     } else {
-      if (this.target.onwheel) {
-        this.target.onwheel = null;
-      }
-
-      if (this.target.onpointerdown) {
-        this.target.onpointerdown = null;
-        this.target.onpointermove = null;
-      }
+      this.target.onwheel = null;
+      this.target.onpointerdown = null;
+      this.target.onpointermove = null;
     }
-
-    this.ipointerup.remove();
-    this.states.remove();
   }
 }
-
 export class scroll extends events {
   /**
    * @param {HTMLElement} target
    * @param {SCROLL_OPTIONS} options
    */
   constructor(target, options = {}) {
-    if (typeof target === 'string') {
-      throw new Error('Pass <HTMLElement>');
+    if (!target) {
+      if (typeof target === 'string') {
+        throw new Error('Pass <HTMLElement>');
+      } else if (typeof target === 'undefined') {
+        throw new Error('Pass <HTMLElement>');
+      }
     }
 
     super();
@@ -307,8 +199,7 @@ export class scroll extends events {
       drag = true,
       wheel = true,
       key = true,
-      speed = 0.09,
-      infinite = false
+      speed = 0.09
     } = options;
 
     this.target = target;
@@ -321,10 +212,85 @@ export class scroll extends events {
 
     this.init({ drag, wheel, key });
 
-    // this._resize();
-    // this.iupdate = states.subscribe('raf', this._update.bind(this));
+    this.speed = speed;
+    this.onUpdate = options.onUpdate;
+    this.infinite = options.infinite;
+
+    this._resize();
+    this.iupdate = states.subscribe('raf', this._update.bind(this));
+    this.iresize = states.subscribe('resize', this._resize.bind(this));
   }
 
-  _update(time) {}
-  _resize() {}
+  /**
+   * @param {HTMLElement|NodeList} target - targeted element
+   * @param {TRIGGER_OPTIONS} options - properties
+   */
+  add(target, options = {}) {
+    options.channel = this.states.name;
+    options.dir = this.dir;
+
+    if (!target) {
+      if (typeof target === 'string') {
+        throw new Error('Pass <HTMLElement>');
+      } else if (typeof target === 'undefined') {
+        throw new Error('Pass <HTMLElement>');
+      }
+    }
+
+    return new trigger(target, options);
+  }
+
+  _update(time) {
+    if (!this.infinite) {
+      this.scroll.value = clamp(0, this.height, this.scroll.value);
+    }
+    this.scroll.lerp = damp(this.scroll.lerp, this.scroll.value, this.speed);
+
+    if (this.infinite) {
+      if (this.scroll.lerp > this.height) {
+        this.scroll.value = this.scroll.value - this.height;
+        this.scroll.lerp = this.scroll.lerp - this.height;
+      } else if (this.scroll.lerp < 0) {
+        this.scroll.value = this.height + this.scroll.value;
+        this.scroll.lerp = this.height + this.scroll.lerp;
+      }
+
+      this.heights.map(([kid, coords]) => {
+        const start = this.scroll.lerp;
+        const end = start + this.screen;
+        if (this.scroll.lerp > this.height - this.screen) {
+          const offsetS =
+            this.scroll.lerp - (this.height - this.screen) - this.screen;
+          const offsetE = offsetS + this.screen;
+          if (offsetS <= coords.size && offsetE >= coords.axis) {
+            isYDir(kid, this.screen - offsetE, this.isYaxis);
+          } else {
+            inRange(start, end, coords, kid, this.isYaxis, this.scroll.lerp);
+          }
+        } else {
+          inRange(start, end, coords, kid, this.isYaxis, this.scroll.lerp);
+        }
+      });
+    } else isYDir(this.target, -this.scroll.lerp, this.isYaxis);
+
+    this.states.notify(this.scroll);
+    if (this.onUpdate) this.onUpdate(time, this.scroll);
+  }
+
+  _resize() {
+    this.coords = bounds(this.target);
+
+    if (this.infinite) {
+      const childs = [...this.target.children];
+      this.heights = childs.map(child => {
+        const axis = this.isYaxis ? child.offsetTop : child.offsetLeft;
+        const size = this.isYaxis ? child.offsetHeight : child.offsetWidth;
+        return [child, { axis, size: axis + size }];
+      });
+    }
+
+    const size = this.isYaxis ? 'h' : 'w';
+    this.screen = win.screen[size];
+    this.height = this.coords[size] - (this.infinite ? 0 : this.screen);
+  }
 }
