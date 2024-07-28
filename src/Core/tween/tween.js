@@ -13,15 +13,25 @@ import { storage, store } from '../../Utils/states/storage';
  * onComplete:Function|undefined
  * }} TWEEN_OPTIONS
  */
+/**
+ * Tween Controllers
+ * @typedef {{
+ * play:Function,
+ * reverse: Function,
+ * pause:Function,
+ * kill:Function
+ * }} TWEEN_CONTROLLERS
+ */
 
 export const kill = el => storage.has(el) && store(el).late.destroy();
 
 /**
  * @param {string|Array|HTMLElement|NodeList} elements
  * @param {TWEEN_OPTIONS} options
- * @returns {{play:Function, reverse: Function, kill: Function}}.
+ * @returns {TWEEN_CONTROLLERS}.
  */
 export function tween(elements, options = {}) {
+  options.space = options.space || 0;
   let nodes;
 
   if (elements instanceof NodeList) nodes = elements;
@@ -33,43 +43,42 @@ export function tween(elements, options = {}) {
   const tweens = [];
   const length = nodes.length - 1;
 
-  nodes.forEach(element => {
+  nodes.forEach((element, i) => {
+    if (i !== 0) {
+      options.late = options.late + options.space * i;
+      options.onStart = undefined;
+      options.onUpdate = undefined;
+      options.onComplete = undefined;
+    }
     if (storage.has(element)) {
       const tweenbase = store(element);
       tweens.push(tweenbase.push(options, 'p'));
-      // late: options.late + options.space * i,
-      // onStart: null,
-      // onUpdate: null,
-      // onComplete: null
     } else {
       tweens.push(store(element, new TweenBase(element, options)));
     }
   });
 
   const methods = {
-    // reverse: late => {
-    //   options.late = late || 0;
-    //   // for (let i = 0; i <= length; i++) {
-    //   //   const idx = length - i;
-    //   //   if (idx === 0) tweens[i].push(options, 'r');
-    //   //   else
-    //   //     tweens[i].push(
-    //   //       {
-    //   //         ...options,
-    //   //         late: options.late + options.space * i,
-    //   //         onStart: null,
-    //   //         onUpdate: null,
-    //   //         onComplete: null
-    //   //       },
-    //   //       'r'
-    //   //     );
-    //   // }
-    // },
-
-    reverse: () => tweens.map(tween => tween.push('r')),
-    play: () => tweens.map(tween => tween.push('p')),
-    pause: () => tweens.map(tween => tween.stop()),
-    kill: () => tweens.map(tween => tween.late.destroy())
+    reverse: () => {
+      tweens.forEach((tween, i) => {
+        tween.push('r', { late: options.space * (length - i) });
+      });
+    },
+    play: () => {
+      tweens.forEach(tween => {
+        tween.push('p');
+      });
+    },
+    pause: () => {
+      tweens.forEach(tween => {
+        tween.stop();
+      });
+    },
+    kill: () => {
+      tweens.forEach(tween => {
+        tween.late.destroy();
+      });
+    }
   };
 
   return methods;

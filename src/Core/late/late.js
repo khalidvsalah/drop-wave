@@ -1,13 +1,8 @@
-import raf from '../../Utils/raf/raf';
+import { raf } from '../../Utils/raf/raf';
 
-/**
- * Handling Delay
- *
- * @constructor
- */
-export default class Late {
+class Late {
   /**
-   * @param {{late: number, o: object, cb: Function}}
+   * @param {{d: number, o: object, cb: Function}}
    */
   constructor({ d, o, cb }) {
     this.d = d || 0;
@@ -35,7 +30,9 @@ export default class Late {
 
   Elp() {
     this.on = false;
-    if (this.o) raf.push(this.o);
     if (this.cb) this.cb();
+    if (this.o) raf.push(this.o);
   }
 }
+
+export const late = Late;
