@@ -97,11 +97,11 @@ function checkWidth(node, value, str, width, lines, wrapper) {
 
 function wrap(text, type) {
   if (type === 'LINE') {
-    return `<div class="pfx"><span class="tfx">${text}</span></div>`;
+    return `<div class="pfx"><span class="tfx" style="display: inline-block;">${text}</span></div>`;
   } else if (type === 'WORD') {
-    return `<span class="word">${text}</span>`;
+    return `<span class="word" style="display: inline-block;">${text}</span>`;
   } else if (type === 'LETTER') {
-    return `<span class="ltr">${text}</span>`;
+    return `<span class="ltr" style="display: inline-block;">${text}</span>`;
   }
 }
 
