@@ -2,6 +2,8 @@ import { states } from '../../states/states';
 
 class Visiability {
   init(raf) {
+    window.onvisibilitychange = states.create('visibilitychange').notify;
+
     if (!this.raf) {
       states.subscribe('visibilitychange', this.change.bind(this));
       this.raf = raf;

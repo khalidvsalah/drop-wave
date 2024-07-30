@@ -4,6 +4,7 @@ import { query } from '../../Utils/methods/query';
 import { win } from '../../Utils/methods/window';
 import { setProp } from '../../Utils/methods/css';
 import { bounds } from '../../Utils/methods/coordinate';
+import { raf } from '../../Utils/raf/raf';
 import { clamp, damp } from '../../Math/math';
 
 import { Trigger } from './trigger';
@@ -26,7 +27,6 @@ import { Trigger } from './trigger';
 /**
  * Trigger options
  * @typedef {{
- * container:HTMLElement,
  * animate:object,
  * tween:object,
  * scroll: boolean,
@@ -60,7 +60,12 @@ class Events {
   init({ drag, key, wheel }) {
     if (Object.is(this.container, window)) {
       this.global = true;
+
       window.history.scrollRestoration = 'manual';
+      window.onpointerdown = states.create('pointerdown').notify;
+      window.onpointermove = states.create('pointermove').notify;
+      window.onkeydown = states.create('keydown').notify;
+      window.onwheel = states.create('wheel').notify;
 
       if (drag) {
         this.ipointerdown = states.subscribe(
@@ -87,6 +92,10 @@ class Events {
         this.target.onpointermove = this._move.bind(this);
       }
     }
+
+    raf.push({ cb: states.create('raf').notify });
+    window.onresize = states.create('resize').notify;
+    window.onpointerup = states.create('pointerup').notify;
 
     this.ipointerup = states.subscribe('pointerup', this._up.bind(this));
 

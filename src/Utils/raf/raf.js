@@ -5,6 +5,8 @@ class Raf {
   constructor() {
     this.items = [];
     this.id = -1;
+
+    visiability.init(this);
   }
 
   /**
@@ -17,7 +19,6 @@ class Raf {
     this.items.push(o);
     if (!this.on) {
       this.loop();
-      visiability.init(this);
     }
     return o.id;
   }

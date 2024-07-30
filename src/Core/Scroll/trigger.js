@@ -66,7 +66,6 @@ export class Trigger {
   }
 
   init(options) {
-    if (!options.container) options.container = options.target;
     if (this.tween || this.scroll) {
       this.start = options.start;
       this.end = options.end;
