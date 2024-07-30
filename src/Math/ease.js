@@ -32,10 +32,10 @@ const iterate = (i, e, s, r) => {
   return e;
 };
 const custom = arr => {
-  let mX1 = arr[0],
-    mY1 = arr[1],
-    mX2 = arr[2],
-    mY2 = arr[3];
+  const mX1 = arr[0];
+  const mY1 = arr[1];
+  const mX2 = arr[2];
+  const mY2 = arr[3];
 
   if (mX1 === mY1 && mX2 === mY2) return ease.l;
   const o = new Float32Array(11);
@@ -52,7 +52,6 @@ const custom = arr => {
     }
     --currentSample;
 
-    // Interpolate to provide an initial guess for t
     const dist =
       (aX - o[currentSample]) / (o[currentSample + 1] - o[currentSample]);
     const guessForT = intervalStart + dist * 0.1;
@@ -69,8 +68,7 @@ const custom = arr => {
   };
 };
 
-const ease = {
-  custom,
+const easing = {
   l: x => x,
   i1: x => 1 - Math.cos((x * Math.PI) / 2),
   o1: x => Math.sin((x * Math.PI) / 2),
@@ -96,23 +94,14 @@ const ease = {
       ? 1
       : x < 0.5
       ? Math.pow(2, 20 * x - 10) / 2
-      : (2 - Math.pow(2, -20 * x + 10)) / 2,
-  i7: x => 1 - Math.sqrt(1 - Math.pow(x, 2)),
-  o7: x => sqrt(1 - Math.pow(x - 1, 2)),
-  io7: x =>
-    x < 0.5
-      ? (1 - Math.sqrt(1 - Math.pow(2 * x, 2))) / 2
-      : (Math.sqrt(1 - Math.pow(-2 * x + 2, 2)) + 1) / 2
+      : (2 - Math.pow(2, -20 * x + 10)) / 2
 };
 
 /**
- * Entry Point
- *
  * @param {object|string} str
  * @returns {Function}
  */
-const Ease = str => {
-  if (typeof str === 'object') return ease.custom(str);
-  else return ease[str];
+export const ease = str => {
+  if (Array.isArray(str)) return custom(str);
+  else return easing[str];
 };
-export default Ease;

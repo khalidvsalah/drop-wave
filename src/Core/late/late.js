@@ -1,6 +1,6 @@
 import { raf } from '../../Utils/raf/raf';
 
-class Late {
+export class Late {
   /**
    * @param {{d: number, o: object, cb: Function}}
    */
@@ -34,5 +34,3 @@ class Late {
     if (this.o) raf.push(this.o);
   }
 }
-
-export const late = Late;

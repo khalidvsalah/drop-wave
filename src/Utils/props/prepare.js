@@ -1,3 +1,5 @@
+import { query } from '../methods/query';
+
 // style
 import opacity from './components/opacity';
 import transform from './components/transform';
@@ -17,24 +19,6 @@ const regexs = [
 ];
 
 /**
- * @param {string} shortName - property name
- * @param {{cssName:string, callback:()=> Function}} options
- */
-export const register = (shortName, options) => {
-  if (match(shortName)) {
-    throw new Error(`${shortName} is already registered`);
-  } else {
-    const regex = new RegExp('^(' + shortName + ')');
-    const component = {
-      callback: options.callback,
-      setValue: element => value => (element.style[options.cssName] = value)
-    };
-
-    regexs.push([regex, component]);
-  }
-};
-
-/**
  * Return matched property
  * @param {string} name - regex.
  * @return {Function} - get properties function.
@@ -44,6 +28,24 @@ function match(name) {
     if (name.match(regex)) return cb;
   }
 }
+
+/**
+ * @param {string} shortName - property name
+ * @param {{cssName:string, callback:()=> Function}} options
+ */
+export const register = (shortName, options) => {
+  if (match(shortName)) {
+    throw new Error(`${shortName} is already registered`);
+  } else {
+    const regex = new RegExp(`^(${shortName})`);
+    const component = {
+      callback: options.callback,
+      setValue: element => value => (element.style[options.cssName] = value)
+    };
+
+    regexs.push([regex, component]);
+  }
+};
 
 /**
  * Get properties tween function
@@ -95,13 +97,17 @@ function obj(element, ps) {
  * @returns {{obj:boolean, element:object}}
  */
 function elementType(element) {
-  if (element instanceof Node) return { obj: false, element };
-  else if (typeof element === 'string')
+  if (element instanceof Node) {
+    return { obj: false, element };
+  }
+
+  if (typeof element === 'string') {
     return { obj: false, element: query.el(element) };
+  }
   return { obj: true, element };
 }
 
-export class prepare {
+export class Prepare {
   /**
    * @param {HTMLElement} element - targeted element.
    */
@@ -115,7 +121,9 @@ export class prepare {
    * @returns {Array} array of tweens functions.
    */
   props(ps) {
-    if (this.obj.obj) return obj(this.obj.element, ps);
-    else return dom(this.obj.element, ps);
+    if (this.obj.obj) {
+      return obj(this.obj.element, ps);
+    }
+    return dom(this.obj.element, ps);
   }
 }

@@ -7,7 +7,6 @@ const translate = p => {
   o.lerp = o.end - o.start;
   return t => `${o.start + o.lerp * t}${o.unit}`;
 };
-
 const interpolation = p => {
   const lerp = p[1] - p[0];
   return t => `${p[0] + lerp * t}`;
@@ -46,7 +45,7 @@ const transform = p => {
   if (p.rx || p.ry || p.rz) arr.push(_rotate([p.rx, p.ry, p.rz]));
 
   if (arr.length > 1) return t => arr.reduce((a, b) => a(t) + ' ' + b(t));
-  else return arr[0];
+  return arr[0];
 };
 
 const setValue = element => value => (element.style.transform = value);

@@ -26,11 +26,11 @@ function placeholder(node, element) {
 }
 
 function nodes(element) {
-  const nodes = element.childNodes;
+  const children = element.childNodes;
   const output = [];
 
-  for (let i = 0; i < nodes.length; i++) {
-    output.push(types(nodes[i]));
+  for (let i = 0; i < children.length; i++) {
+    output.push(types(children[i]));
   }
 
   return output;
@@ -106,7 +106,7 @@ function wrap(text, type) {
 }
 
 function letters(word) {
-  let letters = word.split('').map(letter => wrap(letter, 'LETTER'));
+  const letters = word.split('').map(letter => wrap(letter, 'LETTER'));
   return letters.join('');
 }
 function splitLetter(children) {

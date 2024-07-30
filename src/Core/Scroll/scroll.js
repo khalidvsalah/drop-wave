@@ -1,12 +1,12 @@
 import { states } from '../../Utils/states/states';
-import { choke } from '../../Utils/methods/choke';
+import { Choke } from '../../Utils/methods/choke';
 import { query } from '../../Utils/methods/query';
 import { win } from '../../Utils/methods/window';
 import { setProp } from '../../Utils/methods/css';
 import { bounds } from '../../Utils/methods/coordinate';
 import { clamp, damp } from '../../Math/math';
 
-import { trigger } from './trigger';
+import { Trigger } from './trigger';
 
 /**
  * Scroll options
@@ -56,7 +56,7 @@ const inRange = (start, end, coords, kid, isYaxis, l) => {
   }
 };
 
-class events {
+class Events {
   init({ drag, key, wheel }) {
     if (Object.is(this.container, window)) {
       this.global = true;
@@ -101,7 +101,7 @@ class events {
       pointer-events: none;
     `;
 
-    this.choke = new choke({
+    this.choke = new Choke({
       d: 0.3,
       cb: () => {
         setProp.pointer(this.overlay, 'none');
@@ -113,8 +113,8 @@ class events {
   }
 
   _wheel(e) {
-    let multip = e.deltaMode === 1 ? 0.83 : 0.55;
-    let offset = e.wheelDeltaY * multip;
+    const multip = e.deltaMode === 1 ? 0.83 : 0.55;
+    const offset = e.wheelDeltaY * multip;
 
     this.scroll.value -= offset;
     this.scroll.dir = Math.sign(offset);
@@ -140,7 +140,7 @@ class events {
 
   _move(e) {
     if (this.mousedown) {
-      let offset = e[this.vertical] - this.dist;
+      const offset = e[this.vertical] - this.dist;
       this.scroll.value -= offset;
       this.dist = e[this.vertical];
       this.scroll.dir = Math.sign(offset);
@@ -176,7 +176,7 @@ class events {
     }
   }
 }
-export class scroll extends events {
+export class scroll extends Events {
   /**
    * @param {HTMLElement} target
    * @param {SCROLL_OPTIONS} options
@@ -193,7 +193,7 @@ export class scroll extends events {
     super();
 
     const {
-      name = Symbol(),
+      name = Symbol('symbol'),
       container = window,
       dir = 'y',
       drag = true,
@@ -237,7 +237,7 @@ export class scroll extends events {
       }
     }
 
-    return new trigger(target, options);
+    return new Trigger(target, options);
   }
 
   _update(time) {

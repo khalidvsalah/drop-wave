@@ -11,10 +11,22 @@
 
 /** @type {CSS} */
 export const setProp = {
-  alpha: (element, value) => (element.style.opacity = value),
-  display: (element, value) => (element.style.display = value),
-  pointer: (element, value) => (element.style.pointerEvents = value),
-  position: (element, value) => (element.style.position = value),
-  visible: (element, value) => (element.style.visibility = value),
-  transform: (element, value) => (element.style.transform = value)
+  alpha: (element, value) => {
+    element.style.opacity = value;
+  },
+  display: (element, value) => {
+    element.style.display = value;
+  },
+  pointer: (element, value) => {
+    element.style.pointerEvents = value;
+  },
+  position: (element, value) => {
+    element.style.position = value;
+  },
+  visible: (element, value) => {
+    element.style.visibility = value;
+  },
+  transform: (element, value) => {
+    element.style.transform = value;
+  }
 };

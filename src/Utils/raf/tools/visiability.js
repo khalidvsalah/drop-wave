@@ -1,8 +1,6 @@
 import { states } from '../../states/states';
 
 class Visiability {
-  constructor() {}
-
   init(raf) {
     if (!this.raf) {
       states.subscribe('visibilitychange', this.change.bind(this));
@@ -12,8 +10,13 @@ class Visiability {
 
   change() {
     const now = performance.now();
-    if (document.hidden) this.hide = now;
-    else this.raf.items.map(item => (item.st += now - this.hide));
+    if (document.hidden) {
+      this.hide = now;
+    } else {
+      this.raf.items.map(item => {
+        item.st += now - this.hide;
+      });
+    }
   }
 }
 

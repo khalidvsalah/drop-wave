@@ -58,5 +58,7 @@ function clipPath(p) {
   }
 }
 
-const setValue = element => value => (element.style.clipPath = value);
-export default { callback: clipPath, setValue: setValue };
+export default {
+  callback: clipPath,
+  setValue: element => value => (element.style.clipPath = value)
+};

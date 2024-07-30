@@ -1,5 +1,5 @@
 import { states } from '../../Utils/states/states';
-import { prepare } from '../../Utils/props/prepare';
+import { Prepare } from '../../Utils/props/prepare';
 import { offset } from '../../Utils/methods/coordinate';
 import { setProp } from '../../Utils/methods/css';
 
@@ -21,7 +21,7 @@ const match = (str = '0', coord, size) => {
     return str;
   }
 
-  const match = /^(\+|\-)(\d+)/.exec(str);
+  const match = /^(\+|-)(\d+)/.exec(str);
   const percentage = /%/.exec(str);
 
   if (match) {
@@ -35,7 +35,7 @@ const match = (str = '0', coord, size) => {
   }
 };
 
-export class trigger {
+export class Trigger {
   constructor(target, options) {
     this.target = target;
     this.options = options;
@@ -56,10 +56,10 @@ export class trigger {
 
     if (target.length) {
       target.forEach(element => {
-        this.prepare.push(new prepare(element));
+        this.prepare.push(new Prepare(element));
       });
     } else {
-      this.prepare.push(new prepare(target));
+      this.prepare.push(new Prepare(target));
     }
 
     this.init(options);

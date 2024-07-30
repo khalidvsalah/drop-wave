@@ -1,16 +1,16 @@
 import { ease } from '../../Math/ease';
 import { clamp } from '../../Math/math';
 
-import { prepare } from '../../Utils/props/prepare';
+import { Prepare } from '../../Utils/props/prepare';
 import { raf } from '../../Utils/raf/raf';
 import { toString } from '../../Utils/methods/object';
 
-import { late } from '../late/late';
+import { Late } from '../late/late';
 
 // each htmlelement or object has a tween base class
 export default class TweenBase {
   constructor(element, options) {
-    this.prepare = new prepare(element);
+    this.prepare = new Prepare(element);
 
     this.props = [];
     this.queue = [];
@@ -71,7 +71,7 @@ export default class TweenBase {
     } else {
       if (this.mode !== next.mode) {
         if (this.late) this.late.destroy();
-        this.late = new late({
+        this.late = new Late({
           cb: this.execute.bind(this, next),
           d: next.late || 0
         });

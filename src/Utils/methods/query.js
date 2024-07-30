@@ -1,5 +1,9 @@
-/** @typedef {(str:string)=> HTMLElement | object} Element*/
-/** @typedef {(element:HTMLElement,str:string)=> HTMLElement | object} Elements*/
+/**
+ * @typedef {(str:string)=> HTMLElement | object} Element
+ */
+/**
+ *  @typedef {(element:HTMLElement,str:string)=> HTMLElement | object} Elements
+ */
 /**
  * @typedef {Object} QUERY
  * @property {Element} id

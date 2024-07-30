@@ -1,49 +1,21 @@
-import ease from './Math/ease';
-import { clamp, lerp, map, remap, round, dist, damp } from './Math/math';
+export { ease } from './Math/ease';
+export { clamp, lerp, map, remap, round, dist, damp } from './Math/math';
 
-import { has, toString } from './Utils/methods/object';
-import { bounds, computed, offset } from './Utils/methods/coordinate';
+export { has, toString } from './Utils/methods/object';
+export { bounds, computed, offset } from './Utils/methods/coordinate';
 
-import win from './Utils/methods/window';
-import css from './Utils/methods/css';
-import query from './Utils/methods/query';
-import choke from './Utils/methods/choke';
+export { win } from './Utils/methods/window';
+// export { css } from './Utils/methods/css';
+export { query } from './Utils/methods/query';
+export { Choke } from './Utils/methods/choke';
 
-import props from './Utils/props/props';
-import raf from './Utils/raf/raf';
-import scrub from './Utils/helpers/scrub';
-import late from './Core/late/late';
-import tween from './Core/tween/index';
+export { Prepare, register } from './Utils/props/prepare';
+export { raf } from './Utils/raf/raf';
+// export scrub from './Utils/helpers/scrub';
+export { Late } from './Core/late/late';
+export { tween, kill } from './Core/tween/tween';
 
-import observer from './Core/Observer/observer';
-import scroll from './Core/scroll/scroll';
+export { states } from './Utils/states/states';
+export { scroll } from './Core/scroll/scroll';
 
-import line from './Plugins/line/line';
-
-export {
-  ease,
-  clamp,
-  lerp,
-  map,
-  remap,
-  round,
-  dist,
-  damp,
-  has,
-  toString,
-  bounds,
-  computed,
-  offset,
-  win,
-  css,
-  query,
-  choke,
-  props,
-  raf,
-  late,
-  scrub,
-  tween,
-  observer,
-  scroll,
-  line
-};
+export { splitText } from './Plugins/splitText';

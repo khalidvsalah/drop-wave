@@ -13,7 +13,7 @@ class States {
 
     return {
       notify: (...args) => {
-        let { cbs } = store.get(name);
+        const { cbs } = store.get(name);
         cbs.forEach(cb => cb(...args));
       },
       remove: () => store.delete(name),
@@ -28,7 +28,7 @@ class States {
    */
   subscribe(name, cb) {
     if (!this.store.has(name)) throw new Error(name, 'Undefined');
-    let { cbs } = this.store.get(name);
+    const { cbs } = this.store.get(name);
     cbs.add(cb);
     return { remove: () => cbs.delete(cb) };
   }

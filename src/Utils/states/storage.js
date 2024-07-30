@@ -11,5 +11,6 @@ export function store(key, value) {
   if (!getValue) {
     storage.set(key, value);
     return value;
-  } else return getValue;
+  }
+  return getValue;
 }
