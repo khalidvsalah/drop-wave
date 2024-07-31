@@ -10,7 +10,7 @@ export default async function bundle({ src, dest }) {
     entryPoints: entry,
     bundle: true,
     outfile: dest,
-    plugins: [minifyTemplates(), writeFiles(), babel()],
+    plugins: [minifyTemplates(), writeFiles(), babel({ config: {} })],
     minify: true,
     format: 'esm',
     write: false
