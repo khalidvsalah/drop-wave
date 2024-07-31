@@ -1,6 +1,6 @@
 {
   "name": "stabraq",
-  "version": "0.1.2",
+  "version": "0.1.9",
   "description": "A JavaScript Animation Library",
   "repository": "khalidvsalah/stabraq.git",
   "author": "Khalid Salah <khalidvsalah@gmail.com> (https://www.khalidsalah.com)",
@@ -33,6 +33,7 @@
     "build": "node scripts/bundle.mjs",
     "push": "bash scripts/push.sh",
     "parcel": "parcel __test__/browser/index.html",
-    "lint": "eslint src/**/*.js"
+    "lint": "eslint src/**/*.js",
+    "publish": "bash scripts/publish.sh"
   }
 }
