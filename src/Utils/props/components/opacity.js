@@ -1,10 +1,12 @@
 /**
  * @param {object} p - opacity.
+ * @param {object} info - computed style.
  * @return {Function}
  */
-const opacity = p => {
-  const lerp = p[1] - p[0];
-  return t => `${p[0] + lerp * t}`;
+const opacity = (end, { computed }) => {
+  const o = { start: +computed.opacity, end };
+  o.lerp = o.end - o.start;
+  return t => `${o.start + o.lerp * t}`;
 };
 
 const setValue = element => value => (element.style.opacity = value);

@@ -1,4 +1,5 @@
 import { query } from '../methods/query';
+import { computed } from '../methods/coordinate';
 
 // style
 import opacity from './components/opacity';
@@ -13,9 +14,6 @@ const regexs = [
   [/^(opacity|alpha)/, opacity],
   [/^(clip|clipPath)/, clipPath],
   [/^(draw)/, draw]
-  // [/^(dash)$/, dash],
-  // [/^(points)$/, points],
-  // [/^(d)$/, d],
 ];
 
 /**
@@ -60,6 +58,7 @@ function dom(element, ps) {
 
   info.element = element;
   info.parent = element.parentNode;
+  info.computed = computed(element);
 
   for (const [regex, obj] of Object.entries(ps)) {
     const { setValue, callback } = match(regex);
@@ -120,7 +119,7 @@ export class Prepare {
    * @param {object} ps - properties.
    * @returns {Array} array of tweens functions.
    */
-  props(ps) {
+  init(ps) {
     if (this.obj.obj) {
       return obj(this.obj.element, ps);
     }
