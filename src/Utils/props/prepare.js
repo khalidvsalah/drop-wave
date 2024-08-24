@@ -5,6 +5,7 @@ import { computed } from '../methods/coordinate';
 import opacity from './components/opacity';
 import transform from './components/transform';
 import clipPath from './components/clipPath';
+import filter from './components/filter';
 
 // svg
 import draw from './components/draw';
@@ -13,7 +14,8 @@ const regexs = [
   [/^(transform|move)/, transform],
   [/^(opacity|alpha)/, opacity],
   [/^(clip|clipPath)/, clipPath],
-  [/^(draw)/, draw]
+  [/^(draw)/, draw],
+  [/^(filter)/, filter]
 ];
 
 /**
