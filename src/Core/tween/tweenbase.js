@@ -53,9 +53,12 @@ export default class TweenBase {
       this.easing = next.ease || 'l';
       this.props = next.props;
 
-      this.tweened = this.prepare.props(next.props);
+      this.tweened = this.prepare.init(next.props);
       this.progress = 0;
-    } else this.progress = 1 - this.elapsed; // if reverse progress = 1 - time passed
+    } else {
+      this.progress = 1 - this.elapsed;
+      this.props = next.props;
+    } // if reverse progress = 1 - time passed
 
     this.ease = ease(this.easing);
     if (this.tweened.length) {
@@ -69,14 +72,14 @@ export default class TweenBase {
     if (toString(this.props) === toString(next.props)) {
       next.props = undefined;
     } else {
-      if (this.mode !== next.mode) {
-        if (this.late) this.late.destroy();
-        this.late = new Late({
-          cb: this.execute.bind(this, next),
-          d: next.late || 0
-        });
-        this.late.play();
+      if (this.late) {
+        this.late.destroy();
       }
+      this.late = new Late({
+        cb: this.execute.bind(this, next),
+        d: next.late || 0
+      });
+      this.late.play();
     }
   }
 

@@ -74,7 +74,8 @@ export function tween(elements, options = {}) {
 
     if (storage.has(element)) {
       const tweenbase = store(element);
-      arr.push(tweenbase.push({ ...options, late }, 'p'));
+      tweenbase.push('p', { ...options, late });
+      arr.push(tweenbase);
     } else {
       arr.push(store(element, new TweenBase(element, { ...options, late })));
     }
