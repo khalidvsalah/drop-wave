@@ -114,6 +114,8 @@ function matrix3d(match) {
 
 const translate = (start, end, size) => {
   const split = end ? /(\d+)(%|px)?/.exec(end) : end;
+  size = parseFloat(size);
+
   const o = {
     start: end ? (split[2] === 'px' ? start : (start / size) * 100) : start,
     end: end ? +split[1] : start,
@@ -146,7 +148,8 @@ const _rotate = (start, end) => {
   const ryV = scale(start[1], end[1]);
   const rzV = scale(start[2], end[2]);
 
-  return t => `rotate3d(${rxV(t)}deg, ${ryV(t)}deg, ${rzV(t)}deg)`;
+  return t =>
+    `rotate(${rzV(t)}deg) rotateX(${rxV(t)}deg) rotateY(${ryV(t)}deg)`;
 };
 
 /**
@@ -157,8 +160,8 @@ const _rotate = (start, end) => {
 const transform = (p, { computed }) => {
   let startPoint = computed.transform;
 
-  const height = computed.height;
   const width = computed.width;
+  const height = computed.height;
 
   if (startPoint !== 'none') {
     const isMatrix3d = /3d/.exec(startPoint);
