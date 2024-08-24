@@ -173,7 +173,11 @@ const transform = (p, { computed }) => {
       startPoint = matrix2d(matrix);
     }
   } else {
-    startPoint = false;
+    startPoint = {
+      translate: { x: 0, y: 0 },
+      scale: { x: 0, y: 0 },
+      rotate: { x: 0, y: 0, z: 0 }
+    };
   }
 
   if (p.scale) [p.scaleX, p.scaleY] = [p.scale, p.scale];
@@ -181,27 +185,33 @@ const transform = (p, { computed }) => {
 
   const arr = [];
 
-  if (p.x || p.y) {
+  if (p.x || p.y || startPoint.translate.x || startPoint.translate.y) {
     const start = startPoint
       ? [startPoint.translate.x, startPoint.translate.y]
       : [0, 0];
     arr.push(_translate(start, [p.x, p.y], [width, height]));
   }
-  if (p.scaleX || p.scaleY) {
+  if (p.scaleX || p.scaleY || startPoint.scale.x || startPoint.scale.y) {
     const start = startPoint
       ? [startPoint.scale.x, startPoint.scale.y]
       : [1, 1];
     arr.push(_scale(start, [p.scaleX, p.scaleY]));
   }
-  if (p.rotateX || p.rotateY || p.rotateZ) {
+  if (
+    p.rotateX ||
+    p.rotateY ||
+    p.rotateZ ||
+    startPoint.rotate.x ||
+    startPoint.rotate.y ||
+    startPoint.rotate.z
+  ) {
     const start = startPoint
       ? [startPoint.rotate.x, startPoint.rotate.y, startPoint.rotate.z]
       : [0, 0, 0];
     arr.push(_rotate(start, [p.rotateX, p.rotateY, p.rotateZ]));
   }
 
-  if (arr.length > 1) return t => arr.reduce((a, b) => a(t) + ' ' + b(t));
-  return arr[0];
+  return t => arr.map(a => a(t)).join(' ');
 };
 
 const setValue = element => value => (element.style.transform = value);
