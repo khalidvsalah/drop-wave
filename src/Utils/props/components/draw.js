@@ -1,8 +1,11 @@
-const draw = (p, { element }) => {
-  const length = element.getTotalLength();
-  element.style.strokeDasharray = length;
-  const lerp = (p[1] - p[0]) / 100;
-  return t => `${(p[0] + lerp * t) * length}`;
+const draw = (p, { computed }) => {
+  const length = parseFloat(computed.strokeDashoffset);
+  const o = {
+    start: length,
+    end: (1 - p) * length
+  };
+  o.lerp = o.end - o.start;
+  return t => `${o.start + o.lerp * t}`;
 };
 
 const setValue = element => value => (element.style.strokeDashoffset = value);
