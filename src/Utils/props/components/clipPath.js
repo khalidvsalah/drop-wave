@@ -2,9 +2,9 @@
  * @param {object} p
  * @return {Function}
  */
-const _circle = p => {
-  const start = /(\d+) at (\d+) (\d+)/.exec(p[0]);
-  const end = /(\d+) at (\d+) (\d+)/.exec(p[1]);
+const _circle = (s, e) => {
+  const start = /(\d+)%? at (\d+)%? (\d+)%?/.exec(s);
+  const end = /(\d+)%? at (\d+)%? (\d+)%?/.exec(e);
 
   const startValue = { radius: +start[1], x: +start[2], y: +start[3] };
   const endValue = { radius: +end[1], x: +end[2], y: +end[3] };
@@ -14,9 +14,9 @@ const _circle = p => {
   const yLerp = endValue.y - startValue.y;
 
   return t =>
-    `${startValue.radius + radiusLerp * t} at ${startValue.x + xLerp * t} ${
+    `${startValue.radius + radiusLerp * t}% at ${startValue.x + xLerp * t}% ${
       startValue.y + yLerp * t
-    }`;
+    }%`;
 };
 
 const points = p =>
@@ -29,10 +29,10 @@ const points = p =>
  * @param {object} p
  * @return {Function}
  */
-const _polygon = p => {
-  const start = points(p[0]);
-  const end = points(p[1]);
-  const lerp = start.map(([x, y], i) => [end[i][0] - x, end[i][1] - y]);
+const _polygon = (s, e) => {
+  const start = points(s);
+  const end = points(e);
+  const lerp = end.map(([x, y], i) => [end[i][0] - x, end[i][1] - y]);
 
   return t =>
     lerp.reduce((a, b, i) => {
@@ -45,15 +45,34 @@ const _polygon = p => {
 
 /**
  * @param {object} p - clip path properties.
+ *  @param {object} info - computed style.
  * @return {Function}
  */
-function clipPath(p) {
-  if (p.circle) {
-    const circle = _circle(p.circle);
+function clipPath(p, { computed }) {
+  let start = computed.clipPath;
+  const isCircle = p.circle;
+  if (isCircle) {
+    if (start === 'none') {
+      start = '100 at 50 50';
+    }
+    const cform = Array.isArray(isCircle);
+    const circle = _circle(
+      cform ? isCircle[0] : start,
+      cform ? isCircle[1] : isCircle
+    );
     return t => `circle(${circle(t)})`;
   }
-  if (p.polygon) {
-    const polygon = _polygon(p.polygon);
+  const isPolygon = p.circle;
+  if (isPolygon) {
+    // run some tests
+    if (start === 'none') {
+      start = '0 0, 100 0, 100 100, 0 100';
+    }
+    const pform = Array.isArray(isCircle);
+    const polygon = _polygon(
+      pform ? isPolygon[0] : start,
+      pform ? isPolygon[1] : isPolygon
+    );
     return t => `polygon(${polygon(t)})`;
   }
 }

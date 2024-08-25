@@ -122,11 +122,27 @@ const translate = (start, end, size) => {
     unit: end ? split[2] || 'px' : 'px'
   };
   o.lerp = o.end - o.start;
+
   return t => `${o.start + o.lerp * t}${o.unit}`;
 };
 const _translate = (start, end, [width, height]) => {
-  const xV = translate(start[0], end[0], width);
-  const yV = translate(start[1], end[1], height);
+  const xfrom = Array.isArray(end[0]);
+  const yfrom = Array.isArray(end[1]);
+
+  let xV;
+  let yV;
+
+  if (xfrom) {
+    xV = translate(parseFloat(end[0][0]), end[0][1], width);
+  } else {
+    xV = translate(start[0], end[0], width);
+  }
+  if (yfrom) {
+    yV = translate(parseFloat(end[1][0]), end[1][1], height);
+  } else {
+    yV = translate(start[1], end[1], height);
+  }
+
   return t => `translate3d(${xV(t)}, ${yV(t)}, 0)`;
 };
 const scale = (start, end) => {
@@ -138,15 +154,49 @@ const scale = (start, end) => {
   return t => `${start + o.lerp * t}`;
 };
 const _scale = (start, end) => {
-  const sxV = scale(start[0], end[0]);
-  const syV = scale(start[1], end[1]);
+  const xfrom = Array.isArray(end[0]);
+  const yfrom = Array.isArray(end[1]);
+
+  let sxV;
+  let syV;
+
+  if (xfrom) {
+    sxV = scale(end[0][0], end[0][1]);
+  } else {
+    sxV = scale(start[0], end[0]);
+  }
+  if (yfrom) {
+    syV = scale(end[1][0], end[1][1]);
+  } else {
+    syV = scale(start[1], end[1]);
+  }
   return t => `scale(${sxV(t)}, ${syV(t)})`;
 };
 
 const _rotate = (start, end) => {
-  const rxV = scale(start[0], end[0]);
-  const ryV = scale(start[1], end[1]);
-  const rzV = scale(start[2], end[2]);
+  const xfrom = Array.isArray(end[0]);
+  const yfrom = Array.isArray(end[1]);
+  const zfrom = Array.isArray(end[2]);
+
+  let rxV;
+  let ryV;
+  let rzV;
+
+  if (xfrom) {
+    rxV = scale(end[0][0], end[0][1]);
+  } else {
+    rxV = scale(start[0], end[0]);
+  }
+  if (yfrom) {
+    ryV = scale(end[1][0], end[1][1]);
+  } else {
+    ryV = scale(start[1], end[1]);
+  }
+  if (zfrom) {
+    rzV = scale(end[2][0], end[2][1]);
+  } else {
+    rzV = scale(start[2], end[2]);
+  }
 
   return t =>
     `rotate(${rzV(t)}deg) rotateX(${rxV(t)}deg) rotateY(${ryV(t)}deg)`;
@@ -175,7 +225,7 @@ const transform = (p, { computed }) => {
   } else {
     startPoint = {
       translate: { x: 0, y: 0 },
-      scale: { x: 0, y: 0 },
+      scale: { x: 1, y: 1 },
       rotate: { x: 0, y: 0, z: 0 }
     };
   }
