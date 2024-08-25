@@ -10,43 +10,6 @@ import filter from './components/filter';
 // svg
 import draw from './components/draw';
 
-const regexs = [
-  [/^(transform|move)/, transform],
-  [/^(opacity|alpha)/, opacity],
-  [/^(clip|clipPath)/, clipPath],
-  [/^(draw)/, draw],
-  [/^(filter)/, filter]
-];
-
-/**
- * Return matched property
- * @param {string} name - regex.
- * @return {Function} - get properties function.
- */
-function match(name) {
-  for (const [regex, cb] of regexs) {
-    if (name.match(regex)) return cb;
-  }
-}
-
-/**
- * @param {string} shortName - property name
- * @param {{cssName:string, callback:()=> Function}} options
- */
-export const register = (shortName, options) => {
-  if (match(shortName)) {
-    throw new Error(`${shortName} is already registered`);
-  } else {
-    const regex = new RegExp(`^(${shortName})`);
-    const component = {
-      callback: options.callback,
-      setValue: element => value => (element.style[options.cssName] = value)
-    };
-
-    regexs.push([regex, component]);
-  }
-};
-
 /**
  * Get properties tween function
  * @param {HTMLElement} element - targeted element.
@@ -106,6 +69,25 @@ function elementType(element) {
     return { obj: false, element: query.el(element) };
   }
   return { obj: true, element };
+}
+
+export const regexs = [
+  [/^(transform|move)/, transform],
+  [/^(opacity|alpha)/, opacity],
+  [/^(clip|clipPath)/, clipPath],
+  [/^(draw)/, draw],
+  [/^(filter)/, filter]
+];
+
+/**
+ * Return matched property
+ * @param {string} name - regex.
+ * @return {Function} - get properties function.
+ */
+export function match(name) {
+  for (const [regex, cb] of regexs) {
+    if (name.match(regex)) return cb;
+  }
 }
 
 export class Prepare {
