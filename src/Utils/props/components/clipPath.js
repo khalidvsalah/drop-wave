@@ -2,12 +2,18 @@
  * @param {object} p
  * @return {Function}
  */
-const _circle = (s, e) => {
-  const start = /(\d+)%? at (\d+)%? (\d+)%?/.exec(s);
-  const end = /(\d+)%? at (\d+)%? (\d+)%?/.exec(e);
 
-  const startValue = { radius: +start[1], x: +start[2], y: +start[3] };
-  const endValue = { radius: +end[1], x: +end[2], y: +end[3] };
+const cRegex = /(\d+)%?( at (\d+)%? (\d+)%?)?/;
+const _circle = (s, e) => {
+  const start = cRegex.exec(s);
+  const end = cRegex.exec(e);
+
+  const startValue = {
+    radius: +start[1],
+    x: start[3] ? +start[3] : 50,
+    y: +start[4] ? +start[4] : 50
+  };
+  const endValue = { radius: +end[1], x: +end[3], y: +end[4] };
 
   const radiusLerp = endValue.radius - startValue.radius;
   const xLerp = endValue.x - startValue.x;
@@ -54,6 +60,8 @@ function clipPath(p, { computed }) {
   if (isCircle) {
     if (start === 'none') {
       start = '100 at 50 50';
+    } else {
+      start = /\((.*)\)/.exec(start)[1];
     }
     const cform = Array.isArray(isCircle);
     const circle = _circle(
