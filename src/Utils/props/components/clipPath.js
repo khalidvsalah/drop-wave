@@ -1,12 +1,9 @@
-/**
- * @param {object} p
- * @return {Function}
- */
+const CIRCLE_REGEX = /(\d+)%?( at (\d+)%? (\d+)%?)?/;
+const POLYGON_COORDS_REGEX = /\((.*)\)/;
 
-const cRegex = /(\d+)%?( at (\d+)%? (\d+)%?)?/;
 const _circle = (s, e) => {
-  const start = cRegex.exec(s);
-  const end = cRegex.exec(e);
+  const start = CIRCLE_REGEX.exec(s);
+  const end = CIRCLE_REGEX.exec(e);
 
   const startValue = {
     radius: +start[1],
@@ -25,21 +22,20 @@ const _circle = (s, e) => {
     }%`;
 };
 
-const points = p =>
-  p.split(',').map(a => {
-    const coord = /(\d+)%? (\d+)%?/.exec(a);
-    return [+coord[1], +coord[2]];
+const points = arr => {
+  return arr.split(',').map(str => {
+    const arr = str.match(/\d+/g);
+    return [+arr[0], +arr[1]];
   });
-
-/**
- * @param {object} p
- * @return {Function}
- */
+};
 const _polygon = (s, e) => {
+  s = POLYGON_COORDS_REGEX.exec(s)[1];
+  e = POLYGON_COORDS_REGEX.exec(e) || e;
+
   const start = points(s);
   const end = points(e);
-  const lerp = end.map(([x, y], i) => [end[i][0] - x, end[i][1] - y]);
 
+  const lerp = end.map(([x, y], i) => [x - start[i][0], y - start[i][1]]);
   return t =>
     lerp.reduce((a, b, i) => {
       const x = start[i][0] + b[0] * t;
@@ -51,12 +47,15 @@ const _polygon = (s, e) => {
 
 /**
  * @param {object} p - clip path properties.
- *  @param {object} info - computed style.
+ *  @param {object} info - {computed style, parent, element}.
  * @return {Function}
  */
 function clipPath(p, { computed }) {
-  let start = computed.clipPath;
   const isCircle = p.circle;
+  const isPolygon = p.polygon;
+
+  let start = computed.clipPath;
+
   if (isCircle) {
     if (start === 'none') {
       start = '100 at 50 50';
@@ -70,13 +69,12 @@ function clipPath(p, { computed }) {
     );
     return t => `circle(${circle(t)})`;
   }
-  const isPolygon = p.circle;
   if (isPolygon) {
-    // run some tests
     if (start === 'none') {
-      start = '0 0, 100 0, 100 100, 0 100';
+      start = 'polygon(0 0, 100 0, 100 100, 0 100)';
     }
-    const pform = Array.isArray(isCircle);
+
+    const pform = Array.isArray(isPolygon);
     const polygon = _polygon(
       pform ? isPolygon[0] : start,
       pform ? isPolygon[1] : isPolygon
