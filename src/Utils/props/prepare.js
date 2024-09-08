@@ -10,6 +10,9 @@ import filter from './components/filter';
 // svg
 import draw from './components/draw';
 
+// attribute
+import attribute from './components/attribute';
+
 /**
  * Get properties tween function
  * @param {HTMLElement} element - targeted element.
@@ -27,7 +30,10 @@ function dom(element, ps) {
 
   for (const [regex, obj] of Object.entries(ps)) {
     const { setValue, callback } = match(regex);
-    results.push({ setValue: setValue(element), cb: callback(obj, info) });
+    results.push({
+      setValue: setValue(element),
+      cb: callback(obj, info, regex)
+    });
   }
 
   return results;
@@ -85,9 +91,14 @@ export const regexs = [
  * @return {Function} - get properties function.
  */
 export function match(name) {
+  let found = false;
   for (const [regex, cb] of regexs) {
-    if (name.match(regex)) return cb;
+    if (name.match(regex)) {
+      found = true;
+      return cb;
+    }
   }
+  if (!found) return attribute;
 }
 
 export class Prepare {
