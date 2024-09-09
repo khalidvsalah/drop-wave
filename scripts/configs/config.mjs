@@ -6,7 +6,7 @@ const config = {
   changes: {
     js: {
       src: 'index.js',
-      dest: 'stabraq.esm.js'
+      dest: 'rafraf.esm.js'
     }
   }
 };

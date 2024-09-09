@@ -1,12 +1,12 @@
 {
-  "name": "stabraq",
-  "version": "0.1.9",
+  "name": "rafraf",
+  "version": "1.0.0",
   "description": "A JavaScript Animation Library",
-  "repository": "khalidvsalah/stabraq.git",
+  "repository": "khalidvsalah/rafraf.git",
   "author": "Khalid Salah <khalidvsalah@gmail.com> (https://www.khalidsalah.com)",
   "license": "MIT",
   "main": "src/index.js",
-  "module": "dist/stabraq.esm.js",
+  "module": "dist/rafraf.esm.js",
   "devDependencies": {
     "@babel/core": "^7.23.9",
     "@babel/preset-env": "^7.24.8",
