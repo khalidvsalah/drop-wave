@@ -29,11 +29,11 @@ const points = arr => {
   });
 };
 const _polygon = (s, e) => {
-  s = POLYGON_COORDS_REGEX.exec(s)[1];
+  s = POLYGON_COORDS_REGEX.exec(s) || s;
   e = POLYGON_COORDS_REGEX.exec(e) || e;
 
-  const start = points(s);
-  const end = points(e);
+  const start = points(Array.isArray(s) ? s[1] : s);
+  const end = points(Array.isArray(e) ? e[1] : e);
 
   const lerp = end.map(([x, y], i) => [x - start[i][0], y - start[i][1]]);
   return t =>

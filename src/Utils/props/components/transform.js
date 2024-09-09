@@ -113,7 +113,7 @@ function matrix3d(match) {
 }
 
 const translate = (start, end, size) => {
-  const split = end ? /(\d+)(%|px)?/.exec(end) : end;
+  const split = end ? /([+|-]?\d+)(%|px)?/.exec(end) : end;
   size = parseFloat(size);
 
   const o = {
@@ -122,7 +122,6 @@ const translate = (start, end, size) => {
     unit: end ? split[2] || 'px' : 'px'
   };
   o.lerp = o.end - o.start;
-
   return t => `${o.start + o.lerp * t}${o.unit}`;
 };
 const _translate = (start, end, [width, height]) => {

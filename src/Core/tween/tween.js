@@ -44,7 +44,7 @@ export function tween(elements, options = {}) {
   elements = typeof elements === 'string' ? query.els(elements) : elements;
   if (elements instanceof NodeList) nodes = elements;
   else if (Array.isArray(elements)) {
-    if (typeof elements[0] !== 'number') nodes = [elements];
+    if (typeof elements[0] === 'number') nodes = [elements];
     else nodes = elements;
   } else nodes = [elements];
 

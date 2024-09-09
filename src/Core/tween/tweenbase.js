@@ -48,16 +48,16 @@ export default class TweenBase {
       this.onStart = null;
     }
 
+    this.props = next.props;
+
     if (next.props) {
       this.dur = next.dur || 0.5;
       this.easing = next.ease || 'l';
-      this.props = next.props;
 
       this.tweened = this.prepare.init(next.props);
       this.progress = 0;
     } else {
       this.progress = 1 - this.elapsed;
-      this.props = next.props;
     } // if reverse progress = 1 - time passed
 
     this.ease = ease(this.easing);

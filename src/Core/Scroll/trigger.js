@@ -21,15 +21,11 @@ const match = (str = '0', coord, size) => {
     return str;
   }
 
-  const match = /^(\+|-)(\d+)/.exec(str);
-  const percentage = /%/.exec(str);
+  const match = /^([+|-]\d+)(%|px)?/.exec(str);
 
   if (match) {
-    if (match[1] === '+') {
-      return coord + (percentage ? (+match[2] * size) / 100 : +match[2]);
-    } else {
-      return coord - (percentage ? (+match[2] * size) / 100 : +match[2]);
-    }
+    const percentage = match[2] === '%';
+    return coord + (percentage ? (+match[1] * size) / 100 : +match[1]);
   } else {
     return +str;
   }
@@ -72,7 +68,7 @@ export class Trigger {
 
       if (this.animate) {
         this.preparies = this.prepare.map(element => {
-          return element.props(this.animate)[0];
+          return element.init(this.animate)[0];
         });
       }
     }
@@ -132,8 +128,7 @@ export class Trigger {
   }
 
   _resize() {
-    const target = this.target.length ? this.target[0] : this.target;
-    const coords = offset(target);
+    const coords = offset(this.target);
 
     if (this.tween || this.scroll) {
       this.startPoint = match(this.start, coords[this.dir], coords[this.size]);
