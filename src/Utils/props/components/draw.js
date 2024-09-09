@@ -1,3 +1,8 @@
+/**
+ * @param {object} p - attribute.
+ * @param {object} info - {computed, element, parent}.
+ * @return {Function}
+ */
 const draw = (p, { computed }) => {
   const length = parseFloat(computed.strokeDashoffset);
   const o = {

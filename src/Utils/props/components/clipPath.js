@@ -47,7 +47,7 @@ const _polygon = (s, e) => {
 
 /**
  * @param {object} p - clip path properties.
- *  @param {object} info - {computed style, parent, element}.
+ * @param {object} info - {computed style, parent, element}.
  * @return {Function}
  */
 function clipPath(p, { computed }) {

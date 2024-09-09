@@ -113,11 +113,15 @@ function matrix3d(match) {
 }
 
 const translate = (start, end, size) => {
-  const split = end ? /([+|-]?\d+)(%|px)?/.exec(end) : end;
+  const split = /([+|-]?\d+)(%|px)?/.exec(end) || end;
   size = parseFloat(size);
 
   const o = {
-    start: end ? (split[2] === 'px' ? start : (start / size) * 100) : start,
+    start: end
+      ? split[2] === 'px' || !split[2]
+        ? start
+        : (start / size) * 100
+      : start,
     end: end ? +split[1] : start,
     unit: end ? split[2] || 'px' : 'px'
   };
@@ -147,7 +151,7 @@ const _translate = (start, end, [width, height]) => {
 const scale = (start, end) => {
   const o = {
     start,
-    end: end || start
+    end: typeof end === 'number' ? end : start
   };
   o.lerp = o.end - o.start;
   return t => `${start + o.lerp * t}`;
@@ -171,7 +175,6 @@ const _scale = (start, end) => {
   }
   return t => `scale(${sxV(t)}, ${syV(t)})`;
 };
-
 const _rotate = (start, end) => {
   const xfrom = Array.isArray(end[0]);
   const yfrom = Array.isArray(end[1]);
@@ -202,15 +205,18 @@ const _rotate = (start, end) => {
 };
 
 /**
- * @param {object} p - transform properties animation end ponit .
- * @param {object}
- * @return {(t:number)=> string}
+ * @param {object} p - transform.
+ * @param {object} info - {computed, element, parent}.
+ * @return {Function}
  */
-const transform = (p, { computed }) => {
+const transform = (p, { computed, parent }) => {
   let startPoint = computed.transform;
 
-  const width = computed.width;
-  const height = computed.height;
+  let width = computed.width;
+  let height = computed.height;
+
+  width = width === 'auto' ? parent.clientWidth : width;
+  height = height === 'auto' ? parent.clientHeight : height;
 
   if (startPoint !== 'none') {
     const isMatrix3d = /3d/.exec(startPoint);
@@ -229,8 +235,8 @@ const transform = (p, { computed }) => {
     };
   }
 
-  if (p.scale) [p.scaleX, p.scaleY] = [p.scale, p.scale];
-  if (p.rotate) p.rotateZ = p.rotate;
+  if (typeof p.scale === 'number') [p.scaleX, p.scaleY] = [p.scale, p.scale];
+  if (typeof p.rotate === 'number') p.rotateZ = p.rotate;
 
   const arr = [];
 

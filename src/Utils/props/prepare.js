@@ -17,8 +17,7 @@ import attribute from './components/attribute';
  * Get properties tween function
  * @param {HTMLElement} element - targeted element.
  * @param {object} ps - properties.
- * @param {object} results - array of tweens functions.
- * @param {Function} easing
+ * @returns {Array} - array of tweened function.
  */
 function dom(element, ps) {
   const results = [];
@@ -41,11 +40,9 @@ function dom(element, ps) {
 
 /**
  * Handling object tween like {x: 0}.
- *
  * @param {HTMLElement} e - targeted element.
  * @param {object} ps - properties.
- * @param {object} results - array of tweens functions.
- * @param {Function} easing
+ * @returns {Array} - array of tweened function.
  */
 function obj(element, ps) {
   const results = [];
@@ -112,7 +109,7 @@ export class Prepare {
 
   /**
    * @param {object} ps - properties.
-   * @returns {Array} array of tweens functions.
+   * @returns {Array} array of tweened functions.
    */
   init(ps) {
     if (this.obj.obj) {

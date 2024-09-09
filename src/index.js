@@ -11,9 +11,8 @@ export { Choke } from './Utils/methods/choke';
 
 export { Prepare } from './Utils/props/prepare';
 export { raf } from './Utils/raf/raf';
-// export scrub from './Utils/helpers/scrub';
 
-export { Late } from './Core/late/late';
+export { Late } from './Utils/late/late';
 export { tween, kill } from './Core/tween/tween';
 export { timeline } from './Core/timeline/timeline';
 

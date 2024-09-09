@@ -1,4 +1,4 @@
-import { raf } from '../../Utils/raf/raf';
+import { raf } from '../raf/raf';
 
 export class Late {
   /**

@@ -7,7 +7,7 @@ const unit = attr => {
 /**
  * @param {object} p - attribute.
  * @param {object} info - {computed, element, parent} .
- * @param {string} attr - attribute style.
+ * @param {string} attribute - attribute style.
  * @return {Function}
  */
 const setAttribute = (end, { element }, attribute) => {

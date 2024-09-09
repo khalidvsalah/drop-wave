@@ -1,6 +1,6 @@
 /**
  * @param {object} p - opacity.
- * @param {object} info - computed style.
+ * @param {object} info - - {computed, element, parent}.
  * @return {Function}
  */
 const opacity = (end, { computed }) => {

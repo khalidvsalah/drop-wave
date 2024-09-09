@@ -1,9 +1,9 @@
 export const storage = new Map();
 
 /**
- * @param {object} key - targeted element
- * @param {*} value - targeted element
- * @returns {object} targeted element
+ * @param {object} key
+ * @param {*} value
+ * @returns {object} - stored value
  */
 
 export function store(key, value) {

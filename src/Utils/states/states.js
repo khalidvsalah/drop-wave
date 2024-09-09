@@ -35,6 +35,7 @@ class States {
 
   /**
    * @param {string} name - observer name
+   * @returns {boolean}
    */
   check(name) {
     return this.store.has(name);

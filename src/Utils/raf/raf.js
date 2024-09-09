@@ -1,5 +1,5 @@
 import { clamp } from '../../Math/math';
-import visiability from './tools/visiability';
+import visiability from './visiability';
 
 class Raf {
   constructor() {

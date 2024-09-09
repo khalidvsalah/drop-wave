@@ -5,9 +5,8 @@ import { Prepare } from '../../Utils/props/prepare';
 import { raf } from '../../Utils/raf/raf';
 import { toString } from '../../Utils/methods/object';
 
-import { Late } from '../late/late';
+import { Late } from '../../Utils/late/late';
 
-// each htmlelement or object has a tween base class
 export default class TweenBase {
   constructor(element, options) {
     this.prepare = new Prepare(element);
@@ -58,7 +57,7 @@ export default class TweenBase {
       this.progress = 0;
     } else {
       this.progress = 1 - this.elapsed;
-    } // if reverse progress = 1 - time passed
+    }
 
     this.ease = ease(this.easing);
     if (this.tweened.length) {

@@ -185,6 +185,7 @@ class Events {
     }
   }
 }
+
 export class scroll extends Events {
   /**
    * @param {HTMLElement} target
@@ -231,7 +232,7 @@ export class scroll extends Events {
   }
 
   /**
-   * @param {HTMLElement|NodeList} target - targeted element
+   * @param {HTMLElement} target - targeted element
    * @param {TRIGGER_OPTIONS} options - properties
    */
   add(target, options = {}) {

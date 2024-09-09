@@ -1,4 +1,4 @@
-import { states } from '../../states/states';
+import { states } from '../states/states';
 
 class Visiability {
   init(raf) {

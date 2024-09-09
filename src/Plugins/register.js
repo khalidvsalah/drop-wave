@@ -1,20 +1,21 @@
-import { regexs, match } from '../Utils/props/prepare';
+import { regexs } from '../Utils/props/prepare';
 
 /** * @typedef {{element:HTMLElement, computed:object, parent:HTMLTimeElement}} INFO */
-/** * @typedef {(p:object, info:INFO)=> Function} CALLBACK */
+/** * @typedef {(obj:object, info:INFO, name:string)=> Function} CALLBACK */
 
 /**
- * @param {string} shortName - property name
- * @param {{name:string, callback:CALLBACK}} options
+ * @param {string} name - property tweening name
+ * @param {string} cssName - the css name
+ * @param {CALLBACK} callback
  */
-export const register = (shortName, options) => {
-  if (match(shortName)) {
-    throw new Error(`${shortName} is already registered`);
+export const register = (name, cssName, callback) => {
+  if (regexs.some(([regex]) => name.match(regex))) {
+    throw new Error(name + ' is already registered');
   } else {
-    const regex = new RegExp(`^(${shortName})`);
+    const regex = new RegExp(`^(${name})`);
     const component = {
-      callback: options.callback,
-      setValue: element => value => (element.style[options.name] = value)
+      callback,
+      setValue: element => value => (element.style[cssName] = value)
     };
     regexs.push([regex, component]);
   }

@@ -25,7 +25,7 @@ function _contrast(start, end) {
 
 /**
  * @param {object} p - filter.
- * @param {object} info - computed style.
+ * @param {object} info - {computed, element, parent}.
  * @return {Function}
  */
 function filter(p, { computed }) {
