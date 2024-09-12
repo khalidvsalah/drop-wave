@@ -2,16 +2,17 @@ import { query } from '../methods/query';
 import { computed } from '../methods/coordinate';
 
 // style
-import opacity from './components/opacity';
-import transform from './components/transform';
-import clipPath from './components/clipPath';
-import filter from './components/filter';
+import opacity from './components/properties/opacity';
+import transform from './components/properties/transform';
+import clipPath from './components/properties/clipPath';
+import filter from './components/properties/filter';
 
 // svg
-import draw from './components/draw';
+import draw from './components/svg/draw';
+import points from './components/svg/points';
 
 // attribute
-import attribute from './components/attribute';
+import attribute from './components/properties/attribute';
 
 /**
  * Get properties tween function
@@ -31,7 +32,7 @@ function dom(element, ps) {
     const { setValue, callback } = match(regex);
     results.push({
       setValue: setValue(element),
-      cb: callback(obj, info, regex)
+      cb: callback(obj, info, regex),
     });
   }
 
@@ -51,8 +52,8 @@ function obj(element, ps) {
     const [start, end] = ps[key];
     const lerp = end - start;
     results.push({
-      setValue: value => (element[key] = value),
-      cb: t => start + lerp * t
+      setValue: (value) => (element[key] = value),
+      cb: (t) => start + lerp * t,
     });
   }
 
@@ -79,7 +80,8 @@ export const regexs = [
   [/^(opacity|alpha)/, opacity],
   [/^(clip|clipPath)/, clipPath],
   [/^(draw)/, draw],
-  [/^(filter)/, filter]
+  [/^(filter)/, filter],
+  [/^(points)/, points],
 ];
 
 /**
