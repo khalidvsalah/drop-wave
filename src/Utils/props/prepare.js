@@ -10,6 +10,7 @@ import filter from './components/properties/filter';
 // svg
 import draw from './components/svg/draw';
 import points from './components/svg/points';
+import path from './components/svg/path';
 
 // attribute
 import attribute from './components/properties/attribute';
@@ -49,12 +50,17 @@ function obj(element, ps) {
   const results = [];
 
   for (const key in ps) {
-    const [start, end] = ps[key];
-    const lerp = end - start;
-    results.push({
-      setValue: (value) => (element[key] = value),
-      cb: (t) => start + lerp * t,
-    });
+    const end = ps[key];
+    if (typeof end === 'object') {
+      obj(element[key], end).forEach((r) => results.push(r));
+    } else {
+      const start = element[key];
+      const lerp = end - start;
+      results.push({
+        setValue: (value) => (element[key] = value),
+        cb: (t) => start + lerp * t,
+      });
+    }
   }
 
   return results;
@@ -68,7 +74,6 @@ function elementType(element) {
   if (element instanceof Node) {
     return { obj: false, element };
   }
-
   if (typeof element === 'string') {
     return { obj: false, element: query.el(element) };
   }
@@ -79,9 +84,10 @@ export const regexs = [
   [/^(transform|move)/, transform],
   [/^(opacity|alpha)/, opacity],
   [/^(clip|clipPath)/, clipPath],
-  [/^(draw)/, draw],
   [/^(filter)/, filter],
+  [/^(draw)/, draw],
   [/^(points)/, points],
+  [/^(path)/, path],
 ];
 
 /**
@@ -106,7 +112,6 @@ export class Prepare {
    */
   constructor(element) {
     this.obj = elementType(element);
-    this.target = this.obj.element;
   }
 
   /**

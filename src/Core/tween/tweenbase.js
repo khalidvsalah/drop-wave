@@ -76,7 +76,7 @@ export default class TweenBase {
       }
       this.late = new Late({
         cb: this.execute.bind(this, next),
-        d: next.late || 0
+        d: next.late || 0,
       });
       this.late.play();
     }
@@ -95,7 +95,7 @@ export default class TweenBase {
       space: options.space,
       ease: options.ease,
       props: options.props,
-      mode
+      mode,
     });
 
     this.check();
