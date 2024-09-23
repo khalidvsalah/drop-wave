@@ -3,7 +3,6 @@ import { clamp } from '../../Math/math';
 
 import { Prepare } from '../../Utils/props/prepare';
 import { raf } from '../../Utils/raf/raf';
-import { toString } from '../../Utils/methods/object';
 
 import { Late } from '../../Utils/late/late';
 
@@ -11,7 +10,6 @@ export default class TweenBase {
   constructor(element, options) {
     this.prepare = new Prepare(element);
 
-    this.props = [];
     this.queue = [];
     this.tweened = [];
 
@@ -47,8 +45,6 @@ export default class TweenBase {
       this.onStart = null;
     }
 
-    this.props = next.props;
-
     if (next.props) {
       this.dur = next.dur || 0.5;
       this.easing = next.ease || 'l';
@@ -67,19 +63,11 @@ export default class TweenBase {
 
   check() {
     const next = this.queue[this.calls];
-
-    if (toString(this.props) === toString(next.props)) {
-      next.props = undefined;
-    } else {
-      if (this.late) {
-        this.late.destroy();
-      }
-      this.late = new Late({
-        cb: this.execute.bind(this, next),
-        d: next.late || 0,
-      });
-      this.late.play();
-    }
+    this.late = new Late({
+      cb: this.execute.bind(this, next),
+      d: next.late || 0,
+    });
+    this.late.play();
   }
 
   push(mode, options = {}) {
@@ -90,8 +78,8 @@ export default class TweenBase {
     this.onComplete = options.onComplete;
 
     this.queue.push({
-      dur: options.dur, // raf
-      late: options.late, // late
+      dur: options.dur,
+      late: options.late,
       space: options.space,
       ease: options.ease,
       props: options.props,
