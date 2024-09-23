@@ -3,5 +3,8 @@ export const win = {
     return { w: window.innerWidth, h: window.innerHeight };
   },
   html: document,
-  body: document.body
+  window,
+  title: document.title,
+  head: document.head,
+  body: document.body,
 };

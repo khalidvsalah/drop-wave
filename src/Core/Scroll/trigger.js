@@ -4,7 +4,7 @@ import { offset } from '../../Utils/methods/coordinate';
 import { setProp } from '../../Utils/methods/css';
 
 import { tween } from '../tween/tween';
-import { map } from '../../Math/math';
+import { normalize } from '../../Math/math';
 
 /**
  * This function handles the (start\end) of
@@ -51,7 +51,7 @@ export class Trigger {
     this.prepare = [];
 
     if (target.length) {
-      target.forEach(element => {
+      target.forEach((element) => {
         this.prepare.push(new Prepare(element));
       });
     } else {
@@ -67,7 +67,7 @@ export class Trigger {
       this.end = options.end;
 
       if (this.animate) {
-        this.preparies = this.prepare.map(element => {
+        this.preparies = this.prepare.map((element) => {
           return element.init(this.animate)[0];
         });
       }
@@ -79,7 +79,7 @@ export class Trigger {
   }
 
   _scroll(elapsed) {
-    this.preparies.forEach(prepare => {
+    this.preparies.forEach((prepare) => {
       prepare.setValue(prepare.cb(elapsed));
     });
   }
@@ -112,7 +112,7 @@ export class Trigger {
 
   _update({ lerp }) {
     this.coord = lerp;
-    const elapsed = map(this.startPoint, this.endPoint, this.coord);
+    const elapsed = normalize(this.startPoint, this.endPoint, this.coord);
     if (this.pin) {
       this._pin();
     }
