@@ -71,13 +71,11 @@ function obj(element, ps) {
  * @returns {{obj:boolean, element:object}}
  */
 function elementType(element) {
-  if (element instanceof Node) {
-    return { obj: false, element };
-  }
+  if (element instanceof Node) return { isNode: true, element };
   if (typeof element === 'string') {
-    return { obj: false, element: query.el(element) };
+    return { isNode: true, element: query.el(element) };
   }
-  return { obj: true, element };
+  return { isNode: false, element };
 }
 
 export const regexs = [
@@ -106,22 +104,18 @@ export function match(name) {
   if (!found) return attribute;
 }
 
-export class Prepare {
-  /**
-   * @param {HTMLElement} element - targeted element.
-   */
-  constructor(element) {
-    this.obj = elementType(element);
-  }
+/**
+ * @param {HTMLElement} element - targeted element.
+ */
+export function prepare(target) {
+  const targeted = elementType(target);
 
   /**
    * @param {object} ps - properties.
    * @returns {Array} array of tweened functions.
    */
-  init(ps) {
-    if (this.obj.obj) {
-      return obj(this.obj.element, ps);
-    }
-    return dom(this.obj.element, ps);
-  }
+  return (ps) => {
+    if (targeted.isNode) return dom(targeted.element, ps);
+    else obj(targeted.element, ps);
+  };
 }

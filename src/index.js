@@ -10,7 +10,7 @@ export { query } from './Utils/methods/query';
 export { Choke } from './Utils/methods/choke';
 
 export { states } from './Utils/states/states';
-export { Prepare } from './Utils/props/prepare';
+export { prepare } from './Utils/props/prepare';
 export { raf } from './Utils/raf/raf';
 export { Late } from './Utils/late/late';
 

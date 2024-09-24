@@ -1,14 +1,14 @@
 import { ease } from '../../Math/ease';
 import { clamp } from '../../Math/math';
 
-import { Prepare } from '../../Utils/props/prepare';
+import { prepare } from '../../Utils/props/prepare';
 import { raf } from '../../Utils/raf/raf';
 
 import { Late } from '../../Utils/late/late';
 
 export default class TweenBase {
   constructor(element, options) {
-    this.prepare = new Prepare(element);
+    this.prepare = prepare(element);
 
     this.queue = [];
     this.tweened = [];
@@ -49,7 +49,7 @@ export default class TweenBase {
       this.dur = next.dur || 0.5;
       this.easing = next.ease || 'l';
 
-      this.tweened = this.prepare.init(next.props);
+      this.tweened = this.prepare(next.props);
       this.progress = 0;
     } else {
       this.progress = 1 - this.elapsed;
