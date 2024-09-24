@@ -1,13 +1,12 @@
 import { states } from '../../Utils/states/states';
-import { Choke } from '../../Utils/methods/choke';
-import { query } from '../../Utils/methods/query';
+
 import { win } from '../../Utils/methods/window';
 import { setProp } from '../../Utils/methods/css';
 import { bounds } from '../../Utils/methods/coordinate';
-import { raf } from '../../Utils/raf/raf';
 import { clamp, damp } from '../../Math/math';
 
-import { Trigger } from './trigger';
+import Events from './events.js';
+import Trigger from './trigger';
 
 /**
  * Scroll options
@@ -24,19 +23,6 @@ import { Trigger } from './trigger';
  * }} SCROLL_OPTIONS
  */
 
-/**
- * Trigger options
- * @typedef {{
- * animate:object,
- * tween:object,
- * scroll: boolean,
- * start:string|number,
- * end:string|number,
- * pin:{start:string|number, end:start|number},
- * onUpdate:Function
- * }} TRIGGER_OPTIONS
- */
-
 const isYDir = (element, value, isYaxis) => {
   if (isYaxis) {
     setProp.transform(element, `translate3d(0, ${value}px, 0)`);
@@ -45,7 +31,7 @@ const isYDir = (element, value, isYaxis) => {
   }
 };
 const inRange = (start, end, coords, kid, isYaxis, l) => {
-  if (start <= coords.size && end >= coords.axis) {
+  if (start <= coords.dimensions && end >= coords.padding) {
     isYDir(kid, -l, isYaxis);
     coords.out = false;
   } else {
@@ -56,160 +42,22 @@ const inRange = (start, end, coords, kid, isYaxis, l) => {
   }
 };
 
-class Events {
-  init({ drag, key, wheel }) {
-    if (Object.is(this.container, window)) {
-      this.global = true;
-
-      window.history.scrollRestoration = 'manual';
-      window.onpointerdown = states.create('pointerdown').notify;
-      window.onpointermove = states.create('pointermove').notify;
-      window.onkeydown = states.create('keydown').notify;
-      window.onwheel = states.create('wheel').notify;
-
-      if (drag) {
-        this.ipointerdown = states.subscribe(
-          'pointerdown',
-          this._down.bind(this)
-        );
-        this.ipointermove = states.subscribe(
-          'pointermove',
-          this._move.bind(this)
-        );
-      }
-      if (key) {
-        this.ikey = states.subscribe('keydown', this._onkey.bind(this));
-      }
-      if (wheel) {
-        this.iwheel = states.subscribe('wheel', this._wheel.bind(this));
-      }
-    } else {
-      if (wheel) {
-        this.target.onwheel = this._wheel.bind(this);
-      }
-      if (drag) {
-        this.target.onpointerdown = this._down.bind(this);
-        this.target.onpointermove = this._move.bind(this);
-      }
-    }
-
-    raf.push({ cb: states.create('raf').notify });
-    window.onresize = states.create('resize').notify;
-    window.onpointerup = states.create('pointerup').notify;
-
-    this.ipointerup = states.subscribe('pointerup', this._up.bind(this));
-
-    this.overlay = query.node('div');
-    win.body.appendChild(this.overlay);
-
-    this.overlay.id = 'overlay';
-    this.overlay.style.cssText = `
-      position: fixed; z-index: 999;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      pointer-events: none;
-    `;
-
-    this.choke = new Choke({
-      d: 0.3,
-      cb: () => {
-        setProp.pointer(this.overlay, 'none');
-      }
-    });
-
-    this.dist = 0;
-    this.scroll = { value: 0, lerp: 0, dir: 1 };
-  }
-
-  _wheel(e) {
-    const multip = e.deltaMode === 1 ? 0.83 : 0.55;
-    const offset = e.wheelDeltaY * multip;
-
-    this.scroll.value -= offset;
-    this.scroll.dir = Math.sign(offset);
-  }
-
-  _onkey(e) {
-    if (e.key === 'Tab') e.preventDefault();
-    else {
-      if (e.keyCode === 40 || e.keyCode === 38) {
-        let offset = 0;
-        if (e.keyCode === 40) offset = -66.6;
-        else if (e.keyCode === 38) offset = 66.6;
-
-        this.scroll.value -= offset;
-      }
-    }
-  }
-
-  _down(e) {
-    this.mousedown = true;
-    this.dist = e[this.vertical];
-  }
-
-  _move(e) {
-    if (this.mousedown) {
-      const offset = e[this.vertical] - this.dist;
-      this.scroll.value -= offset;
-      this.dist = e[this.vertical];
-      this.scroll.dir = Math.sign(offset);
-
-      if (this.global) setProp.pointer(this.overlay, 'all');
-    }
-  }
-
-  _up() {
-    this.mousedown = false;
-    this.choke.run();
-  }
-
-  _destroy() {
-    this.iupdate.remove();
-    this.iresize.remove();
-
-    this.ipointerup.remove();
-    this.states.remove();
-
-    if (this.global) {
-      if (this.ipointerdown) {
-        this.ipointerdown.remove();
-        this.ipointermove.remove();
-      }
-
-      if (this.ikey) this.ikey.remove();
-      if (this.iwheel) this.iwheel.remove();
-    } else {
-      this.target.onwheel = null;
-      this.target.onpointerdown = null;
-      this.target.onpointermove = null;
-    }
-  }
-}
-
 export class scroll extends Events {
   /**
    * @param {HTMLElement} target
    * @param {SCROLL_OPTIONS} options
    */
   constructor(target, options = {}) {
-    if (!target) {
-      if (typeof target === 'string') {
-        throw new Error('Pass <HTMLElement>');
-      } else if (typeof target === 'undefined') {
-        throw new Error('Pass <HTMLElement>');
-      }
-    }
-
     super();
 
     const {
-      name = Symbol('symbol'),
+      name = Symbol('virtual'),
       container = window,
       dir = 'y',
       drag = true,
       wheel = true,
       key = true,
-      speed = 0.09
+      speed = 0.09,
     } = options;
 
     this.target = target;
@@ -218,7 +66,7 @@ export class scroll extends Events {
 
     this.dir = dir === 'x' ? 'x' : 'y';
     this.isYaxis = this.dir === 'y';
-    this.vertical = this.isYaxis ? 'pageY' : 'pageX';
+    this.axis = this.isYaxis ? 'pageY' : 'pageX';
 
     this.init({ drag, wheel, key });
 
@@ -232,21 +80,12 @@ export class scroll extends Events {
   }
 
   /**
-   * @param {HTMLElement} target - targeted element
-   * @param {TRIGGER_OPTIONS} options - properties
+   * @param {HTMLElement} target
+   * @param {import('./trigger.js').TRIGGER_OPTIONS} options
    */
   add(target, options = {}) {
     options.channel = this.states.name;
     options.dir = this.dir;
-
-    if (!target) {
-      if (typeof target === 'string') {
-        throw new Error('Pass <HTMLElement>');
-      } else if (typeof target === 'undefined') {
-        throw new Error('Pass <HTMLElement>');
-      }
-    }
-
     return new Trigger(target, options);
   }
 
@@ -272,7 +111,7 @@ export class scroll extends Events {
           const offsetS =
             this.scroll.lerp - (this.height - this.screen) - this.screen;
           const offsetE = offsetS + this.screen;
-          if (offsetS <= coords.size && offsetE >= coords.axis) {
+          if (offsetS <= coords.dimensions && offsetE >= coords.padding) {
             isYDir(kid, this.screen - offsetE, this.isYaxis);
           } else {
             inRange(start, end, coords, kid, this.isYaxis, this.scroll.lerp);
@@ -292,15 +131,17 @@ export class scroll extends Events {
 
     if (this.infinite) {
       const childs = [...this.target.children];
-      this.heights = childs.map(child => {
-        const axis = this.isYaxis ? child.offsetTop : child.offsetLeft;
-        const size = this.isYaxis ? child.offsetHeight : child.offsetWidth;
-        return [child, { axis, size: axis + size }];
+      this.heights = childs.map((child) => {
+        const padding = this.isYaxis ? child.offsetTop : child.offsetLeft;
+        const dimensions = this.isYaxis
+          ? child.offsetHeight
+          : child.offsetWidth;
+        return [child, { padding, dimensions: padding + dimensions }];
       });
     }
 
-    const size = this.isYaxis ? 'h' : 'w';
-    this.screen = win.screen[size];
-    this.height = this.coords[size] - (this.infinite ? 0 : this.screen);
+    const dimensions = this.isYaxis ? 'h' : 'w';
+    this.screen = win.screen[dimensions];
+    this.height = this.coords[dimensions] - (this.infinite ? 0 : this.screen);
   }
 }

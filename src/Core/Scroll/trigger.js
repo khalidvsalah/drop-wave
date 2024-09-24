@@ -1,10 +1,22 @@
 import { states } from '../../Utils/states/states';
-import { Prepare } from '../../Utils/props/prepare';
+import { prepare } from '../../Utils/props/prepare';
 import { offset } from '../../Utils/methods/coordinate';
 import { setProp } from '../../Utils/methods/css';
-
 import { tween } from '../tween/tween';
-import { normalize } from '../../Math/math';
+import { clamp, normalize } from '../../Math/math';
+
+/**
+ * Trigger options
+ * @typedef {{
+ * animate:object,
+ * tween:object,
+ * scroll: boolean,
+ * start:string|number,
+ * end:string|number,
+ * pin:{start:string|number, end:start|number},
+ * onUpdate:Function
+ * }} TRIGGER_OPTIONS
+ */
 
 /**
  * This function handles the (start\end) of
@@ -20,26 +32,25 @@ const match = (str = '0', coord, size) => {
   if (typeof str === 'number') {
     return str;
   }
-
   const match = /^([+|-]\d+)(%|px)?/.exec(str);
-
   if (match) {
     const percentage = match[2] === '%';
     return coord + (percentage ? (+match[1] * size) / 100 : +match[1]);
-  } else {
-    return +str;
-  }
+  } else return coord;
 };
 
-export class Trigger {
+export default class Trigger {
+  /**
+   * @param {HTMLElement} target
+   * @param {TRIGGER_OPTIONS} options
+   */
   constructor(target, options) {
     this.target = target;
     this.options = options;
 
     this.pin = options.pin;
-    this.scroll = options.scroll;
     this.animate = options.animate;
-    this.tween = this.scroll ? false : options.tween;
+    this.tween = options.tween;
     this.onUpdate = options.onUpdate;
 
     this.dir = options.dir;
@@ -48,46 +59,27 @@ export class Trigger {
     this.dirEnd = this.dir === 'y' ? 'yE' : 'xE';
 
     this.pined = false;
-    this.prepare = [];
 
-    if (target.length) {
-      target.forEach((element) => {
-        this.prepare.push(new Prepare(element));
-      });
-    } else {
-      this.prepare.push(new Prepare(target));
-    }
-
-    this.init(options);
+    this.init();
   }
 
-  init(options) {
-    if (this.tween || this.scroll) {
-      this.start = options.start;
-      this.end = options.end;
-
-      if (this.animate) {
-        this.preparies = this.prepare.map((element) => {
-          return element.init(this.animate)[0];
-        });
-      }
-    }
+  init() {
+    if (this.animate) this.lerps = prepare(this.target)(this.animate);
 
     this._resize();
-    this.iupdate = states.subscribe(options.channel, this._update.bind(this));
+    this.iupdate = states.subscribe(
+      this.options.channel,
+      this._update.bind(this)
+    );
     this.iresize = states.subscribe('resize', this._resize.bind(this));
   }
 
   _scroll(elapsed) {
-    this.preparies.forEach((prepare) => {
-      prepare.setValue(prepare.cb(elapsed));
-    });
+    this.lerps.map(({ cb, setValue }) => setValue(cb(elapsed)));
   }
 
-  _fire() {
-    if (this.tween) {
-      tween(this.target, this.tween);
-    }
+  _tween() {
+    if (this.tween) tween(this.target, this.tween);
     this._destroy();
   }
 
@@ -112,29 +104,33 @@ export class Trigger {
 
   _update({ lerp }) {
     this.coord = lerp;
-    const elapsed = normalize(this.startPoint, this.endPoint, this.coord);
-    if (this.pin) {
-      this._pin();
-    }
-    if (this.scroll) {
-      this._scroll(elapsed);
-    }
-    if (this.tween) {
-      if (this.startPoint <= this.coord) {
-        this._fire();
-      }
-    }
+    const elapsed = clamp(
+      0,
+      1,
+      normalize(this.startPoint, this.endPoint, this.coord)
+    );
+
+    if (this.pin) this._pin();
+    if (this.animate) this._scroll(elapsed);
+    if (this.tween) if (this.startPoint <= this.coord) this._tween();
     if (this.onUpdate) this.onUpdate(elapsed, this.target);
   }
 
   _resize() {
     const coords = offset(this.target);
 
-    if (this.tween || this.scroll) {
-      this.startPoint = match(this.start, coords[this.dir], coords[this.size]);
-      this.endPoint = match(this.end, coords[this.dirEnd], coords[this.size]);
+    if (this.tween || this.animate) {
+      this.startPoint = match(
+        this.options.start,
+        coords[this.dir],
+        coords[this.size]
+      );
+      this.endPoint = match(
+        this.options.end,
+        coords[this.dirEnd],
+        coords[this.size]
+      );
     }
-
     if (this.pin) {
       this.pinStart = match(
         this.pin.start,
