@@ -3,11 +3,15 @@
  * @param {object} info - {computed, element, parent}.
  * @return {Function}
  */
-const draw = (p, { computed }) => {
-  const length = parseFloat(computed.strokeDashoffset);
+const draw = (p, { element, computed }) => {
+  const start = parseFloat(computed.strokeDashoffset);
+  const length = element.getTotalLength();
+  element.style.strokeDasharray = length;
+
+  const ofrom = Array.isArray(p);
   const o = {
-    start: length,
-    end: (1 - p) * length,
+    start: ofrom ? (1 - p[0]) * length : start,
+    end: (1 - (ofrom ? p[1] : p)) * length,
   };
   o.lerp = o.end - o.start;
   return (t) => `${o.start + o.lerp * t}`;
