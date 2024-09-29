@@ -1,43 +1,35 @@
 function matrix2d(match) {
-  // Extract the 6 values from the matrix string
   const values = match[1].split(',').map(Number);
 
-  // Extract individual matrix components
   const [a, b, c, d, e, f] = values;
 
-  // Calculate translation
   const translate = {
     x: e,
-    y: f
+    y: f,
   };
 
-  // Calculate rotation (in radians, then converted to degrees)
   const rotation = Math.atan2(b, a);
   const rotate = {
     x: 0,
     y: 0,
-    z: rotation * (180 / Math.PI)
+    z: rotation * (180 / Math.PI),
   };
 
-  // Calculate scale
   const scale = {
     x: Math.sign(a) * Math.sqrt(a * a + b * b),
-    y: Math.sign(d) * Math.sqrt(c * c + d * d)
+    y: Math.sign(d) * Math.sqrt(c * c + d * d),
   };
 
-  // Calculate skew
-  // The skew is the difference between the rotation angles of the two axes
   const skew = Math.atan2(a * c + b * d, a * d - b * c) - rotation;
 
   return {
     translate,
     rotate,
     scale,
-    skew: skew * (180 / Math.PI) // Convert skew to degrees
+    skew: skew * (180 / Math.PI),
   };
 }
 function matrix3d(match) {
-  // Extract the 16 values from the matrix3d string
   const values = match[1].split(',').map(Number);
   const [
     m11,
@@ -55,27 +47,27 @@ function matrix3d(match) {
     m41,
     m42,
     m43,
-    m44
+    m44,
   ] = values;
 
   // Extract translation
   const translate = {
     x: m41,
     y: m42,
-    z: m43
+    z: m43,
   };
 
   // Extract scale and rotation
   const scale = {
     x: Math.sqrt(m11 * m11 + m12 * m12 + m13 * m13),
     y: Math.sqrt(m21 * m21 + m22 * m22 + m23 * m23),
-    z: Math.sqrt(m31 * m31 + m32 * m32 + m33 * m33)
+    z: Math.sqrt(m31 * m31 + m32 * m32 + m33 * m33),
   };
 
   const rotation = [
     [m11 / scale.x, m12 / scale.x, m13 / scale.x],
     [m21 / scale.y, m22 / scale.y, m23 / scale.y],
-    [m31 / scale.z, m32 / scale.z, m33 / scale.z]
+    [m31 / scale.z, m32 / scale.z, m33 / scale.z],
   ];
 
   // Convert rotation matrix to Euler angles
@@ -98,7 +90,7 @@ function matrix3d(match) {
   const rotate = {
     x: x * (180 / Math.PI),
     y: y * (180 / Math.PI),
-    z: z * (180 / Math.PI)
+    z: z * (180 / Math.PI),
   };
 
   // Extract skew
@@ -106,7 +98,7 @@ function matrix3d(match) {
   const skew = {
     x: Math.atan2(rotation[1][0], rotation[0][0]) * (180 / Math.PI),
     y: Math.atan2(rotation[2][0], rotation[0][0]) * (180 / Math.PI),
-    z: Math.atan2(rotation[2][1], rotation[1][1]) * (180 / Math.PI)
+    z: Math.atan2(rotation[2][1], rotation[1][1]) * (180 / Math.PI),
   };
 
   return { translate, rotate, scale, skew };
@@ -114,8 +106,6 @@ function matrix3d(match) {
 
 const translate = (start, end, size) => {
   const split = /([+|-]?\d+)(%|px)?/.exec(end) || end;
-  size = parseFloat(size);
-
   const o = {
     start: end
       ? split[2] === 'px' || !split[2]
@@ -123,10 +113,10 @@ const translate = (start, end, size) => {
         : (start / size) * 100
       : start,
     end: end ? +split[1] : start,
-    unit: end ? split[2] || 'px' : 'px'
+    unit: end ? split[2] || 'px' : 'px',
   };
   o.lerp = o.end - o.start;
-  return t => `${o.start + o.lerp * t}${o.unit}`;
+  return (t) => `${o.start + o.lerp * t}${o.unit}`;
 };
 const _translate = (start, end, [width, height]) => {
   const xfrom = Array.isArray(end[0]);
@@ -146,15 +136,12 @@ const _translate = (start, end, [width, height]) => {
     yV = translate(start[1], end[1], height);
   }
 
-  return t => `translate3d(${xV(t)}, ${yV(t)}, 0)`;
+  return (t) => `translate3d(${xV(t)}, ${yV(t)}, 0)`;
 };
 const scale = (start, end) => {
-  const o = {
-    start,
-    end: typeof end === 'number' ? end : start
-  };
+  const o = { start, end: end != null ? end : start };
   o.lerp = o.end - o.start;
-  return t => `${start + o.lerp * t}`;
+  return (t) => `${start + o.lerp * t}`;
 };
 const _scale = (start, end) => {
   const xfrom = Array.isArray(end[0]);
@@ -173,7 +160,8 @@ const _scale = (start, end) => {
   } else {
     syV = scale(start[1], end[1]);
   }
-  return t => `scale(${sxV(t)}, ${syV(t)})`;
+
+  return (t) => `scale(${sxV(t)}, ${syV(t)})`;
 };
 const _rotate = (start, end) => {
   const xfrom = Array.isArray(end[0]);
@@ -200,7 +188,7 @@ const _rotate = (start, end) => {
     rzV = scale(start[2], end[2]);
   }
 
-  return t =>
+  return (t) =>
     `rotate(${rzV(t)}deg) rotateX(${rxV(t)}deg) rotateY(${ryV(t)}deg)`;
 };
 
@@ -209,14 +197,14 @@ const _rotate = (start, end) => {
  * @param {object} info - {computed, element, parent}.
  * @return {Function}
  */
-const transform = (p, { computed, parent }) => {
+const transform = (p, { element, computed, parent }) => {
   let startPoint = computed.transform;
 
   let width = computed.width;
   let height = computed.height;
 
-  width = width === 'auto' ? parent.clientWidth : width;
-  height = height === 'auto' ? parent.clientHeight : height;
+  width = width === 'auto' ? parent.clientWidth : element.clientWidth;
+  height = height === 'auto' ? parent.clientHeight : element.clientHeight;
 
   if (startPoint !== 'none') {
     const isMatrix3d = /3d/.exec(startPoint);
@@ -231,43 +219,57 @@ const transform = (p, { computed, parent }) => {
     startPoint = {
       translate: { x: 0, y: 0 },
       scale: { x: 1, y: 1 },
-      rotate: { x: 0, y: 0, z: 0 }
+      rotate: { x: 0, y: 0, z: 0 },
     };
   }
 
-  if (typeof p.scale === 'number') [p.scaleX, p.scaleY] = [p.scale, p.scale];
-  if (typeof p.rotate === 'number') p.rotateZ = p.rotate;
+  if (p.scale != null) [p.scaleX, p.scaleY] = [p.scale, p.scale];
+  if (p.rotate != null) p.rotateZ = p.rotate;
 
   const arr = [];
 
-  if (p.x || p.y || startPoint.translate.x || startPoint.translate.y) {
-    const start = startPoint
-      ? [startPoint.translate.x, startPoint.translate.y]
-      : [0, 0];
-    arr.push(_translate(start, [p.x, p.y], [width, height]));
-  }
-  if (p.scaleX || p.scaleY || startPoint.scale.x || startPoint.scale.y) {
-    const start = startPoint
-      ? [startPoint.scale.x, startPoint.scale.y]
-      : [1, 1];
-    arr.push(_scale(start, [p.scaleX, p.scaleY]));
+  if (
+    p.x != null ||
+    p.y != null ||
+    startPoint.translate.x ||
+    startPoint.translate.y
+  ) {
+    arr.push(
+      _translate(
+        [startPoint.translate.x, startPoint.translate.y],
+        [p.x, p.y],
+        [width, height]
+      )
+    );
   }
   if (
-    p.rotateX ||
-    p.rotateY ||
-    p.rotateZ ||
+    p.scaleX != null ||
+    p.scaleY != null ||
+    startPoint.scale.x ||
+    startPoint.scale.y
+  ) {
+    arr.push(
+      _scale([startPoint.scale.x, startPoint.scale.y], [p.scaleX, p.scaleY])
+    );
+  }
+  if (
+    p.rotateX != null ||
+    p.rotateY != null ||
+    p.rotateZ != null ||
     startPoint.rotate.x ||
     startPoint.rotate.y ||
     startPoint.rotate.z
   ) {
-    const start = startPoint
-      ? [startPoint.rotate.x, startPoint.rotate.y, startPoint.rotate.z]
-      : [0, 0, 0];
-    arr.push(_rotate(start, [p.rotateX, p.rotateY, p.rotateZ]));
+    arr.push(
+      _rotate(
+        [startPoint.rotate.x, startPoint.rotate.y, startPoint.rotate.z],
+        [p.rotateX, p.rotateY, p.rotateZ]
+      )
+    );
   }
 
-  return t => arr.map(a => a(t)).join(' ');
+  return (t) => arr.map((a) => a(t)).join(' ');
 };
 
-const setValue = element => value => (element.style.transform = value);
+const setValue = (element) => (value) => (element.style.transform = value);
 export default { callback: transform, setValue };

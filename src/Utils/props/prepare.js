@@ -116,6 +116,6 @@ export function prepare(target) {
    */
   return (ps) => {
     if (targeted.isNode) return dom(targeted.element, ps);
-    else obj(targeted.element, ps);
+    else return obj(targeted.element, ps);
   };
 }
