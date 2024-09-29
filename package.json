@@ -1,12 +1,12 @@
 {
-  "name": "rafraf",
+  "name": "drop-wave",
   "version": "1.0.2",
   "description": "A JavaScript Animation Library",
-  "repository": "khalidvsalah/rafraf.git",
+  "repository": "khalidvsalah/drop-wave.git",
   "author": "Khalid Salah <khalidvsalah@gmail.com> (https://www.khalidsalah.com)",
   "license": "MIT",
   "main": "src/index.js",
-  "module": "dist/rafraf.esm.js",
+  "module": "dist/index.esm.js",
   "devDependencies": {
     "@babel/core": "^7.23.9",
     "@babel/preset-env": "^7.24.8",

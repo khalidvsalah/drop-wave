@@ -6,9 +6,9 @@ const config = {
   changes: {
     js: {
       src: 'index.js',
-      dest: 'rafraf.esm.js'
-    }
-  }
+      dest: 'index.esm.js',
+    },
+  },
 };
 
 modifyPath(config);
