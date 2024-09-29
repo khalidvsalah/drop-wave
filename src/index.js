@@ -1,4 +1,4 @@
-export { ease } from './Math/ease';
+export { easings, ease } from './Math/ease';
 export { clamp, lerp, normalize, map, round, dist, damp } from './Math/math';
 
 export { has, toString } from './Utils/methods/object';
