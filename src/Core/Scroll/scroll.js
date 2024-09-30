@@ -75,8 +75,6 @@ export class scroll extends Events {
     this.infinite = options.infinite;
 
     this._resize();
-    this.iupdate = states.subscribe('raf', this._update.bind(this));
-    this.iresize = states.subscribe('resize', this._resize.bind(this));
   }
 
   /**

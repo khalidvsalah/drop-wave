@@ -23,10 +23,14 @@ export default class Events {
       this.global = true;
 
       window.history.scrollRestoration = 'manual';
-      window.onpointerdown = states.create('pointerdown').notify;
-      window.onpointermove = states.create('pointermove').notify;
-      window.onkeydown = states.create('keydown').notify;
-      window.onwheel = states.create('wheel').notify;
+      if (!states.check('pointerdown'))
+        window.onpointerdown = states.create('pointerdown').notify;
+      if (!states.check('pointermove'))
+        window.onpointermove = states.create('pointermove').notify;
+      if (!states.check('keydown'))
+        window.onkeydown = states.create('keydown').notify;
+      if (!states.check('wheel'))
+        window.onwheel = states.create('wheel').notify;
 
       if (drag) {
         this.ipointerdown = states.subscribe(
@@ -49,16 +53,14 @@ export default class Events {
       this.target.onpointermove = this._move.bind(this);
     }
 
-    if (!states.check('raf')) {
-      raf.push({ cb: states.create('raf').notify });
-    }
-    if (!states.check('resize')) {
+    if (!states.check('raf')) raf.push({ cb: states.create('raf').notify });
+    if (!states.check('resize'))
       window.onresize = states.create('resize').notify;
-    }
-    if (!states.check('pointerup')) {
+    if (!states.check('pointerup'))
       window.onpointerup = states.create('pointerup').notify;
-    }
 
+    this.iupdate = states.subscribe('raf', this._update.bind(this));
+    this.iresize = states.subscribe('resize', this._resize.bind(this));
     this.ipointerup = states.subscribe('pointerup', this._up.bind(this));
   }
 
