@@ -25,7 +25,7 @@ import { TWEEN_REVERSE } from '../timeline/timeline';
  * }} TWEEN_CONTROLLERS
  */
 
-export const kill = element => {
+export const kill = (element) => {
   element = typeof element === 'string' ? query.el(element) : element;
   if (storage.has(element)) {
     store(element).late.destroy();
@@ -54,11 +54,11 @@ export function tween(elements, options = {}) {
   const actions = {
     onStart: options.onStart,
     onUpdate: options.onUpdate,
-    onComplete: options.onComplete
+    onComplete: options.onComplete,
   };
 
   nodes.forEach((element, i) => {
-    let late = options.late;
+    let late = options.late || 0;
     late += options.space * i;
 
     if (i !== 0) {
@@ -86,24 +86,25 @@ export function tween(elements, options = {}) {
       arr.forEach((t, i) => {
         t.push('r', {
           late:
-            (symbol === TWEEN_REVERSE ? time : 0) + options.space * (length - i)
+            (symbol === TWEEN_REVERSE ? time : 0) +
+            options.space * (length - i),
         });
       });
     },
     play: () => {
-      arr.forEach(t => {
+      arr.forEach((t) => {
         t.push('p');
       });
     },
     pause: () => {
-      arr.forEach(t => {
+      arr.forEach((t) => {
         t.stop();
       });
     },
     kill: () => {
-      arr.forEach(t => {
+      arr.forEach((t) => {
         t.late.destroy();
       });
-    }
+    },
   };
 }
