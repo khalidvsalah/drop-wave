@@ -1,32 +1,15 @@
-/** @typedef {(element:HTMLElement, value:string)=> string} CSSProp */
+import { computed } from './coordinate';
+
 /**
  * @typedef {Object} CSS
- * @property {CSSProp} alpha
- * @property {CSSProp} display
- * @property {CSSProp} pointer
- * @property {CSSProp} position
- * @property {CSSProp} visible
- * @property {CSSProp} transform
+ * @property {(element:NodeList|Node, key:string, value:string)=>void} set
+ * @property {(element:NodeList|Node, key:string)=>string} get
  */
-
-/** @type {CSS} */
-export const setProp = {
-  alpha: (element, value) => {
-    element.style.opacity = value;
+export const CSS = {
+  set: (element, key, value) => {
+    element.style[key] = value;
   },
-  display: (element, value) => {
-    element.style.display = value;
+  get: (element, key) => {
+    return computed(element)[key];
   },
-  pointer: (element, value) => {
-    element.style.pointerEvents = value;
-  },
-  position: (element, value) => {
-    element.style.position = value;
-  },
-  visible: (element, value) => {
-    element.style.visibility = value;
-  },
-  transform: (element, value) => {
-    element.style.transform = value;
-  }
 };

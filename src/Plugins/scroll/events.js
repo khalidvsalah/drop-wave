@@ -1,6 +1,5 @@
 import { states } from '../../Utils/states/states';
 import { Choke } from '../../Utils/methods/choke';
-import { query } from '../../Utils/methods/query';
 import { raf } from '../../Utils/raf/raf';
 import { win } from '../../Utils/methods/window';
 import { CSS } from '../../Utils/methods/css';
@@ -76,10 +75,10 @@ export default class Events {
   }
 
   overlay() {
-    const isOverlay = query.el('[data-overlay]');
+    const isOverlay = document.querySelector('[data-overlay]');
 
     if (!isOverlay) {
-      this.overlay = query.node('div');
+      this.overlay = document.createElement('div');
       win.body.appendChild(this.overlay);
       this.overlay.setAttribute('data-overlay', '');
       this.overlay.style.cssText = `
