@@ -6,8 +6,8 @@ import { REVERSE } from '../timeline/timeline';
  * Tweening Starting Function
  *
  * @param {Array|Node|NodeList} elements
- * @param {import('../../types/tweenTypes').TWEEN_OPTIONS} options
- * @returns {import('../../types/tweenTypes').TWEEN_CONTROLLERS}.
+ * @param {import('../../types/tweenTypes.js').TWEEN_OPTIONS} options
+ * @returns {import('../../types/tweenTypes.js').TWEEN_CONTROLLERS}
  */
 export function tween(elements, options = {}) {
   const tweens = [];
