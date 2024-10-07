@@ -1,6 +1,6 @@
 import { raf } from '../raf/raf';
 
-export class Late {
+export class Delay {
   /**
    * @param {{d: number, o: object, cb: Function}}
    */
