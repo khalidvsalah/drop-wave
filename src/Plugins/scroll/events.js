@@ -3,7 +3,9 @@ import { Choke } from '../../Utils/methods/choke';
 import { query } from '../../Utils/methods/query';
 import { raf } from '../../Utils/raf/raf';
 import { win } from '../../Utils/methods/window';
-import { setProp } from '../../Utils/methods/css';
+import { CSS } from '../../Utils/methods/css';
+
+import { keyCodes } from './keycodes';
 
 export default class Events {
   constructor() {
@@ -11,7 +13,7 @@ export default class Events {
     this.choke = new Choke({
       d: 0.3,
       cb: () => {
-        setProp.pointer(this.overlay, 'none');
+        CSS.set(this.overlay, 'pointer-events', 'none');
       },
     });
     this.dist = 0;
@@ -23,14 +25,19 @@ export default class Events {
       this.global = true;
 
       window.history.scrollRestoration = 'manual';
-      if (!states.check('pointerdown'))
+
+      if (!states.check('pointerdown')) {
         window.onpointerdown = states.create('pointerdown').notify;
-      if (!states.check('pointermove'))
+      }
+      if (!states.check('pointermove')) {
         window.onpointermove = states.create('pointermove').notify;
-      if (!states.check('keydown'))
+      }
+      if (!states.check('keydown')) {
         window.onkeydown = states.create('keydown').notify;
-      if (!states.check('wheel'))
+      }
+      if (!states.check('wheel')) {
         window.onwheel = states.create('wheel').notify;
+      }
 
       if (drag) {
         this.ipointerdown = states.subscribe(
@@ -53,11 +60,15 @@ export default class Events {
       this.target.onpointermove = this._move.bind(this);
     }
 
-    if (!states.check('raf')) raf.push({ cb: states.create('raf').notify });
-    if (!states.check('resize'))
+    if (!states.check('raf')) {
+      raf.push({ cb: states.create('raf').notify });
+    }
+    if (!states.check('resize')) {
       window.onresize = states.create('resize').notify;
-    if (!states.check('pointerup'))
+    }
+    if (!states.check('pointerup')) {
       window.onpointerup = states.create('pointerup').notify;
+    }
 
     this.iupdate = states.subscribe('raf', this._update.bind(this));
     this.iresize = states.subscribe('resize', this._resize.bind(this));
@@ -89,14 +100,22 @@ export default class Events {
   }
 
   _onkey(e) {
-    if (e.key === 'Tab') e.preventDefault();
-    else {
-      if (e.keyCode === 40 || e.keyCode === 38) {
-        let offset = 0;
-        if (e.keyCode === 40) offset = -66.6;
-        else if (e.keyCode === 38) offset = 66.6;
+    if (e.key === 'Tab') {
+      e.preventDefault();
+    } else {
+      switch (e.keyCode) {
+        case keyCodes.LEFT:
+        case keyCodes.UP:
+          this.scroll.value -= 66.6;
+          break;
+        case keyCodes.RIGHT:
+        case keyCodes.DOWN:
+          this.scroll.value += 66.6;
+          break;
 
-        this.scroll.value -= offset;
+        case keyCodes.SPACE:
+          this.scroll.value -= win.screen.h * 0.75 * (e.shiftKey ? 1 : -1);
+          break;
       }
     }
   }
@@ -113,7 +132,7 @@ export default class Events {
       this.dist = e[this.axis];
       this.scroll.dir = Math.sign(offset);
 
-      if (this.global) setProp.pointer(this.overlay, 'all');
+      if (this.global) CSS.set(this.overlay, 'pointer-events', 'all');
     }
   }
 
