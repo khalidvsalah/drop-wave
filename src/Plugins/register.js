@@ -1,4 +1,4 @@
-import { regexs } from '../Utils/props/prepare';
+import { propertyMatchers } from '../Utils/props/propertyMatchers';
 
 /** * @typedef {{element:HTMLElement, computed:object, parent:HTMLTimeElement}} INFO */
 /** * @typedef {(obj:object, info:INFO, name:string)=> Function} CALLBACK */
@@ -9,14 +9,14 @@ import { regexs } from '../Utils/props/prepare';
  * @param {CALLBACK} callback
  */
 export const register = (name, cssName, callback) => {
-  if (regexs.some(([regex]) => name.match(regex))) {
+  if (propertyMatchers.some(([regex]) => name.match(regex))) {
     throw new Error(name + ' is already registered');
   } else {
     const regex = new RegExp(`^(${name})`);
     const component = {
       callback,
-      setValue: element => value => (element.style[cssName] = value)
+      setValue: (element) => (value) => (element.style[cssName] = value),
     };
-    regexs.push([regex, component]);
+    propertyMatchers.push([regex, component]);
   }
 };

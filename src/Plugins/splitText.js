@@ -1,4 +1,3 @@
-import { query } from '../Utils/methods/query';
 import { computed } from '../Utils/methods/coordinate';
 
 const space = ' ';
@@ -106,7 +105,7 @@ function wrap(text, type) {
 }
 
 function letters(word) {
-  const letters = word.split('').map(letter => wrap(letter, 'LETTER'));
+  const letters = word.split('').map((letter) => wrap(letter, 'LETTER'));
   return letters.join('');
 }
 function splitLetter(children) {
@@ -149,7 +148,7 @@ function splitLines(node, children, width, str, wrapper) {
     if (type === 'TEXT') checkWidth(node, value, str, width, arr, wrapper);
     else {
       const lines = splitLines(node, value, width, str, parent);
-      lines.map(line => arr.push(line));
+      lines.map((line) => arr.push(line));
     }
   }
   return arr;
@@ -182,12 +181,12 @@ export function splitText(element, options = {}) {
 
   if (lines.length) {
     element.innerHTML = '';
-    lines.map(line => (element.innerHTML += line));
+    lines.map((line) => (element.innerHTML += line));
   }
 
   return {
-    lines: query.sEls(element, '.tfx'),
-    words: query.sEls(element, '.word'),
-    letters: query.sEls(element, '.ltr')
+    lines: document.querySelectorAll(`${element.className} .tfx`),
+    words: document.querySelectorAll(`${element.className} .word`),
+    letters: document.querySelectorAll(`${element.className} .ltr`),
   };
 }

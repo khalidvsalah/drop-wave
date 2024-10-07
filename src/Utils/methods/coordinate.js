@@ -6,7 +6,7 @@
  * @param {HTMLElement} element
  * @returns {Coordinates}
  */
-const bounds = element => {
+const bounds = (element) => {
   const rect = element.getBoundingClientRect();
   return {
     w: rect.width,
@@ -14,7 +14,7 @@ const bounds = element => {
     x: rect.x,
     y: rect.y,
     xE: rect.right,
-    yE: rect.bottom
+    yE: rect.bottom,
   };
 };
 
@@ -22,7 +22,7 @@ const bounds = element => {
  * @param {HTMLElement} element
  * @returns {Coordinates}
  */
-const offset = element => {
+const offset = (element) => {
   const width = element.offsetWidth;
   const height = element.offsetHeight;
   const left = element.offsetLeft;
@@ -34,12 +34,12 @@ const offset = element => {
     x: left,
     xE: left + width,
     y: top,
-    yE: top + height
+    yE: top + height,
   };
 };
 
 /**
  * @param {HTMLElement} element
  */
-const computed = element => window.getComputedStyle(element);
+const computed = (element) => window.getComputedStyle(element);
 export { bounds, computed, offset };

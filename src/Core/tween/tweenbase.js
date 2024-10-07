@@ -55,7 +55,7 @@ export default class TweenBase {
 
     if (nextTween.props) {
       this.duration = nextTween.duration;
-      this.easingType = nextTween.ease;
+      this.ease = ease[nextTween.ease];
 
       this.properties = prepare(this.element, nextTween.props);
       this.progress = 0;
@@ -63,7 +63,6 @@ export default class TweenBase {
       this.progress = 1 - this.elapsed;
     }
 
-    this.ease = ease[this.easingType];
     if (this.properties.length) {
       this.animationId = raf.push({
         cb: this.update.bind(this),

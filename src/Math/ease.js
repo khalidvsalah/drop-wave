@@ -1,4 +1,4 @@
-export const easings = {
+const easings = {
   linear: (x) => x,
   i1: (x) => 1 - Math.cos((x * Math.PI) / 2),
   o1: (x) => Math.sin((x * Math.PI) / 2),
@@ -66,12 +66,8 @@ const iterate = (i, e, s, r) => {
   }
   return e;
 };
-const customEasing = (arr) => {
-  const mX1 = arr[0];
-  const mY1 = arr[1];
-  const mX2 = arr[2];
-  const mY2 = arr[3];
-
+const customEasing = (slope) => {
+  const [mX1, mY1, mX2, mY2] = slope.split(',');
   if (mX1 === mY1 && mX2 === mY2) return easings.linear;
   const o = new Float32Array(11);
   for (let i = 0; i < 11; ++i) {
@@ -103,13 +99,14 @@ const customEasing = (arr) => {
   };
 };
 
+easings.custom = customEasing;
 /**
  * @param {object|string} str
  * @returns {Function}
  */
 export const ease = new Proxy(easings, {
   get(target, prop) {
-    return target[prop] || customEasing(prop);
+    return prop.length > 3 ? customEasing(prop) : target[prop];
   },
   set(target, prop, value) {
     target[prop] = value;
