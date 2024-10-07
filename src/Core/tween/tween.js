@@ -1,54 +1,40 @@
 import TweenBase from './tweenbase';
 import { storage, store } from '../../Utils/states/storage';
-import { query } from '../../Utils/methods/query';
-import { TWEEN_REVERSE } from '../timeline/timeline';
+import { REVERSE } from '../timeline/timeline';
 
 /**
- * Tween options
- * @typedef {{
- * dur:number|undefined,
- * late:number|undefined,
- * space:number|undefined,
- * props:object|undefined,
- * onStart:Function|undefined,
- * onUpdate:Function|undefined
- * onComplete:Function|undefined
- * }} TWEEN_OPTIONS
- */
-/**
- * Tween Controllers
- * @typedef {{
- * play:Function,
- * reverse: Function,
- * pause:Function,
- * kill:Function
- * }} TWEEN_CONTROLLERS
- */
-
-export const kill = (element) => {
-  element = typeof element === 'string' ? query.el(element) : element;
-  if (storage.has(element)) {
-    store(element).late.destroy();
-  }
-};
-
-/**
- * @param {Array|HTMLElement|NodeList} elements
- * @param {TWEEN_OPTIONS} options
- * @returns {TWEEN_CONTROLLERS}.
+ * Tweening Starting Function
+ *
+ * @param {Array|Node|NodeList} elements
+ * @param {import('../../types/tweenTypes').TWEEN_OPTIONS} options
+ * @returns {import('../../types/tweenTypes').TWEEN_CONTROLLERS}.
  */
 export function tween(elements, options = {}) {
-  options.space = options.space || 0;
+  const tweens = [];
   let nodes;
 
-  elements = typeof elements === 'string' ? query.els(elements) : elements;
-  if (elements instanceof NodeList) nodes = elements;
-  else if (Array.isArray(elements)) {
-    if (typeof elements[0] === 'number') nodes = [elements];
-    else nodes = elements;
-  } else nodes = [elements];
+  options = {
+    space: 0,
+    delay: 0,
+    duration: 1,
+    ease: 'l',
+    ...options,
+  };
 
-  const arr = [];
+  if (typeof elements === 'string') {
+    nodes = [...document.querySelectorAll(elements)];
+  } else if (elements instanceof NodeList) {
+    nodes = [...elements];
+  } else if (Array.isArray(elements)) {
+    if (typeof elements[0] === 'number') {
+      nodes = elements;
+    } else {
+      nodes = elements;
+    }
+  } else {
+    nodes = [elements];
+  }
+
   const length = nodes.length - 1;
 
   const actions = {
@@ -57,9 +43,13 @@ export function tween(elements, options = {}) {
     onComplete: options.onComplete,
   };
 
-  nodes.forEach((element, i) => {
-    let late = options.late || 0;
-    late += options.space * i;
+  /**
+   * Create a new tween instance for each element.
+   * When reusing the same element, the same instance is reused.
+   */
+  nodes = nodes.map((element, i) => {
+    let delay = options.delay;
+    delay += options.space * i;
 
     if (i !== 0) {
       options.onStart = undefined;
@@ -72,38 +62,40 @@ export function tween(elements, options = {}) {
       options.onComplete = actions.onComplete;
     }
 
+    const newOptions = { ...options, delay };
     if (storage.has(element)) {
       const tweenbase = store(element);
-      tweenbase.push('p', { ...options, late });
-      arr.push(tweenbase);
+      tweenbase.push('p', newOptions);
+      tweens.push(tweenbase);
     } else {
-      arr.push(store(element, new TweenBase(element, { ...options, late })));
+      const tween = new TweenBase(element, newOptions);
+      tweens.push(store(element, tween));
     }
+
+    return newOptions;
   });
 
   return {
     reverse: (symbol, time) => {
-      arr.forEach((t, i) => {
-        t.push('r', {
-          late:
-            (symbol === TWEEN_REVERSE ? time : 0) +
-            options.space * (length - i),
-        });
+      tweens.forEach((tween, idx) => {
+        const isTimeline = symbol === REVERSE;
+        const delay = (isTimeline ? time : 0) + options.space * (length - idx);
+        tween.push('reverse', { delay });
       });
     },
     play: () => {
-      arr.forEach((t) => {
-        t.push('p');
+      tweens.forEach((tween, idx) => {
+        tween.push('play', nodes[idx]);
       });
     },
     pause: () => {
-      arr.forEach((t) => {
-        t.stop();
+      tweens.forEach((tween) => {
+        tween.stop();
       });
     },
     kill: () => {
-      arr.forEach((t) => {
-        t.late.destroy();
+      tweens.forEach((tween) => {
+        tween.delay.destroy();
       });
     },
   };
