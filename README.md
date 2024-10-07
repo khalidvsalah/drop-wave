@@ -22,6 +22,7 @@ const animation = tween(elements, {
   delay: 1,
   space: 0.1,
   ease: 'io2',
+  props: { opacity: 1 }
   onStart: (element) => console.log('Animation started for', element),
   onUpdate: (progress, element) =>
     console.log('Progress:', progress, 'for', element),
@@ -33,6 +34,33 @@ animation.play(); // Start the animation
 animation.pause(); // Pause the animation
 animation.reverse(); // Reverse the animation
 animation.kill(); // Stop and destroy the animation
+```
+
+```js
+import { tween } from 'drop-wave';
+
+// time in seconds
+// Define animation options
+// Create a tween animation
+
+const timeline = new Timeline({delay: 1,})
+const animation = timeline.to(elements, {
+  d uration: 2,
+    delay: 1,
+    space: 0.1,
+    ease: 'io2',
+    props: { opacity: 1 }
+}, "+1")
+.to(nextElements,{
+    duration: 2,
+    delay: 1,
+    space: 0.1,
+    ease: 'io2',
+    props: { opacity: 1 }
+}, "-.25");
+
+// Control the animation
+timeline.reverse(); // Reverse the animation
 ```
 
 ```js
@@ -78,5 +106,46 @@ virtualScroll.add(animatedElement, {
     ease: 'io5',
     props: { opacity: 1 },
   }, // Tween properties
+});
+```
+
+```js
+// Ease
+import { ease } from 'drop-wave';
+
+ease.linear; // easing function
+// (linear, i1,o1,io1, i2,o2,io2, i3,o3,io3, i4,o4,io4, i5,o5,io5, i6,o6,io6)
+// and a custom easing ease.custom(".9, .1, .1, .9");
+```
+
+```js
+// Properties
+const animation = tween(elements, {
+  duration: 2,
+  props: {
+      opacity: 1,
+      transform: {
+        x: "100px", // to
+        y: "100%", // to
+        scale: 1,
+        scaleX: [0, 1] // from - to
+        scaleY: [0, 1] // from - to
+        rotate: 1,
+        rotateX: 1,
+        rotateY: [45, 90],
+      },
+      filter: {
+          blur: "4px",
+          contrast: "10%",
+          gray: "50%"
+      },
+      clipPath: {
+          circle: "50 at 50 50",
+          polygon: "0 0, 0 100, 100 100, 100 0"
+      },
+      draw: [0, 1] // from - to,
+      path: element.getAttribute("d"),
+      points: element.getAttribute("points"),
+    },
 });
 ```
