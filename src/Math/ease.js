@@ -106,7 +106,7 @@ easings.custom = customEasing;
  */
 export const ease = new Proxy(easings, {
   get(target, prop) {
-    return prop.length > 3 ? customEasing(prop) : target[prop];
+    return target[prop] || customEasing(prop);
   },
   set(target, prop, value) {
     target[prop] = value;

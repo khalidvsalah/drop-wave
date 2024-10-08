@@ -17,7 +17,7 @@ export function tween(elements, options = {}) {
     space: 0,
     delay: 0,
     duration: 1,
-    ease: 'l',
+    ease: 'linear',
     ...options,
   };
 
