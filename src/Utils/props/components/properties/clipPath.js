@@ -57,27 +57,32 @@ function clipPath(p, { computed }) {
   let start = computed.clipPath;
 
   if (isCircle) {
-    if (start === 'none') {
-      start = '100 at 50 50';
-    } else {
-      start = /\((.*)\)/.exec(start)[1];
+    const from = Array.isArray(isCircle);
+    if (!from) {
+      if (start === 'none') {
+        start = '100 at 50 50';
+      } else {
+        start = /\((.*)\)/.exec(start)[1];
+      }
     }
-    const cform = Array.isArray(isCircle);
     const circle = _circle(
-      cform ? isCircle[0] : start,
-      cform ? isCircle[1] : isCircle
+      from ? isCircle[0] : start,
+      from ? isCircle[1] : isCircle
     );
     return (t) => `circle(${circle(t)})`;
   }
   if (isPolygon) {
-    if (start === 'none') {
-      start = 'polygon(0 0, 100 0, 100 100, 0 100)';
+    const from = Array.isArray(isPolygon);
+
+    if (!from) {
+      if (start === 'none') {
+        start = 'polygon(0 0, 100 0, 100 100, 0 100)';
+      }
     }
 
-    const pform = Array.isArray(isPolygon);
     const polygon = _polygon(
-      pform ? isPolygon[0] : start,
-      pform ? isPolygon[1] : isPolygon
+      from ? isPolygon[0] : start,
+      from ? isPolygon[1] : isPolygon
     );
     return (t) => `polygon(${polygon(t)})`;
   }

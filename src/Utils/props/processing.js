@@ -37,13 +37,16 @@ export function processObjectProperties(element, ps) {
 
   for (const key in ps) {
     const end = ps[key];
-    if (typeof end === 'object') {
-      processObjectProperties(element[key], end).forEach((r) =>
-        results.push(r)
-      );
+    const isArray = Array.isArray(end);
+
+    if (typeof end === 'object' && !isArray) {
+      processObjectProperties(element[key], end).forEach((property) => {
+        results.push(property);
+      });
     } else {
-      const start = element[key];
-      const lerp = end - start;
+      const start = isArray ? end[0] : element[key];
+      const lerp = (isArray ? end[1] : end) - start;
+
       results.push({
         setValue: (value) => (element[key] = value),
         cb: (t) => start + lerp * t,

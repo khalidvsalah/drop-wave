@@ -1,16 +1,24 @@
-import window from '../../../__utilities__/dom';
-import transform from '../../../../src/Utils/props/components/transform';
+import '../../../__utilities__/dom';
+import transform from '../../../../src/Utils/props/components/properties/transform';
 
-const prag = window.document.querySelector('p');
+const parent = document.querySelector('main');
+const child = document.querySelector('p');
+let computed = { transform: 'none' };
 
 describe('Transform', () => {
   it('transform tween function', () => {
-    const result = transform.callback({ x: [0, 100, 'px'] });
+    const result = transform(
+      { x: [0, 100, 'px'] },
+      { computed, element: child, parent }
+    );
     expect(result).toEqual(expect.any(Function));
   });
 
   it('check element style', () => {
-    const result = transform.callback({ x: [0, 100, 'px'] });
-    expect(result(1)).toBe('translate3d(100px, 0, 0)');
+    const result = transform(
+      { x: [0, 100, 'px'] },
+      { computed, element: child, parent }
+    );
+    expect(result(1)).toBe('translate3d(100px, 0px, 0) scale(1, 1)');
   });
 });

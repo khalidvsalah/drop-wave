@@ -1,18 +1,18 @@
-import window from '../../../__utilities__/dom';
-import opacity from '../../../../src/Utils/props/components/opacity';
+import '../../../__utilities__/dom';
+import opacity from '../../../../src/Utils/props/components/properties/opacity';
 
-const prag = window.document.querySelector('p');
+const prag = document.querySelector('p');
+let computed = { opacity: '1' };
 
 describe('Opacity', () => {
   it('opacity tween function', () => {
-    const result = opacity.callback([0, 1]);
+    const result = opacity([0, 1], { computed });
     expect(result).toEqual(expect.any(Function));
   });
 
   it('element opacity to equal 1', () => {
-    prag.style.opacity = 0;
-    const result = opacity.callback([0, 1]);
-    opacity.setValue(prag, result(1));
-    expect(result(1)).toBe('1');
+    prag.style.opacity = 1;
+    const result = opacity(0, { computed });
+    expect(result(1)).toBe('0');
   });
 });
