@@ -8,7 +8,7 @@ const _circle = (s, e) => {
   const startValue = {
     radius: +start[1],
     x: start[3] ? +start[3] : 50,
-    y: +start[4] ? +start[4] : 50
+    y: +start[4] ? +start[4] : 50,
   };
   const endValue = { radius: +end[1], x: +end[3], y: +end[4] };
 
@@ -16,14 +16,14 @@ const _circle = (s, e) => {
   const xLerp = endValue.x - startValue.x;
   const yLerp = endValue.y - startValue.y;
 
-  return t =>
+  return (t) =>
     `${startValue.radius + radiusLerp * t}% at ${startValue.x + xLerp * t}% ${
       startValue.y + yLerp * t
     }%`;
 };
 
-const points = arr => {
-  return arr.split(',').map(str => {
+const points = (arr) => {
+  return arr.split(',').map((str) => {
     const arr = str.match(/\d+/g);
     return [+arr[0], +arr[1]];
   });
@@ -36,7 +36,7 @@ const _polygon = (s, e) => {
   const end = points(Array.isArray(e) ? e[1] : e);
 
   const lerp = end.map(([x, y], i) => [x - start[i][0], y - start[i][1]]);
-  return t =>
+  return (t) =>
     lerp.reduce((a, b, i) => {
       const x = start[i][0] + b[0] * t;
       const y = start[i][1] + b[1] * t;
@@ -67,7 +67,7 @@ function clipPath(p, { computed }) {
       cform ? isCircle[0] : start,
       cform ? isCircle[1] : isCircle
     );
-    return t => `circle(${circle(t)})`;
+    return (t) => `circle(${circle(t)})`;
   }
   if (isPolygon) {
     if (start === 'none') {
@@ -79,11 +79,8 @@ function clipPath(p, { computed }) {
       pform ? isPolygon[0] : start,
       pform ? isPolygon[1] : isPolygon
     );
-    return t => `polygon(${polygon(t)})`;
+    return (t) => `polygon(${polygon(t)})`;
   }
 }
 
-export default {
-  callback: clipPath,
-  setValue: element => value => (element.style.clipPath = value)
-};
+export default clipPath;

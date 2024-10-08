@@ -116,5 +116,4 @@ const path = (p, { element }) => {
   };
 };
 
-const setValue = (element) => (value) => element.setAttribute('d', value);
-export default { callback: path, setValue };
+export default path;

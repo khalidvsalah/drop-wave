@@ -10,16 +10,19 @@ import points from './components/svg/points';
 import path from './components/svg/path';
 
 // attribute
-import attribute from './components/properties/attribute';
+// import attribute from './components/properties/attribute';
 
-export const propertyMatchers = [
-  [/^(transform|move)/, transform],
-  [/^(opacity|alpha)/, opacity],
-  [/^(clip|clipPath)/, clipPath],
-  [/^(filter)/, filter],
-  [/^(draw)/, draw],
-  [/^(points)/, points],
-  [/^(path)/, path],
+export const cssProperties = [
+  [/^(transform|move)/, transform, 'transform'],
+  [/^(opacity|alpha)/, opacity, 'opacity'],
+  [/^(clip|clipPath)/, clipPath, 'clip-path'],
+  [/^(filter)/, filter, 'filter'],
+  [/^(draw)/, draw, 'draw'],
+];
+
+const attributes = [
+  [/^(points)/, points, 'points'],
+  [/^(path)/, path, 'path'],
 ];
 
 /**
@@ -27,13 +30,21 @@ export const propertyMatchers = [
  * @param {string} name - regex.
  * @return {Function} - get properties function.
  */
-export function findMatchingProperty(name) {
-  let found = false;
-  for (const [regex, cb] of propertyMatchers) {
+export function findMatchingProperty(element, name) {
+  for (const [regex, callback, propertyName] of cssProperties) {
     if (name.match(regex)) {
-      found = true;
-      return cb;
+      return {
+        setValue: (value) => (element.style[propertyName] = value),
+        callback,
+      };
     }
   }
-  if (!found) return attribute;
+  for (const [regex, callback, attr] of attributes) {
+    if (name.match(regex)) {
+      return {
+        setValue: (value) => element.setAttribute(attr, value),
+        callback,
+      };
+    }
+  }
 }

@@ -35,5 +35,4 @@ const points = (p, { element }) => {
   };
 };
 
-const setValue = (element) => (value) => element.setAttribute('points', value);
-export default { callback: points, setValue };
+export default points;

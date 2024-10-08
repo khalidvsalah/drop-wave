@@ -271,5 +271,4 @@ const transform = (p, { element, computed, parent }) => {
   return (t) => arr.map((a) => a(t)).join(' ');
 };
 
-const setValue = (element) => (value) => (element.style.transform = value);
-export default { callback: transform, setValue };
+export default transform;

@@ -16,9 +16,9 @@ export function processDOMElement(element, ps) {
   info.computed = computed(element);
 
   for (const [regex, obj] of Object.entries(ps)) {
-    const { setValue, callback } = findMatchingProperty(regex);
+    const { setValue, callback } = findMatchingProperty(element, regex);
     results.push({
-      setValue: setValue(element),
+      setValue,
       cb: callback(obj, info, regex),
     });
   }

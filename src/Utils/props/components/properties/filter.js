@@ -1,26 +1,26 @@
 function _blur(start, end) {
   const o = {
     start: parseFloat(start),
-    end: parseFloat(end)
+    end: parseFloat(end),
   };
   o.lerp = o.end - o.start;
-  return t => `blur(${o.start + o.lerp * t}px)`;
+  return (t) => `blur(${o.start + o.lerp * t}px)`;
 }
 function _gray(start, end) {
   const o = {
     start: parseFloat(start),
-    end: parseFloat(end)
+    end: parseFloat(end),
   };
   o.lerp = o.end - o.start;
-  return t => `grayscale(${o.start + o.lerp * t}%)`;
+  return (t) => `grayscale(${o.start + o.lerp * t}%)`;
 }
 function _contrast(start, end) {
   const o = {
     start: parseFloat(start),
-    end: parseFloat(end)
+    end: parseFloat(end),
   };
   o.lerp = o.end - o.start;
-  return t => `contrast(${o.start + o.lerp * t}%)`;
+  return (t) => `contrast(${o.start + o.lerp * t}%)`;
 }
 
 /**
@@ -62,8 +62,7 @@ function filter(p, { computed }) {
     }
   }
 
-  return t => arrs.map(arr => arr(t)).join(' ');
+  return (t) => arrs.map((arr) => arr(t)).join(' ');
 }
 
-const setValue = element => value => (element.style.filter = value);
-export default { callback: filter, setValue };
+export default filter;

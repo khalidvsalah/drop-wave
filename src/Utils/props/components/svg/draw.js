@@ -17,6 +17,4 @@ const draw = (p, { element, computed }) => {
   return (t) => `${o.start + o.lerp * t}`;
 };
 
-const setValue = (element) => (value) =>
-  (element.style.strokeDashoffset = value);
-export default { callback: draw, setValue };
+export default draw;
