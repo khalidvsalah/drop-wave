@@ -7,15 +7,17 @@ import { CSS } from '../../Utils/methods/css';
 import { keyCodes } from './keycodes';
 
 export default class Events {
+  #choke = new Choke({
+    d: 0.3,
+    cb: () => {
+      CSS.set(this.overlay, 'pointer-events', 'none');
+    },
+  });
+
+  #dist = 0;
+
   constructor() {
-    this.overlay();
-    this.choke = new Choke({
-      d: 0.3,
-      cb: () => {
-        CSS.set(this.overlay, 'pointer-events', 'none');
-      },
-    });
-    this.dist = 0;
+    this.#overlay();
     this.scroll = { value: 0, lerp: 0, dir: 1 };
   }
 
@@ -41,22 +43,22 @@ export default class Events {
       if (drag) {
         this.ipointerdown = states.subscribe(
           'pointerdown',
-          this._down.bind(this)
+          this.#_down.bind(this)
         );
         this.ipointermove = states.subscribe(
           'pointermove',
-          this._move.bind(this)
+          this.#_move.bind(this)
         );
       }
       if (key) {
-        this.ikey = states.subscribe('keydown', this._onkey.bind(this));
+        this.ikey = states.subscribe('keydown', this.#_onkey.bind(this));
       }
       if (wheel) {
-        this.iwheel = states.subscribe('wheel', this._wheel.bind(this));
+        this.iwheel = states.subscribe('wheel', this.#_wheel.bind(this));
       }
     } else {
-      this.target.onpointerdown = this._down.bind(this);
-      this.target.onpointermove = this._move.bind(this);
+      this.target.onpointerdown = this.#_down.bind(this);
+      this.target.onpointermove = this.#_move.bind(this);
     }
 
     if (!states.check('raf')) {
@@ -71,10 +73,10 @@ export default class Events {
 
     this.iupdate = states.subscribe('raf', this._update.bind(this));
     this.iresize = states.subscribe('resize', this._resize.bind(this));
-    this.ipointerup = states.subscribe('pointerup', this._up.bind(this));
+    this.ipointerup = states.subscribe('pointerup', this.#_up.bind(this));
   }
 
-  overlay() {
+  #overlay() {
     const isOverlay = document.querySelector('[data-overlay]');
 
     if (!isOverlay) {
@@ -90,7 +92,7 @@ export default class Events {
     } else this.overlay = isOverlay;
   }
 
-  _wheel(e) {
+  #_wheel(e) {
     const multip = e.deltaMode === 1 ? 0.83 : 0.55;
     const offset = e.wheelDeltaY * multip;
 
@@ -98,7 +100,7 @@ export default class Events {
     this.scroll.dir = Math.sign(offset);
   }
 
-  _onkey(e) {
+  #_onkey(e) {
     if (e.key === 'Tab') {
       e.preventDefault();
     } else {
@@ -119,25 +121,25 @@ export default class Events {
     }
   }
 
-  _down(e) {
+  #_down(e) {
     this.mousedown = true;
-    this.dist = e[this.axis];
+    this.#dist = e[this.axis];
   }
 
-  _move(e) {
+  #_move(e) {
     if (this.mousedown) {
-      const offset = e[this.axis] - this.dist;
+      const offset = e[this.axis] - this.#dist;
       this.scroll.value -= offset;
-      this.dist = e[this.axis];
+      this.#dist = e[this.axis];
       this.scroll.dir = Math.sign(offset);
 
       if (this.global) CSS.set(this.overlay, 'pointer-events', 'all');
     }
   }
 
-  _up() {
+  #_up() {
     this.mousedown = false;
-    this.choke.run();
+    this.#choke.run();
   }
 
   _destroy() {

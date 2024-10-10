@@ -2,10 +2,10 @@ import { clamp } from '../../Math/math';
 import visiability from './visiability';
 
 class Raf {
-  constructor() {
-    this.items = [];
-    this.id = -1;
+  #items = [];
+  #id = -1;
 
+  constructor() {
     visiability.init(this);
   }
 
@@ -15,17 +15,15 @@ class Raf {
    * @returns {Number} - object id.
    */
   push(o) {
-    o.id = ++this.id;
-    this.items.push(o);
-    if (!this.on) {
-      this.loop();
-    }
+    o.id = ++this.#id;
+    this.#items.push(o);
+    if (!this.on) this.#loop();
     return o.id;
   }
 
-  update(t) {
-    for (let i = 0; i < this.items.length; i++) {
-      const o = this.items[i];
+  #update(t) {
+    for (let i = 0; i < this.#items.length; i++) {
+      const o = this.#items[i];
 
       if (o.d) {
         if (!o.st) o.st = t;
@@ -37,7 +35,7 @@ class Raf {
       } else o.cb(t);
     }
 
-    this.loop();
+    this.#loop();
   }
 
   /**
@@ -45,22 +43,22 @@ class Raf {
    * @param {Number} - object id.
    */
   kill(n) {
-    this.items.map((o, i) => {
+    this.#items.map((o, i) => {
       if (o.id === n) {
         o.id = null;
         o.st = null;
-        this.items.splice(i, 1);
+        this.#items.splice(i, 1);
       }
     });
   }
 
-  loop() {
-    if (this.items.length === 0) {
-      this.on = false;
+  #loop() {
+    if (this.#items.length === 0) {
       window.cancelAnimationFrame(this.raf);
+      this.on = false;
     } else {
+      this.raf = window.requestAnimationFrame(this.#update.bind(this));
       this.on = true;
-      this.raf = window.requestAnimationFrame(this.update.bind(this));
     }
   }
 }

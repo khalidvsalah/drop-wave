@@ -28,6 +28,8 @@ const inRange = (start, end, coords, kid, isVertical, l) => {
 };
 
 export class VirtualScroll extends Events {
+  #isVertical = false;
+
   /**
    * @param {HTMLElement} target
    * @param {import('../../types/tweenTypes.js').SCROLL_OPTIONS} options
@@ -50,8 +52,8 @@ export class VirtualScroll extends Events {
     this.states = states.create(name);
 
     this.dir = dir === 'x' ? 'x' : 'y';
-    this.isVertical = this.dir === 'y';
-    this.axis = this.isVertical ? 'pageY' : 'pageX';
+    this.#isVertical = this.dir === 'y';
+    this.axis = this.#isVertical ? 'pageY' : 'pageX';
 
     this.init({ drag, wheel, key });
 
@@ -97,15 +99,26 @@ export class VirtualScroll extends Events {
             this.viewportSize;
           const offsetE = offsetS + this.viewportSize;
           if (offsetS <= coords.dimensions && offsetE >= coords.padding) {
-            translateElement(kid, this.viewportSize - offsetE, this.isVertical);
+            translateElement(
+              kid,
+              this.viewportSize - offsetE,
+              this.#isVertical
+            );
           } else {
-            inRange(start, end, coords, kid, this.isVertical, this.scroll.lerp);
+            inRange(
+              start,
+              end,
+              coords,
+              kid,
+              this.#isVertical,
+              this.scroll.lerp
+            );
           }
         } else {
-          inRange(start, end, coords, kid, this.isVertical, this.scroll.lerp);
+          inRange(start, end, coords, kid, this.#isVertical, this.scroll.lerp);
         }
       });
-    } else translateElement(this.target, -this.scroll.lerp, this.isVertical);
+    } else translateElement(this.target, -this.scroll.lerp, this.#isVertical);
 
     this.states.notify(this.scroll);
     if (this.onUpdate) this.onUpdate(time, this.scroll);
@@ -117,15 +130,15 @@ export class VirtualScroll extends Events {
     if (this.infinite) {
       const children = [...this.target.children];
       this.elementHeights = children.map((child) => {
-        const padding = this.isVertical ? child.offsetTop : child.offsetLeft;
-        const dimensions = this.isVertical
+        const padding = this.#isVertical ? child.offsetTop : child.offsetLeft;
+        const dimensions = this.#isVertical
           ? child.offsetHeight
           : child.offsetWidth;
         return [child, { padding, dimensions: padding + dimensions }];
       });
     }
 
-    const dimensions = this.isVertical ? 'h' : 'w';
+    const dimensions = this.#isVertical ? 'h' : 'w';
     this.viewportSize = win.screen[dimensions];
     this.totalHeight =
       this.coords[dimensions] - (this.infinite ? 0 : this.viewportSize);
