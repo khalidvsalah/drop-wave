@@ -2,10 +2,10 @@ import { clamp } from '../../Math/math';
 import visiability from './visiability';
 
 class Raf {
-  #items = [];
   #id = -1;
 
   constructor() {
+    this.items = [];
     visiability.init(this);
   }
 
@@ -16,14 +16,14 @@ class Raf {
    */
   push(o) {
     o.id = ++this.#id;
-    this.#items.push(o);
+    this.items.push(o);
     if (!this.on) this.#loop();
     return o.id;
   }
 
   #update(t) {
-    for (let i = 0; i < this.#items.length; i++) {
-      const o = this.#items[i];
+    for (let i = 0; i < this.items.length; i++) {
+      const o = this.items[i];
 
       if (o.d) {
         if (!o.st) o.st = t;
@@ -43,17 +43,17 @@ class Raf {
    * @param {Number} - object id.
    */
   kill(n) {
-    this.#items.map((o, i) => {
+    this.items.map((o, i) => {
       if (o.id === n) {
         o.id = null;
         o.st = null;
-        this.#items.splice(i, 1);
+        this.items.splice(i, 1);
       }
     });
   }
 
   #loop() {
-    if (this.#items.length === 0) {
+    if (this.items.length === 0) {
       window.cancelAnimationFrame(this.raf);
       this.on = false;
     } else {
