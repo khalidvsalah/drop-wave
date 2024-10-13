@@ -1,4 +1,4 @@
-import { lerp } from '../../../../index';
+import { lerp } from '../math/math';
 
 /**
  * @param {string} pointString

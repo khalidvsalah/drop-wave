@@ -1,20 +1,22 @@
-export { ease } from './Math/ease';
-export { clamp, lerp, normalize, map, round, dist, damp } from './Math/math';
+export { ease } from './math/easing';
+export { clamp, lerp, normalize, map, round, dist, damp } from './math/math';
 
-export { bounds, computed, offset } from './Utils/methods/coordinate';
-export { win } from './Utils/methods/window';
-export { CSS } from './Utils/methods/css';
-export { Choke } from './Utils/methods/choke';
+export { bounds, computed, offset } from './methods/coordinate';
+export { win } from './methods/window';
+export { css } from './methods/css';
+export { Choke } from './methods/choke';
 
-export { states } from './Utils/states/states';
-export { prepare } from './Utils/props/prepare';
-export { raf } from './Utils/raf/raf';
-export { Delay } from './Utils/delay/delay';
+export { observer } from './utils/Observer';
+export { raf } from './utils/Raf';
+export { Delay } from './utils/Delay';
 
-export { kill } from './Core/tween/kill';
-export { tween } from './Core/tween/tween';
-export { Timeline } from './Core/timeline/timeline';
-export { VirtualScroll } from './Plugins/scroll/scroll';
+export { processing } from './processing/processing';
 
-export { splitText } from './Plugins/splitText';
-export { register } from './Plugins/register';
+export { kill } from './tween/kill';
+export { tween } from './tween/tween';
+export { Timeline } from './tween/Timeline';
+
+export { VirtualScroll } from './virtual-scroll/VirtualScroll';
+
+export { splitText } from './plugins/splitText';
+export { register } from './plugins/register';

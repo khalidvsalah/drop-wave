@@ -1,9 +1,9 @@
-import { states } from '../../Utils/states/states';
-import { prepare } from '../../Utils/props/prepare';
-import { offset } from '../../Utils/methods/coordinate';
-import { CSS } from '../../Utils/methods/css';
-import { tween } from '../../Core/tween/tween';
-import { clamp, normalize } from '../../Math/math';
+import { observer } from '../utils/Observer.js';
+import { processing } from '../processing/processing.js';
+import { offset } from '../methods/coordinate.js';
+import { css } from '../methods/css.js';
+import { tween } from '../tween/tween.js';
+import { clamp, normalize } from '../math/math.js';
 
 /**
  * This function calculates the position of the triggered element
@@ -61,15 +61,15 @@ export default class Trigger {
 
   #init() {
     if (this.#animate) {
-      this.lerps = prepare(this.target, this.#animate);
+      this.lerps = processing(this.target, this.#animate);
     }
 
     this._resize();
-    this.iupdate = states.subscribe(
+    this.iupdate = observer.subscribe(
       this.options.channel,
       this.#_update.bind(this)
     );
-    this.iresize = states.subscribe('resize', this._resize.bind(this));
+    this.iresize = observer.subscribe('resize', this._resize.bind(this));
   }
 
   #_scroll(elapsed) {
@@ -86,9 +86,9 @@ export default class Trigger {
       if (!(this.coord >= this.pinEnd)) {
         const dist = Math.max(0, this.coord - this.#pin.scroll);
         if (this.#isVertical) {
-          CSS.set(this.target, 'transform', `translate3d(0, ${dist}px, 0)`);
+          css.set(this.target, 'transform', `translate3d(0, ${dist}px, 0)`);
         } else {
-          CSS.set(this.target, 'transform', `translate3d(${dist}px, 0, 0)`);
+          css.set(this.target, 'transform', `translate3d(${dist}px, 0, 0)`);
         }
       }
     }
@@ -135,7 +135,7 @@ export default class Trigger {
   }
 
   _destroy() {
-    this.iresize.remove();
-    this.iupdate.remove();
+    this.iresize.unsubscribe();
+    this.iupdate.unsubscribe();
   }
 }

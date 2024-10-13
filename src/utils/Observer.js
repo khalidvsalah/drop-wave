@@ -1,23 +1,21 @@
-class States {
-  constructor() {
-    this.store = new Map();
-  }
+class Observer {
+  #store = new Map();
 
   /**
    * @param {string} name - observer name
    * @returns {{notify:Function, remove:Function}}
    */
   create(name) {
-    const store = this.store;
+    const store = this.#store;
     store.set(name, { cbs: new Set() });
 
     return {
       notify: (...args) => {
         const { cbs } = store.get(name);
-        cbs.forEach(cb => cb(...args));
+        cbs.forEach((cb) => cb(...args));
       },
       remove: () => store.delete(name),
-      name
+      name,
     };
   }
 
@@ -27,10 +25,10 @@ class States {
    * @returns {{remove: ()=> void}}
    */
   subscribe(name, cb) {
-    if (!this.store.has(name)) throw new Error(name, 'Undefined');
-    const { cbs } = this.store.get(name);
+    if (!this.#store.has(name)) throw new Error(name, 'Undefined');
+    const { cbs } = this.#store.get(name);
     cbs.add(cb);
-    return { remove: () => cbs.delete(cb) };
+    return { unsubscribe: () => cbs.delete(cb) };
   }
 
   /**
@@ -38,8 +36,8 @@ class States {
    * @returns {boolean}
    */
   check(name) {
-    return this.store.has(name);
+    return this.#store.has(name);
   }
 }
 
-export const states = new States();
+export const observer = new Observer();

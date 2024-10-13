@@ -1,6 +1,6 @@
-import { tween } from '../tween/tween';
+import { tween } from './tween';
 
-export const REVERSE = Symbol('reverse');
+export const TIMELINE_REVERSE = Symbol('');
 export class Timeline {
   #tweens = [];
   #time = 0;

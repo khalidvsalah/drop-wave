@@ -1,5 +1,5 @@
 import { computed } from '../methods/coordinate';
-import { findMatchingProperty } from './propertyMatchers';
+import { propertyMatchers } from './propertyMatchers';
 
 /**
  * Get properties tween function
@@ -7,7 +7,7 @@ import { findMatchingProperty } from './propertyMatchers';
  * @param {object} ps - properties.
  * @returns {Array} - array of tweened function.
  */
-export function processDOMElement(element, ps) {
+function processDOMElement(element, ps) {
   const results = [];
   const info = {};
 
@@ -16,7 +16,7 @@ export function processDOMElement(element, ps) {
   info.computed = computed(element);
 
   for (const [regex, obj] of Object.entries(ps)) {
-    const { setValue, callback } = findMatchingProperty(element, regex);
+    const { setValue, callback } = propertyMatchers(element, regex);
     results.push({
       setValue,
       cb: callback(obj, info, regex),
@@ -32,7 +32,7 @@ export function processDOMElement(element, ps) {
  * @param {object} ps - properties.
  * @returns {Array} - array of tweened function.
  */
-export function processObjectProperties(element, ps) {
+function processObjectProperties(element, ps) {
   const results = [];
 
   for (const key in ps) {
@@ -55,4 +55,13 @@ export function processObjectProperties(element, ps) {
   }
 
   return results;
+}
+
+/**
+ * @param {HTMLElement} element - targeted element.
+ * @param {object} props - properties.
+ */
+export function processing(target, props) {
+  if (target instanceof Node) return processDOMElement(target, props);
+  else return processObjectProperties(target, props);
 }

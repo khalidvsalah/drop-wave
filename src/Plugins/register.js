@@ -1,4 +1,4 @@
-import { cssProperties } from '../Utils/props/propertyMatchers';
+import { cssProperties } from '../processing/propertyMatchers';
 
 /** * @typedef {{element:HTMLElement, computed:object, parent:HTMLTimeElement}} INFO */
 /** * @typedef {(obj:object, info:INFO, name:string)=> Function} CALLBACK */

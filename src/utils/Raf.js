@@ -1,12 +1,14 @@
-import { clamp } from '../../Math/math';
-import visiability from './visiability';
+import { clamp } from '../math/math';
+import { observer } from './Observer';
 
 class Raf {
   #id = -1;
+  #items = [];
+  #hiddenFor = 0;
 
   constructor() {
-    this.items = [];
-    visiability.init(this);
+    document.onvisibilitychange = observer.create('visibilitychange').notify;
+    observer.subscribe('visibilitychange', this.#change.bind(this));
   }
 
   /**
@@ -16,14 +18,14 @@ class Raf {
    */
   push(o) {
     o.id = ++this.#id;
-    this.items.push(o);
+    this.#items.push(o);
     if (!this.on) this.#loop();
     return o.id;
   }
 
   #update(t) {
-    for (let i = 0; i < this.items.length; i++) {
-      const o = this.items[i];
+    for (let i = 0; i < this.#items.length; i++) {
+      const o = this.#items[i];
 
       if (o.d) {
         if (!o.st) o.st = t;
@@ -43,23 +45,29 @@ class Raf {
    * @param {Number} - object id.
    */
   kill(n) {
-    this.items.map((o, i) => {
+    this.#items.map((o, i) => {
       if (o.id === n) {
         o.id = null;
         o.st = null;
-        this.items.splice(i, 1);
+        this.#items.splice(i, 1);
       }
     });
   }
 
   #loop() {
-    if (this.items.length === 0) {
+    if (this.#items.length === 0) {
       window.cancelAnimationFrame(this.raf);
       this.on = false;
     } else {
       this.raf = window.requestAnimationFrame(this.#update.bind(this));
       this.on = true;
     }
+  }
+
+  #change() {
+    const now = performance.now();
+    if (document.hidden) this.#hiddenFor = now;
+    else this.#items.map((item) => (item.st += now - this.#hiddenFor));
   }
 }
 

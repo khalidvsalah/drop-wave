@@ -1,8 +1,8 @@
-import { states } from '../../Utils/states/states';
-import { Choke } from '../../Utils/methods/choke';
-import { raf } from '../../Utils/raf/raf';
-import { win } from '../../Utils/methods/window';
-import { CSS } from '../../Utils/methods/css';
+import { observer } from '../utils/Observer';
+import { Choke } from '../methods/choke';
+import { raf } from '../utils/Raf';
+import { win } from '../methods/window';
+import { css } from '../methods/css';
 
 import { keyCodes } from './keycodes';
 
@@ -10,7 +10,7 @@ export default class Events {
   #choke = new Choke({
     d: 0.3,
     cb: () => {
-      CSS.set(this.overlay, 'pointer-events', 'none');
+      css.set(this.overlay, 'pointer-events', 'none');
     },
   });
 
@@ -21,59 +21,61 @@ export default class Events {
     this.scroll = { value: 0, lerp: 0, dir: 1 };
   }
 
-  init({ drag, key, wheel }) {
+  init({ drag, key, wheel, name }) {
+    this.observer = observer.create(name);
+
     if (Object.is(this.container, window)) {
       this.global = true;
 
       window.history.scrollRestoration = 'manual';
 
-      if (!states.check('pointerdown')) {
-        window.onpointerdown = states.create('pointerdown').notify;
+      if (!observer.check('pointerdown')) {
+        window.onpointerdown = observer.create('pointerdown').notify;
       }
-      if (!states.check('pointermove')) {
-        window.onpointermove = states.create('pointermove').notify;
+      if (!observer.check('pointermove')) {
+        window.onpointermove = observer.create('pointermove').notify;
       }
-      if (!states.check('keydown')) {
-        window.onkeydown = states.create('keydown').notify;
+      if (!observer.check('keydown')) {
+        window.onkeydown = observer.create('keydown').notify;
       }
-      if (!states.check('wheel')) {
-        window.onwheel = states.create('wheel').notify;
+      if (!observer.check('wheel')) {
+        window.onwheel = observer.create('wheel').notify;
       }
 
       if (drag) {
-        this.ipointerdown = states.subscribe(
+        this.ipointerdown = observer.subscribe(
           'pointerdown',
           this.#_down.bind(this)
         );
-        this.ipointermove = states.subscribe(
+        this.ipointermove = observer.subscribe(
           'pointermove',
           this.#_move.bind(this)
         );
       }
       if (key) {
-        this.ikey = states.subscribe('keydown', this.#_onkey.bind(this));
+        this.ikey = observer.subscribe('keydown', this.#_onkey.bind(this));
       }
       if (wheel) {
-        this.iwheel = states.subscribe('wheel', this.#_wheel.bind(this));
+        this.iwheel = observer.subscribe('wheel', this.#_wheel.bind(this));
       }
     } else {
       this.target.onpointerdown = this.#_down.bind(this);
       this.target.onpointermove = this.#_move.bind(this);
     }
 
-    if (!states.check('raf')) {
-      raf.push({ cb: states.create('raf').notify });
+    if (!observer.check('raf')) {
+      raf.push({ cb: observer.create('raf').notify });
     }
-    if (!states.check('resize')) {
-      window.onresize = states.create('resize').notify;
+    if (!observer.check('resize')) {
+      window.onresize = observer.create('resize').notify;
     }
-    if (!states.check('pointerup')) {
-      window.onpointerup = states.create('pointerup').notify;
+    if (!observer.check('pointerup')) {
+      window.onpointerup = observer.create('pointerup').notify;
     }
 
-    this.iupdate = states.subscribe('raf', this._update.bind(this));
-    this.iresize = states.subscribe('resize', this._resize.bind(this));
-    this.ipointerup = states.subscribe('pointerup', this.#_up.bind(this));
+    this.iupdate = observer.subscribe('raf', this._update.bind(this));
+    this.iresize = observer.subscribe('resize', this._resize.bind(this));
+    this.ipointerup = observer.subscribe('pointerup', this.#_up.bind(this));
   }
 
   #overlay() {
@@ -133,7 +135,7 @@ export default class Events {
       this.#dist = e[this.axis];
       this.scroll.dir = Math.sign(offset);
 
-      if (this.global) CSS.set(this.overlay, 'pointer-events', 'all');
+      if (this.global) css.set(this.overlay, 'pointer-events', 'all');
     }
   }
 
@@ -143,20 +145,20 @@ export default class Events {
   }
 
   _destroy() {
-    this.iupdate.remove();
-    this.iresize.remove();
+    this.iupdate.unsubscribe();
+    this.iresize.unsubscribe();
 
-    this.ipointerup.remove();
-    this.states.remove();
+    this.ipointerup.unsubscribe();
+    this.observer.unsubscribe();
 
     if (this.global) {
       if (this.ipointerdown) {
-        this.ipointerdown.remove();
-        this.ipointermove.remove();
+        this.ipointerdown.unsubscribe();
+        this.ipointermove.unsubscribe();
       }
 
-      if (this.ikey) this.ikey.remove();
-      if (this.iwheel) this.iwheel.remove();
+      if (this.ikey) this.ikey.unsubscribe();
+      if (this.iwheel) this.iwheel.unsubscribe();
     } else {
       this.target.onwheel = null;
       this.target.onpointerdown = null;

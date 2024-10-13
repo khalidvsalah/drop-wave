@@ -1,10 +1,10 @@
-import { ease } from '../../Math/ease';
-import { clamp } from '../../Math/math';
+import { ease } from '../math/easing';
+import { clamp } from '../math/math';
 
-import { prepare } from '../../Utils/props/prepare';
-import { raf } from '../../Utils/raf/raf';
+import { processing } from '../processing/processing';
+import { raf } from '../utils/Raf';
 
-import { Delay } from '../../Utils/delay/delay';
+import { Delay } from '../Utils/Delay';
 
 /**
  * Tween Base Class
@@ -16,7 +16,7 @@ export default class TweenBase {
   /**
    *
    * @param {HTMLElement} element
-   * @param {import('../../types/tweenTypes').TWEEN_OPTIONS} options
+   * @param {import('../types/tweenTypes').TWEEN_OPTIONS} options
    */
   constructor(element, options) {
     this.element = element;
@@ -57,7 +57,7 @@ export default class TweenBase {
       this.duration = nextTween.duration;
       this.ease = ease[nextTween.ease];
 
-      this.properties = prepare(this.element, nextTween.props);
+      this.properties = processing(this.element, nextTween.props);
       this.progress = 0;
     } else {
       this.progress = 1 - this.elapsed;
@@ -74,7 +74,7 @@ export default class TweenBase {
   /**
    *
    * @param {string} mode
-   * @param {import('../../types/tweenTypes').TWEEN_OPTIONS} options
+   * @param {import('../types/tweenTypes').TWEEN_OPTIONS} options
    */
   push(mode, options = {}) {
     ++this.callIndex;

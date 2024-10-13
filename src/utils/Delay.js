@@ -1,15 +1,13 @@
-import { raf } from '../raf/raf';
+import { raf } from './Raf';
 
 export class Delay {
   #d = 0;
   #o = 0;
 
-  /**
-   * @param {{d: number, o: object, cb: Function}}
-   */
   constructor({ d, o, cb }) {
     this.#d = d;
     this.#o = o;
+
     this.cb = cb;
     this.on = false;
   }

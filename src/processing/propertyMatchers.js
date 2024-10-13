@@ -1,13 +1,13 @@
 // css properties
-import opacity from './components/properties/opacity';
-import transform from './components/properties/transform';
-import clipPath from './components/properties/clipPath';
-import filter from './components/properties/filter';
+import opacity from '../components/opacity';
+import transform from '../components/transform';
+import clipPath from '../components/clipPath';
+import filter from '../components/filter';
 
 // svg
-import draw from './components/svg/draw';
-import points from './components/svg/points';
-import path from './components/svg/path';
+import draw from '../components/draw';
+import points from '../components/points';
+import path from '../components/path';
 
 // attribute
 // import attribute from './components/properties/attribute';
@@ -30,7 +30,7 @@ const attributes = [
  * @param {string} name - regex.
  * @return {Function} - get properties function.
  */
-export function findMatchingProperty(element, name) {
+export function propertyMatchers(element, name) {
   for (const [regex, callback, propertyName] of cssProperties) {
     if (name.match(regex)) {
       return {

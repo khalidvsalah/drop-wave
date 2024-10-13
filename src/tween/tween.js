@@ -1,13 +1,14 @@
 import TweenBase from './tweenbase';
-import { storage, store } from '../../Utils/states/storage';
-import { REVERSE } from '../timeline/timeline';
+import { TIMELINE_REVERSE } from './Timeline.js';
+
+export const tweensStorage = new WeakMap();
 
 /**
  * Tweening Starting Function
  *
  * @param {Array|Node|NodeList} elements
- * @param {import('../../types/tweenTypes.js').TWEEN_OPTIONS} options
- * @returns {import('../../types/tweenTypes.js').TWEEN_CONTROLLERS}
+ * @param {import('../types/tweenTypes.js').TWEEN_OPTIONS} options
+ * @returns {import('../types/tweenTypes.js').TWEEN_CONTROLLERS}
  */
 export function tween(elements, options = {}) {
   try {
@@ -64,13 +65,13 @@ export function tween(elements, options = {}) {
       }
 
       const newOptions = { ...options, delay };
-      if (storage.has(element)) {
-        const tweenbase = store(element);
+      if (tweensStorage.has(element)) {
+        const tweenbase = tweensStorage.get(element);
         tweenbase.push('play', newOptions);
         tweens.push(tweenbase);
       } else {
         const tween = new TweenBase(element, newOptions);
-        tweens.push(store(element, tween));
+        tweens.push(tweensStorage.set(element, tween));
       }
 
       return newOptions;
@@ -79,7 +80,7 @@ export function tween(elements, options = {}) {
     return {
       reverse: (symbol, time) => {
         tweens.forEach((tween, idx) => {
-          const isTimeline = symbol === REVERSE;
+          const isTimeline = symbol === TIMELINE_REVERSE;
           const delay =
             (isTimeline ? time : 0) + options.space * (length - idx);
           tween.push('reverse', { delay });

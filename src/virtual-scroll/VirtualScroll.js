@@ -1,18 +1,16 @@
-import { states } from '../../Utils/states/states.js';
+import { win } from '../methods/window.js';
+import { css } from '../methods/css.js';
+import { bounds } from '../methods/coordinate.js';
+import { clamp, damp } from '../math/math.js';
 
-import { win } from '../../Utils/methods/window.js';
-import { CSS } from '../../Utils/methods/css.js';
-import { bounds } from '../../Utils/methods/coordinate.js';
-import { clamp, damp } from '../../Math/math.js';
-
-import Events from './events.js';
-import Trigger from './trigger.js';
+import Events from './Events.js';
+import Trigger from './Trigger.js';
 
 const translateElement = (element, value, isVertical) => {
   if (isVertical) {
-    CSS.set(element, 'transform', `translate3d(0, ${value}px, 0)`);
+    css.set(element, 'transform', `translate3d(0, ${value}px, 0)`);
   } else {
-    CSS.set(element, 'transform', `translate3d(${value}px, 0, 0)`);
+    css.set(element, 'transform', `translate3d(${value}px, 0, 0)`);
   }
 };
 const inRange = (start, end, coords, kid, isVertical, l) => {
@@ -49,13 +47,12 @@ export class VirtualScroll extends Events {
 
     this.target = target;
     this.container = container;
-    this.states = states.create(name);
 
     this.dir = dir === 'x' ? 'x' : 'y';
     this.#isVertical = this.dir === 'y';
     this.axis = this.#isVertical ? 'pageY' : 'pageX';
 
-    this.init({ drag, wheel, key });
+    this.init({ drag, wheel, key, name });
 
     this.speed = speed;
     this.onUpdate = options.onUpdate;
@@ -69,7 +66,7 @@ export class VirtualScroll extends Events {
    * @param {import('../../types/tweenTypes.js').TRIGGER_OPTIONS} options
    */
   add(target, options = {}) {
-    options.channel = this.states.name;
+    options.channel = this.observer.name;
     options.dir = this.dir;
     return new Trigger(target, options);
   }
@@ -120,7 +117,7 @@ export class VirtualScroll extends Events {
       });
     } else translateElement(this.target, -this.scroll.lerp, this.#isVertical);
 
-    this.states.notify(this.scroll);
+    this.observer.notify(this.scroll);
     if (this.onUpdate) this.onUpdate(time, this.scroll);
   }
 
