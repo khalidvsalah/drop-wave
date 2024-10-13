@@ -38,7 +38,7 @@ export default class Trigger {
 
   /**
    * @param {HTMLElement} target
-   * @param {import('../../types/tweenTypes.js').TRIGGER_OPTIONS} options
+   * @param {TRIGGER_OPTIONS} [options]
    */
   constructor(target, options) {
     this.target = target;

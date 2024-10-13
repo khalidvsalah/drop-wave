@@ -14,8 +14,8 @@ export class Timeline {
 
   /**
    * @param {Array|Node|NodeList} elements
-   * @param {import('../../types/tweenTypes').TWEEN_OPTIONS} options
-   * @param {string} delay
+   * @param {TWEEN_OPTIONS} [options]
+   * @param {string} [delay]
    */
   to(elements, options, delay) {
     this.#time += +delay || 0;

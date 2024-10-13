@@ -30,7 +30,7 @@ export class VirtualScroll extends Events {
 
   /**
    * @param {HTMLElement} target
-   * @param {import('../../types/tweenTypes.js').SCROLL_OPTIONS} options
+   * @param {SCROLL_OPTIONS} [options]
    */
   constructor(target, options = {}) {
     super();
@@ -63,7 +63,7 @@ export class VirtualScroll extends Events {
 
   /**
    * @param {HTMLElement} target
-   * @param {import('../../types/tweenTypes.js').TRIGGER_OPTIONS} options
+   * @param {TRIGGER_OPTIONS} [options]
    */
   add(target, options = {}) {
     options.channel = this.observer.name;

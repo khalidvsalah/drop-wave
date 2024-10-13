@@ -6,9 +6,9 @@ export const tweensStorage = new WeakMap();
 /**
  * Tweening Starting Function
  *
- * @param {Array|Node|NodeList} elements
- * @param {import('../types/tweenTypes.js').TWEEN_OPTIONS} options
- * @returns {import('../types/tweenTypes.js').TWEEN_CONTROLLERS}
+ * @param {Node|NodeList|string|Array} elements
+ * @param {TWEEN_OPTIONS} options
+ * @returns {TWEEN_CONTROLLERS}
  */
 export function tween(elements, options = {}) {
   try {
