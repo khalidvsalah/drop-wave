@@ -1,6 +1,6 @@
 {
   "name": "drop-wave",
-  "version": "1.0.25",
+  "version": "1.0.28",
   "description": "A JavaScript Animation Library",
   "repository": "khalidvsalah/drop-wave.git",
   "author": "Khalid Salah <khalidvsalah@gmail.com> (https://www.khalidsalah.com)",
@@ -11,6 +11,7 @@
     "@babel/core": "^7.23.9",
     "@babel/preset-env": "^7.24.8",
     "@parcel/babel-preset-env": "^2.12.0",
+    "@testing-library/jest-dom": "^6.5.0",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^29.7.0",
     "browser-sync": "^2.29.3",
