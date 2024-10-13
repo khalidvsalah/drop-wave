@@ -149,7 +149,7 @@ export default class Events {
     this.iresize.unsubscribe();
 
     this.ipointerup.unsubscribe();
-    this.observer.unsubscribe();
+    this.observer.remove();
 
     if (this.global) {
       if (this.ipointerdown) {

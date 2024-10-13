@@ -3,7 +3,9 @@ import { processing } from '../processing/processing.js';
 import { offset } from '../methods/coordinate.js';
 import { css } from '../methods/css.js';
 import { tween } from '../tween/tween.js';
+
 import { clamp, normalize } from '../math/math.js';
+import { ease } from '../math/easing.js';
 
 /**
  * This function calculates the position of the triggered element
@@ -26,6 +28,7 @@ const calculatePosition = (str = '0', coord, size) => {
 
 export default class Trigger {
   #pin;
+  #ease;
   #animate;
   #tween;
   #onUpdate;
@@ -38,13 +41,14 @@ export default class Trigger {
 
   /**
    * @param {HTMLElement} target
-   * @param {TRIGGER_OPTIONS} [options]
+   * @param {TRIGGER_OPTIONS} options
    */
   constructor(target, options) {
     this.target = target;
     this.options = options;
 
     this.#pin = options.pin;
+    this.#ease = ease[options.ease || 'linear'];
     this.#animate = options.animate;
     this.#tween = options.tween;
     this.#onUpdate = options.onUpdate;
@@ -73,7 +77,7 @@ export default class Trigger {
   }
 
   #_scroll(elapsed) {
-    this.lerps.map(({ cb, setValue }) => setValue(cb(elapsed)));
+    this.lerps.map(({ cb, setValue }) => setValue(cb(this.#ease(elapsed))));
   }
 
   #_tween() {
@@ -83,7 +87,7 @@ export default class Trigger {
 
   #_pin() {
     if (this.pined) {
-      if (!(this.coord >= this.pinEnd)) {
+      if (!(this.coord >= this.#pinEnd)) {
         const dist = Math.max(0, this.coord - this.#pin.scroll);
         if (this.#isVertical) {
           css.set(this.target, 'transform', `translate3d(0, ${dist}px, 0)`);
@@ -117,21 +121,37 @@ export default class Trigger {
   _resize() {
     const coords = offset(this.target);
 
-    const start = calculatePosition(
-      this.options.start,
-      coords[this.#dir],
-      coords[this.#size]
-    );
-    const end = calculatePosition(
-      this.options.end,
-      coords[this.#dirEnd],
-      coords[this.#size]
-    );
+    if (this.#animate || this.#tween) {
+      const start = calculatePosition(
+        this.options.start,
+        coords[this.#dir],
+        coords[this.#size]
+      );
+      const end = calculatePosition(
+        this.options.end,
+        coords[this.#dirEnd],
+        coords[this.#size]
+      );
 
-    this.startPoint = start;
-    this.endPoint = end;
-    this.#pinStart = start;
-    this.#pinEnd = end;
+      this.startPoint = start;
+      this.endPoint = end;
+    }
+
+    if (this.#pin) {
+      const start = calculatePosition(
+        this.#pin.start,
+        coords[this.#dir],
+        coords[this.#size]
+      );
+      const end = calculatePosition(
+        this.#pin.end,
+        coords[this.#dirEnd],
+        coords[this.#size]
+      );
+
+      this.#pinStart = start;
+      this.#pinEnd = end;
+    }
   }
 
   _destroy() {

@@ -36,7 +36,7 @@
  * @typedef {Object} TRIGGER_OPTIONS
  * @property {object} animate
  * @property {object} tween
- * @property {boolean} scroll
+ * @property {string} ease
  * @property {string|number} start
  * @property {string|number} end
  * @property {{start:string|number, end:start|number}} pin
