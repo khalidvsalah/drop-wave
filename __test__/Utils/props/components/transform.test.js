@@ -1,9 +1,9 @@
 import '../../../__utilities__/dom';
-import transform from '../../../../src/Utils/props/components/properties/transform';
+import transform from '../../../../src/components/transform';
 
 const parent = document.querySelector('main');
 const child = document.querySelector('p');
-let computed = { transform: 'none' };
+const computed = { transform: 'none' };
 
 describe('Transform', () => {
   it('transform tween function', () => {

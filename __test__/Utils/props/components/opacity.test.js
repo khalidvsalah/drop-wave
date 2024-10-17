@@ -1,5 +1,5 @@
 import '../../../__utilities__/dom';
-import opacity from '../../../../src/Utils/props/components/properties/opacity';
+import opacity from '../../../../src/components/opacity';
 
 const prag = document.querySelector('p');
 let computed = { opacity: '1' };

@@ -1,5 +1,5 @@
 import '../../../__utilities__/dom';
-import clipPath from '../../../../src/Utils/props/components/properties/clipPath';
+import clipPath from '../../../../src/components/clipPath';
 
 const prag = document.querySelector('p');
 let computed = { clipPath: 'none' };

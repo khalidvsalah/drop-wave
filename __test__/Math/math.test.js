@@ -1,5 +1,5 @@
 import '../__utilities__/dom';
-import { clamp, lerp, map, remap } from '../../src/index';
+import { clamp, lerp, normalize, map } from '../../src/index';
 
 describe('Math Functions', () => {
   it('Clamp', () => {
@@ -13,12 +13,12 @@ describe('Math Functions', () => {
   });
 
   it('Map', () => {
-    expect(map(0, 100, 25)).toBe(0.25);
-    expect(map(50, 100, 75)).toBe(0.5);
+    expect(normalize(0, 100, 25)).toBe(0.25);
+    expect(normalize(50, 100, 75)).toBe(0.5);
   });
 
   it('Remap', () => {
-    expect(remap(0, 100, 0, 10, 50)).toBe(5);
-    expect(remap(0, 5, 0, 100, 3)).toBe(60);
+    expect(map(0, 100, 0, 10, 50)).toBe(5);
+    expect(map(0, 5, 0, 100, 3)).toBe(60);
   });
 });
