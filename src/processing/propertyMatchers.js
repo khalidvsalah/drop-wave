@@ -20,31 +20,50 @@ export const cssProperties = [
   [/^(draw)/, draw, 'draw'],
 ];
 
-const attributes = [
+export const attributes = [
   [/^(points)/, points, 'points'],
   [/^(path)/, path, 'path'],
 ];
 
 /**
- * Return matched property
+ * Return matched property object
  * @param {string} name - regex.
- * @return {Function} - get properties function.
+ * @return {object} - get properties function.
  */
-export function propertyMatchers(element, name) {
+export function propertyMatchers(name) {
   for (const [regex, callback, propertyName] of cssProperties) {
     if (name.match(regex)) {
       return {
-        setValue: (value) => (element.style[propertyName] = value),
+        type: 'css',
         callback,
+        property: propertyName,
       };
     }
   }
   for (const [regex, callback, attr] of attributes) {
     if (name.match(regex)) {
       return {
-        setValue: (value) => element.setAttribute(attr, value),
+        type: 'attr',
         callback,
+        property: attr,
       };
     }
   }
+}
+
+/**
+ * Return tweened object
+ * @param {HTMLElement} element
+ * @param {string} name - regex.
+ * @return {object}
+ */
+export function propertyTweener(element, name) {
+  const { type, callback, property } = propertyMatchers(name);
+  return {
+    setValue: (value) =>
+      type === 'css'
+        ? (element.style[property] = value)
+        : element.setAttribute(property, value),
+    callback,
+  };
 }

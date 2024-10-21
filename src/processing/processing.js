@@ -1,5 +1,5 @@
 import { computed } from '../methods/coordinate';
-import { propertyMatchers } from './propertyMatchers';
+import { propertyTweener } from './propertyMatchers';
 
 /**
  * Get properties tween function
@@ -16,7 +16,7 @@ function processDOMElement(element, ps) {
   info.computed = computed(element);
 
   for (const [regex, obj] of Object.entries(ps)) {
-    const { setValue, callback } = propertyMatchers(element, regex);
+    const { setValue, callback } = propertyTweener(element, regex);
     results.push({
       setValue,
       cb: callback(obj, info, regex),

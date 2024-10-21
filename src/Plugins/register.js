@@ -1,22 +1,33 @@
-import { cssProperties } from '../processing/propertyMatchers';
+import {
+  propertyMatchers,
+  cssProperties,
+  attributes,
+} from '../processing/propertyMatchers';
 
-/** * @typedef {{element:HTMLElement, computed:object, parent:HTMLTimeElement}} INFO */
-/** * @typedef {(obj:object, info:INFO, name:string)=> Function} CALLBACK */
-
-/**
- * @param {string} name - property tweening name
- * @param {string} cssName - the css name
- * @param {CALLBACK} callback
- */
-export const register = (name, cssName, callback) => {
-  if (cssProperties.some(([regex]) => name.match(regex))) {
-    throw new Error(name + ' is already registered');
-  } else {
-    const regex = new RegExp(`^(${name})`);
-    const component = {
-      callback,
-      setValue: (element) => (value) => (element.style[cssName] = value),
-    };
-    cssProperties.push([regex, component]);
+class Register {
+  /**
+   * @param {string} name - property tweening name
+   * @param {{CSSName:string, HTMLAttr:string, TweenFn:Function}}
+   */
+  push(name, { CSSName, HTMLAttr, TweenFn }) {
+    if (this.check(name)) {
+      throw new Error(name + ' is already registered');
+    } else {
+      const regex = new RegExp(`^(${name})`);
+      if (CSSName) {
+        cssProperties.push([regex, TweenFn, CSSName]);
+      } else if (HTMLAttr) {
+        attributes.push([regex, TweenFn, HTMLAttr]);
+      }
+    }
   }
-};
+
+  /**
+   * @param {string} name - check if property exist
+   */
+  check(name) {
+    return !!propertyMatchers(name);
+  }
+}
+
+export const register = new Register();
