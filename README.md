@@ -43,21 +43,30 @@ import { tween } from 'drop-wave';
 // Define animation options
 // Create a tween animation
 
-const timeline = new Timeline({delay: 1,})
-const animation = timeline.to(elements, {
-  d uration: 2,
-    delay: 1,
-    space: 0.1,
-    ease: 'io2',
-    props: { opacity: 1 }
-}, "+1")
-.to(nextElements,{
-    duration: 2,
-    delay: 1,
-    space: 0.1,
-    ease: 'io2',
-    props: { opacity: 1 }
-}, "-.25");
+const timeline = new Timeline({ delay: 1 });
+const animation = timeline
+  .to(
+    elements,
+    {
+      duration: 2,
+      delay: 1,
+      space: 0.1,
+      ease: 'io2',
+      props: { opacity: 1 },
+    },
+    '+1'
+  )
+  .to(
+    nextElements,
+    {
+      duration: 2,
+      delay: 1,
+      space: 0.1,
+      ease: 'io2',
+      props: { opacity: 1 },
+    },
+    '-.25'
+  );
 
 // Control the animation
 timeline.reverse(); // Reverse the animation
@@ -147,5 +156,22 @@ const animation = tween(elements, {
       path: element.getAttribute("d"),
       points: element.getAttribute("points"),
     },
+});
+```
+
+```js
+import { register } from 'drop-wave';
+
+// check
+register.check('height');
+
+// push
+register.push('height', {
+  CSSName: 'height',
+  TweenFn: (tweenedObj, computedStyle) => {
+    const end = parseInt(computedStyle.height);
+    const lerp = interplation.end - tweenedObj;
+    return (time) => `${tweenedObj + interplation.lerp * time}px`;
+  },
 });
 ```
