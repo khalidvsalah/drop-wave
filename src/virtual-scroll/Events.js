@@ -59,8 +59,13 @@ export default class Events {
         this.iwheel = observer.subscribe('wheel', this.#_wheel.bind(this));
       }
     } else {
-      this.target.onpointerdown = this.#_down.bind(this);
-      this.target.onpointermove = this.#_move.bind(this);
+      if (drag) {
+        this.container.onpointerdown = this.#_down.bind(this);
+        this.container.onpointermove = this.#_move.bind(this);
+      }
+      if (wheel) {
+        this.container.onwheel = this.#_wheel.bind(this);
+      }
     }
 
     if (!observer.check('raf')) {
@@ -160,9 +165,9 @@ export default class Events {
       if (this.ikey) this.ikey.unsubscribe();
       if (this.iwheel) this.iwheel.unsubscribe();
     } else {
-      this.target.onwheel = null;
-      this.target.onpointerdown = null;
-      this.target.onpointermove = null;
+      this.container.onpointerdown = null;
+      this.container.onpointermove = null;
+      this.container.onwheel = null;
     }
   }
 }
