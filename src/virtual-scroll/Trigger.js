@@ -1,30 +1,11 @@
+import { units } from '../helpers/units.js';
 import { observer } from '../utils/Observer.js';
 import { processing } from '../processing/processing.js';
 import { offset } from '../methods/coordinate.js';
 import { css } from '../methods/css.js';
-import { tween } from '../tween/tween.js';
-
 import { clamp, normalize } from '../math/math.js';
 import { ease } from '../math/easing.js';
-
-/**
- * This function calculates the position of the triggered element
- * based on a string or number input.
- *
- * @param {string|number} str
- * @param {number} coord
- * @param {number} size
- */
-const calculatePosition = (str = '0', coord, size) => {
-  if (typeof str === 'number') {
-    return str;
-  }
-  const match = /^([+|-]\d+)(%|px)?/.exec(str);
-  if (match) {
-    const percentage = match[2] === '%';
-    return coord + (percentage ? (+match[1] * size) / 100 : +match[1]);
-  } else return coord;
-};
+import { tween } from '../tween/tween.js';
 
 export default class Trigger {
   #pin;
@@ -122,35 +103,16 @@ export default class Trigger {
     const coords = offset(this.target);
 
     if (this.#animate || this.#tween) {
-      const start = calculatePosition(
-        this.options.start,
-        coords[this.#dir],
-        coords[this.#size]
-      );
-      const end = calculatePosition(
-        this.options.end,
-        coords[this.#dirEnd],
-        coords[this.#size]
-      );
-
-      this.startPoint = start;
-      this.endPoint = end;
+      this.startPoint =
+        coords[this.#dir] + units(this.options.start, coords[this.#size]);
+      this.endPoint =
+        coords[this.#dirEnd] + units(this.options.end, coords[this.#size]);
     }
-
     if (this.#pin) {
-      const start = calculatePosition(
-        this.#pin.start,
-        coords[this.#dir],
-        coords[this.#size]
-      );
-      const end = calculatePosition(
-        this.#pin.end,
-        coords[this.#dirEnd],
-        coords[this.#size]
-      );
-
-      this.#pinStart = start;
-      this.#pinEnd = end;
+      this.#pinStart =
+        coords[this.#dir] + units(this.#pin.start, coords[this.#size]);
+      this.#pinEnd =
+        coords[this.#dirEnd] + units(this.#pin.end, coords[this.#size]);
     }
   }
 

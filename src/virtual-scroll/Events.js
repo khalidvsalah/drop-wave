@@ -27,8 +27,6 @@ export default class Events {
     if (Object.is(this.container, window)) {
       this.global = true;
 
-      window.history.scrollRestoration = 'manual';
-
       if (!observer.check('pointerdown')) {
         window.onpointerdown = observer.create('pointerdown').notify;
       }
@@ -87,6 +85,7 @@ export default class Events {
     const isOverlay = document.querySelector('[data-overlay]');
 
     if (!isOverlay) {
+      window.history.scrollRestoration = 'manual';
       this.overlay = document.createElement('div');
       win.body.appendChild(this.overlay);
       this.overlay.setAttribute('data-overlay', '');
