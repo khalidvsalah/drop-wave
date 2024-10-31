@@ -13,6 +13,6 @@ export default async function bundle({ src, dest }) {
     plugins: [minifyTemplates(), writeFiles(), babel({ config: {} })],
     minify: true,
     format: 'esm',
-    write: false
+    write: false,
   });
 }

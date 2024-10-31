@@ -1,3 +1,5 @@
+import './types/types';
+
 export { ease } from './math/easing';
 export { clamp, lerp, normalize, map, round, dist, damp } from './math/math';
 

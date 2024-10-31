@@ -17,7 +17,7 @@ export const cssProperties = [
   [/^(opacity|alpha)/, opacity, 'opacity'],
   [/^(clip|clipPath)/, clipPath, 'clip-path'],
   [/^(filter)/, filter, 'filter'],
-  [/^(draw)/, draw, 'draw'],
+  [/^(draw)/, draw, 'strokeDashoffset'],
 ];
 
 export const attributes = [
