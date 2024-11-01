@@ -1,3 +1,5 @@
+import { unitConventer, getUnit, getValue } from '../helpers/handleUnits.js';
+
 function matrix2d(match) {
   const values = match[1].split(',').map(Number);
 
@@ -105,18 +107,10 @@ function matrix3d(match) {
 }
 
 const translate = (start, end, size) => {
-  const split = /([+|-]?\d+)(%|px)?/.exec(end) || end;
-  const o = {
-    start: end
-      ? split[2] === 'px' || !split[2]
-        ? start
-        : (start / size) * 100
-      : start,
-    end: end ? +split[1] : start,
-    unit: end ? split[2] || 'px' : 'px',
-  };
-  o.lerp = o.end - o.start;
-  return (t) => `${o.start + o.lerp * t}${o.unit}`;
+  const unit = end ? getUnit(end)[0] : 'px';
+  start = unitConventer(start, size, unit).value;
+  const lerp = (end ? getValue(end)[0] : start) - start;
+  return (t) => `${start + lerp * t}${unit}`;
 };
 const _translate = (start, end, [width, height]) => {
   const xfrom = Array.isArray(end[0]);
