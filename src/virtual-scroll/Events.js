@@ -1,10 +1,10 @@
 import { observer } from '../utils/Observer';
 import { Choke } from '../methods/choke';
-import { raf } from '../utils/Raf';
 import { win } from '../methods/window';
 import { css } from '../methods/css';
 
-import { keyCodes } from './keycodes';
+import { raf } from '../utils/Raf';
+import { keyCodes } from './utils/keycodes';
 
 export default class Events {
   #choke = new Choke({
@@ -107,10 +107,9 @@ export default class Events {
   }
 
   #_onkey(e) {
-    if (e.key === 'Tab') {
-      e.preventDefault();
-    } else {
-      switch (e.keyCode) {
+    if (e.code === 'Tab') e.preventDefault();
+    else {
+      switch (e.code) {
         case keyCodes.LEFT:
         case keyCodes.UP:
           this.scroll.value -= 66.6;

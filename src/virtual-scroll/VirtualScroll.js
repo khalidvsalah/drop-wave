@@ -1,25 +1,19 @@
 import { win } from '../methods/window.js';
-import { css } from '../methods/css.js';
 import { bounds } from '../methods/coordinate.js';
 import { clamp, damp } from '../math/math.js';
 
 import Events from './Events.js';
 import Trigger from './Trigger.js';
 
-const translateElement = (element, value, isVertical) => {
-  if (isVertical) {
-    css.set(element, 'transform', `translate3d(0, ${value}px, 0)`);
-  } else {
-    css.set(element, 'transform', `translate3d(${value}px, 0, 0)`);
-  }
-};
+import XY from './utils/XY.js';
+
 const inRange = (start, end, coords, kid, isVertical, l) => {
   if (start <= coords.dimensions && end >= coords.padding) {
-    translateElement(kid, -l, isVertical);
+    XY(kid, -l, isVertical);
     coords.out = false;
   } else {
     if (!coords.out) {
-      translateElement(kid, -l, isVertical);
+      XY(kid, -l, isVertical);
       coords.out = true;
     }
   }
@@ -63,7 +57,7 @@ export class VirtualScroll extends Events {
 
   /**
    * @param {HTMLElement} target
-   * @param {TRIGGER_OPTIONS} [options]
+   * @param {TRIGGER_OPTIONS} options
    */
   add(target, options = {}) {
     options.channel = this.observer.name;
@@ -96,11 +90,7 @@ export class VirtualScroll extends Events {
             this.viewportSize;
           const offsetE = offsetS + this.viewportSize;
           if (offsetS <= coords.dimensions && offsetE >= coords.padding) {
-            translateElement(
-              kid,
-              this.viewportSize - offsetE,
-              this.#isVertical
-            );
+            XY(kid, this.viewportSize - offsetE, this.#isVertical);
           } else {
             inRange(
               start,
@@ -115,7 +105,7 @@ export class VirtualScroll extends Events {
           inRange(start, end, coords, kid, this.#isVertical, this.scroll.lerp);
         }
       });
-    } else translateElement(this.target, -this.scroll.lerp, this.#isVertical);
+    } else XY(this.target, -this.scroll.lerp, this.#isVertical);
 
     this.observer.notify(this.scroll);
     if (this.onUpdate) this.onUpdate(time, this.scroll);

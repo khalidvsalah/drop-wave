@@ -1,11 +1,11 @@
-import { units } from '../helpers/units.js';
+import { toPixels } from '../helpers/handleUnits.js';
 import { observer } from '../utils/Observer.js';
 import { processing } from '../processing/processing.js';
 import { offset } from '../methods/coordinate.js';
-import { css } from '../methods/css.js';
-import { clamp, normalize } from '../math/math.js';
+import { clamp, normalize, inRange } from '../math/math.js';
 import { ease } from '../math/easing.js';
 import { tween } from '../tween/tween.js';
+import XY from './utils/XY.js';
 
 export default class Trigger {
   #pin;
@@ -67,21 +67,20 @@ export default class Trigger {
   }
 
   #_pin() {
-    if (this.pined) {
-      if (!(this.coord >= this.#pinEnd)) {
-        const dist = Math.max(0, this.coord - this.#pin.scroll);
-        if (this.#isVertical) {
-          css.set(this.target, 'transform', `translate3d(0, ${dist}px, 0)`);
+    if (inRange(this.#pinStart, this.#pinEnd, this.coord)) {
+      this.pinOut = false;
+      const dist = Math.max(0, this.coord - this.#pinStart);
+      XY(this.target, dist, this.#isVertical);
+    } else {
+      if (!this.pinOut) {
+        if (this.coord > this.#pinEnd) {
+          const dist = this.#pinEnd - this.#pinStart;
+          XY(this.target, dist, this.#isVertical);
         } else {
-          css.set(this.target, 'transform', `translate3d(${dist}px, 0, 0)`);
+          XY(this.target, 0, this.#isVertical);
         }
+        this.pinOut = true;
       }
-    }
-    if (this.coord < this.#pinStart) {
-      this.pined = false;
-    } else if (this.coord >= this.#pinStart && !this.pined) {
-      this.#pin.scroll = this.coord;
-      this.pined = true;
     }
   }
 
@@ -104,15 +103,19 @@ export default class Trigger {
 
     if (this.#animate || this.#tween) {
       this.startPoint =
-        coords[this.#dir] + units(this.options.start, coords[this.#size]);
+        coords[this.#dir] +
+        toPixels(this.options.start, coords[this.#size]).pixels;
       this.endPoint =
-        coords[this.#dirEnd] + units(this.options.end, coords[this.#size]);
+        coords[this.#dirEnd] +
+        toPixels(this.options.end, coords[this.#size]).pixels;
     }
     if (this.#pin) {
       this.#pinStart =
-        coords[this.#dir] + units(this.#pin.start, coords[this.#size]);
+        coords[this.#dir] +
+        toPixels(this.#pin.start || 0, coords[this.#size]).pixels;
       this.#pinEnd =
-        coords[this.#dirEnd] + units(this.#pin.end, coords[this.#size]);
+        coords[this.#dirEnd] +
+        toPixels(this.#pin.end || 0, coords[this.#size]).pixels;
     }
   }
 
