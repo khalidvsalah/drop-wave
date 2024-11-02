@@ -1,3 +1,4 @@
+/** * @typedef {NodeList|Node|HTMLElement|Array} NODE */
 /** * @typedef {string|Array<string>} STRING_ARR */
 /** * @typedef {string|Array<number>} NUMBER_ARR */
 
@@ -54,11 +55,12 @@
 /**
  * Trigger options
  * @typedef {Object} TRIGGER_OPTIONS
- * @property {PROPERTIES} animate
- * @property {TWEEN_OPTIONS} tween
- * @property {string} ease
- * @property {string|number} start
- * @property {string|number} end
- * @property {{start:string|number, end:start|number}} pin
- * @property {Function} onUpdate
+ * @property {NODE} [trigger]
+ * @property {PROPERTIES} [animate]
+ * @property {TWEEN_OPTIONS} [tween]
+ * @property {string} [ease]
+ * @property {string|number} [start]
+ * @property {string|number} [end]
+ * @property {{start:string|number, end:start|number}} [pin]
+ * @property {Function} [onUpdate]
  */

@@ -8,17 +8,22 @@ import { tween } from '../tween/tween.js';
 import XY from './utils/XY.js';
 
 export default class Trigger {
-  #pin;
   #ease;
+  #trigger;
+
+  #pin;
   #animate;
   #tween;
-  #onUpdate;
+
   #dir;
   #isVertical;
   #size;
   #dirEnd;
+
   #pinStart;
   #pinEnd;
+
+  #onUpdate;
 
   /**
    * @param {HTMLElement} target
@@ -28,25 +33,33 @@ export default class Trigger {
     this.target = target;
     this.options = options;
 
-    this.#pin = options.pin;
+    this.#trigger = options.trigger
+      ? options.trigger.length
+        ? options.trigger
+        : [options.trigger]
+      : [target];
     this.#ease = ease[options.ease || 'linear'];
+
+    this.#pin = options.pin;
     this.#animate = options.animate;
     this.#tween = options.tween;
-    this.#onUpdate = options.onUpdate;
 
     this.#dir = options.dir;
     this.#isVertical = options.dir === 'y';
     this.#size = this.#isVertical ? 'h' : 'w';
     this.#dirEnd = this.#dir === 'y' ? 'yE' : 'xE';
 
-    this.pined = false;
+    this.#onUpdate = options.onUpdate;
 
     this.#init();
   }
 
   #init() {
     if (this.#animate) {
-      this.lerps = processing(this.target, this.#animate);
+      this.props = [];
+      this.#trigger.forEach((element) => {
+        this.props.push(processing(element, this.#animate));
+      });
     }
 
     this._resize();
@@ -58,11 +71,15 @@ export default class Trigger {
   }
 
   #_scroll(elapsed) {
-    this.lerps.map(({ cb, setValue }) => setValue(cb(this.#ease(elapsed))));
+    this.props.map((prop) => {
+      prop.forEach(({ setValue, cb }) => {
+        setValue(cb(this.#ease(elapsed)));
+      });
+    });
   }
 
   #_tween() {
-    if (this.#tween) tween(this.target, this.#tween);
+    tween(this.#trigger, this.#tween);
     this._destroy();
   }
 
@@ -86,15 +103,11 @@ export default class Trigger {
 
   #_update({ lerp }) {
     this.coord = lerp;
-    const elapsed = clamp(
-      0,
-      1,
-      normalize(this.startPoint, this.endPoint, this.coord)
-    );
+    const elapsed = clamp(0, 1, normalize(this.start, this.end, this.coord));
 
     if (this.#pin) this.#_pin();
     if (this.#animate) this.#_scroll(elapsed);
-    if (this.#tween) if (this.startPoint <= this.coord) this.#_tween();
+    if (this.#tween) if (this.start <= this.coord) this.#_tween();
     if (this.#onUpdate) this.#onUpdate(elapsed, this.target);
   }
 
@@ -102,12 +115,12 @@ export default class Trigger {
     const coords = offset(this.target);
 
     if (this.#animate || this.#tween) {
-      this.startPoint =
+      this.start =
         coords[this.#dir] +
-        toPixels(this.options.start, coords[this.#size]).pixels;
-      this.endPoint =
+        toPixels(this.options.start || '0', coords[this.#size]).pixels;
+      this.end =
         coords[this.#dirEnd] +
-        toPixels(this.options.end, coords[this.#size]).pixels;
+        toPixels(this.options.end || '0', coords[this.#size]).pixels;
     }
     if (this.#pin) {
       this.#pinStart =
