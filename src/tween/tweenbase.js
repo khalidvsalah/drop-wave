@@ -96,7 +96,6 @@ export default class TweenBase {
 
   stop() {
     this.isRunning = false;
-    this.delay.destroy();
     raf.kill(this.animationId);
   }
 

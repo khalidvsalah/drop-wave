@@ -1,11 +1,11 @@
 import { raf } from './Raf';
 
 export class Delay {
-  #d = 0;
+  #duration = 0;
   #o = 0;
 
   constructor({ d, o, cb }) {
-    this.#d = d;
+    this.#duration = d;
     this.#o = o;
 
     this.cb = cb;
@@ -13,18 +13,18 @@ export class Delay {
   }
 
   play() {
-    if (this.#d === 0) this.#done();
-    else this.id = raf.push({ cb: this.#loop.bind(this), d: this.#d });
+    if (this.#duration === 0) this.#done();
+    else this.id = raf.push({ cb: this.#loop.bind(this), d: this.#duration });
     this.on = true;
+  }
+
+  #loop(t) {
+    if (t === 1) this.#done();
   }
 
   destroy() {
     raf.kill(this.id);
     this.on = false;
-  }
-
-  #loop(t) {
-    if (t === 1) this.#done();
   }
 
   #done() {

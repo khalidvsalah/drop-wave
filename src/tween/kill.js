@@ -9,7 +9,9 @@ export const kill = (elements) => {
 
   elements.forEach((element) => {
     if (tweensStorage.has(element)) {
-      tweensStorage.get(element).stop();
+      const tween = tweensStorage.get(element);
+      tween.stop();
+      tween.delay.destroy();
     }
   });
 };
