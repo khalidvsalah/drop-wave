@@ -6,17 +6,11 @@ import { raf } from '../utils/Raf';
 
 import { Delay } from '../Utils/Delay';
 
-/**
- * Tween Base Class
- * For each element, a new instance is created.
- *
- * @class
- */
 export default class TweenBase {
   /**
    *
    * @param {HTMLElement} element
-   * @param {import('../types/tweenTypes').TWEEN_OPTIONS} options
+   * @param {TWEEN_OPTIONS} options
    */
   constructor(element, options) {
     this.element = element;
@@ -102,6 +96,7 @@ export default class TweenBase {
 
   stop() {
     this.isRunning = false;
+    this.delay.destroy();
     raf.kill(this.animationId);
   }
 
