@@ -51,7 +51,9 @@ export function tween(elements, options = {}) {
      */
     const tweenNodes = nodes.map((element, i) => {
       let delay = options.delay;
-      delay += options.space * i;
+      delay +=
+        Math.abs(options.space) *
+        (Math.sign(options.space) < 0 ? nodes.length - 1 - i : i);
 
       if (i !== 0) {
         options.onStart = undefined;
