@@ -48,7 +48,6 @@
  * @property {boolean} [wheel]
  * @property {boolean} [key]
  * @property {number} [speed]
- * @property {Function} [onUpdate]
  * @property {boolean} [infinite]
  */
 
