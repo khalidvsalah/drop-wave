@@ -120,8 +120,8 @@ export class VirtualScroll extends Events {
   _resize() {
     this.coords = offset(this.target);
 
-    const dim = this.#isY ? 'Height' : 'Width';
-    this.viewportSize = win.html['offset' + dim];
+    const dim = this.#isY ? 'h' : 'w';
+    this.viewportSize = win.screen[dim];
     this.totalHeight =
       this.coords[dim] - (this.infinite ? 0 : this.viewportSize);
 
