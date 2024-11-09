@@ -1,4 +1,4 @@
-const CIRCLE_REGEX = /(\d+)%?( at (\d+)%? (\d+)%?)?/;
+const CIRCLE_REGEX = /(\d+(\.\d+)?)%?( at (\d+(\.\d+)?)%? (\d+(\.\d+)?)%?)?/;
 const POLYGON_COORDS_REGEX = /\((.*)\)/;
 
 const _circle = (s, e) => {
@@ -24,7 +24,7 @@ const _circle = (s, e) => {
 
 const points = (arr) => {
   return arr.split(',').map((str) => {
-    const arr = str.match(/\d+/g);
+    const arr = str.match(/\d+(\.\d+)?/g);
     return [+arr[0], +arr[1]];
   });
 };

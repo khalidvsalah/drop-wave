@@ -1,6 +1,6 @@
 let attr;
-const unit = attr => {
-  const [, number, unit] = /(\d+)(%|px)?/.exec(attr);
+const unit = (attr) => {
+  const [, number, unit] = /((\d+(\.\d+)?))(%|px)?/.exec(attr);
   return [+number, unit];
 };
 
@@ -17,12 +17,12 @@ const setAttribute = (end, { element }, attribute) => {
   const o = {
     start: ofrom ? +end[0] : start[0],
     end: ofrom ? +end[1] : +end,
-    unit: start[1] || ''
+    unit: start[1] || '',
   };
 
   o.lerp = o.end - o.start;
-  return t => `${o.start + o.lerp * t + o.unit}`;
+  return (t) => `${o.start + o.lerp * t + o.unit}`;
 };
 
-const setValue = element => value => element.setAttribute(attr, value);
+const setValue = (element) => (value) => element.setAttribute(attr, value);
 export default { callback: setAttribute, setValue };
