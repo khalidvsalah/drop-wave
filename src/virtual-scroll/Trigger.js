@@ -1,4 +1,5 @@
 import { toPixels } from '../helpers/handleUnits.js';
+import selector from '../helpers/selector.js';
 import { observer } from '../utils/Observer.js';
 import { processing } from '../processing/processing.js';
 import { offset } from '../methods/coordinate.js';
@@ -16,12 +17,15 @@ export default class Trigger {
   #tween;
 
   #dir;
-  #isVertical;
+  #isY;
   #size;
   #dirEnd;
 
   #pinStart;
   #pinEnd;
+
+  #iresize;
+  #iupdate;
 
   #onUpdate;
 
@@ -30,23 +34,21 @@ export default class Trigger {
    * @param {TRIGGER_OPTIONS} options
    */
   constructor(target, options) {
-    this.target = target;
+    this.target = selector(target)[0]; // do: edit it for multiple elements
     this.options = options;
 
-    this.#trigger = options.trigger
-      ? options.trigger.length
-        ? options.trigger
-        : [options.trigger]
-      : [target];
+    this.#trigger = options.trigger ? selector(options.trigger) : [target];
     this.#ease = ease[options.ease || 'linear'];
+
+    console.log(this.#trigger);
 
     this.#pin = options.pin;
     this.#animate = options.animate;
     this.#tween = options.tween;
 
     this.#dir = options.dir;
-    this.#isVertical = options.dir === 'y';
-    this.#size = this.#isVertical ? 'h' : 'w';
+    this.#isY = options.dir === 'y';
+    this.#size = this.#isY ? 'h' : 'w';
     this.#dirEnd = this.#dir === 'y' ? 'yE' : 'xE';
 
     this.#onUpdate = options.onUpdate;
@@ -62,12 +64,12 @@ export default class Trigger {
       });
     }
 
-    this._resize();
-    this.iupdate = observer.subscribe(
+    this.#iresize = observer.subscribe('resize', this.#_resize.bind(this));
+    this.#_resize();
+    this.#iupdate = observer.subscribe(
       this.options.channel,
       this.#_update.bind(this)
     );
-    this.iresize = observer.subscribe('resize', this._resize.bind(this));
   }
 
   #_scroll(elapsed) {
@@ -84,17 +86,17 @@ export default class Trigger {
   }
 
   #_pin() {
-    if (inRange(this.#pinStart, this.#pinEnd, this.coord)) {
+    if (inRange(this.#pinStart, this.#pinEnd, this.scroll)) {
       this.pinOut = false;
-      const dist = Math.max(0, this.coord - this.#pinStart);
-      XY(this.target, dist, this.#isVertical);
+      const dist = Math.max(0, this.scroll - this.#pinStart);
+      XY(this.target, dist, this.#isY);
     } else {
       if (!this.pinOut) {
-        if (this.coord > this.#pinEnd) {
+        if (this.scroll > this.#pinEnd) {
           const dist = this.#pinEnd - this.#pinStart;
-          XY(this.target, dist, this.#isVertical);
+          XY(this.target, dist, this.#isY);
         } else {
-          XY(this.target, 0, this.#isVertical);
+          XY(this.target, 0, this.#isY);
         }
         this.pinOut = true;
       }
@@ -102,16 +104,16 @@ export default class Trigger {
   }
 
   #_update({ lerp }) {
-    this.coord = lerp;
-    const elapsed = clamp(0, 1, normalize(this.start, this.end, this.coord));
+    this.scroll = lerp;
+    const elapsed = clamp(0, 1, normalize(this.start, this.end, this.scroll));
 
     if (this.#pin) this.#_pin();
     if (this.#animate) this.#_scroll(elapsed);
-    if (this.#tween) if (this.start <= this.coord) this.#_tween();
+    if (this.#tween) if (this.start <= this.scroll) this.#_tween();
     if (this.#onUpdate) this.#onUpdate(elapsed, this.target);
   }
 
-  _resize() {
+  #_resize() {
     const coords = offset(this.target);
 
     if (this.#animate || this.#tween) {
@@ -133,7 +135,7 @@ export default class Trigger {
   }
 
   _destroy() {
-    this.iresize.unsubscribe();
-    this.iupdate.unsubscribe();
+    this.#iresize.unsubscribe();
+    this.#iupdate.unsubscribe();
   }
 }
