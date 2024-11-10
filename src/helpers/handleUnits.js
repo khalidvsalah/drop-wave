@@ -1,6 +1,7 @@
 import { win } from '../methods/window';
 
 export const getValue = (value) => value.match(/^([+|-]?\d+(\.\d+)?)/g);
+
 export const getUnit = (value) => value.match(/(%|px|vw|vh)/g) || ['px'];
 
 export function toPixels(value, size) {

@@ -21,6 +21,7 @@ export default class Trigger {
   #size;
   #dirEnd;
 
+  #pinOut;
   #pinStart;
   #pinEnd;
 
@@ -39,8 +40,6 @@ export default class Trigger {
 
     this.#trigger = options.trigger ? selector(options.trigger) : [target];
     this.#ease = ease[options.ease || 'linear'];
-
-    console.log(this.#trigger);
 
     this.#pin = options.pin;
     this.#animate = options.animate;
@@ -87,18 +86,18 @@ export default class Trigger {
 
   #_pin() {
     if (inRange(this.#pinStart, this.#pinEnd, this.scroll)) {
-      this.pinOut = false;
+      this.#pinOut = false;
       const dist = Math.max(0, this.scroll - this.#pinStart);
       XY(this.target, dist, this.#isY);
     } else {
-      if (!this.pinOut) {
+      if (!this.#pinOut) {
         if (this.scroll > this.#pinEnd) {
           const dist = this.#pinEnd - this.#pinStart;
           XY(this.target, dist, this.#isY);
         } else {
           XY(this.target, 0, this.#isY);
         }
-        this.pinOut = true;
+        this.#pinOut = true;
       }
     }
   }
@@ -114,23 +113,39 @@ export default class Trigger {
   }
 
   #_resize() {
+    this.#pinOut = false;
     const coords = offset(this.target);
 
     if (this.#animate || this.#tween) {
-      this.start =
-        coords[this.#dir] +
-        toPixels(this.options.start || '0', coords[this.#size]).pixels;
-      this.end =
-        coords[this.#dirEnd] +
-        toPixels(this.options.end || '0', coords[this.#size]).pixels;
+      const start =
+        typeof this.options.start === 'function'
+          ? this.options.start(coords[this.#dir])
+          : coords[this.#dir] +
+            toPixels(this.options.start || '0', coords[this.#size]).pixels;
+      const end =
+        typeof this.options.end === 'function'
+          ? this.options.end(coords[this.#dirEnd])
+          : coords[this.#dirEnd] +
+            toPixels(this.options.end || '0', coords[this.#size]).pixels;
+
+      this.start = start;
+      this.end = end;
     }
+
     if (this.#pin) {
-      this.#pinStart =
-        coords[this.#dir] +
-        toPixels(this.#pin.start || 0, coords[this.#size]).pixels;
-      this.#pinEnd =
-        coords[this.#dirEnd] +
-        toPixels(this.#pin.end || 0, coords[this.#size]).pixels;
+      const start =
+        typeof this.#pin.start === 'function'
+          ? this.#pin.start(coords[this.#dir])
+          : coords[this.#dir] +
+            toPixels(this.#pin.start || '0', coords[this.#size]).pixels;
+      const end =
+        typeof this.#pin.end === 'function'
+          ? this.#pin.end(coords[this.#dirEnd])
+          : coords[this.#dirEnd] +
+            toPixels(this.#pin.end || '0', coords[this.#size]).pixels;
+
+      this.#pinStart = start;
+      this.#pinEnd = end;
     }
   }
 
