@@ -1,7 +1,7 @@
 import { lerp } from '../math/math';
-import { NUMBER } from '../helpers/regex';
+import { NUMERIC } from '../helpers/regex';
 
-const PAIR = new RegExp(NUMBER + ',' + NUMBER, 'g');
+const PAIR = new RegExp(NUMERIC + ',' + NUMERIC, 'g');
 const getPairs = (str) => str.match(PAIR).map((pair) => pair.split(','));
 
 function interpolatePoints(start, end) {

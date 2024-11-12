@@ -1,1 +1,1 @@
-export const NUMBER = '(\\d+(\\.\\d+)?)';
+export const NUMERIC = '(\\d+(\\.\\d+)?)';
