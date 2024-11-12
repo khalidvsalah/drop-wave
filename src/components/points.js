@@ -1,38 +1,69 @@
 import { lerp } from '../math/math';
+import { NUMBER } from '../helpers/regex';
 
-/**
- * @param {string} pointString
- * @returns {(number|string)[]} - An array of numbers and strings parsed from the input string.
- */
-const parsePoints = (pointString) => {
-  const result = [];
-  const pointPairs = pointString.split(' ');
+const PAIR = new RegExp(NUMBER + ',' + NUMBER, 'g');
+const getPairs = (str) => str.match(PAIR).map((pair) => pair.split(','));
 
-  for (const pair of pointPairs) {
-    const coordinates = pair.split(',');
-    for (const coord of coordinates) {
-      result.push(isNaN(coord) ? coord : +coord);
+function interpolatePoints(start, end) {
+  const results = [];
+
+  const sLength = start.length;
+  const eLength = end.length;
+
+  if (sLength < eLength) end = start;
+
+  let length = Math.max(sLength, eLength);
+  const segments = Math.min(sLength, eLength);
+
+  for (let i = 0; i < segments; i++) {
+    const vertices = Math.ceil(length / (segments - i));
+    const [startX, startY] = end[i];
+    const [endX, endY] = end[i + 1] || end[0];
+
+    for (let k = 0; k < vertices; k++) {
+      const map = k / (vertices - 1) || 0;
+      const x = lerp(+startX, +endX, map);
+      const y = lerp(+startY, +endY, map);
+      results.push([x, y]);
     }
+
+    length -= vertices;
   }
 
-  return result;
-};
+  return results;
+}
 
 /**
  * Creates an interpolating function between two sets of point coordinates.
- * @param {string} p
+ * @param {string} target
  * @param {object} info
  * @returns {Function}
  */
-const points = (p, { element }) => {
-  const startPoints = parsePoints(element.getAttribute('points'));
-  const endPoints = parsePoints(p);
+const points = (target, { element }) => {
+  let start = getPairs(element.getAttribute('points'));
+  let end = getPairs(target);
+
+  const newPoints = interpolatePoints(start, end);
+
+  if (start.length > end.length) end = newPoints;
+  else start = newPoints;
 
   return (t) => {
-    return startPoints
-      .map((point, i) => lerp(point, endPoints[i], t))
-      .join(' ');
+    return start
+      .map((point, idx) => {
+        const [x, y] = point;
+        const [nX, nY] = end[idx];
+        return `${lerp(x, nX, t)},${lerp(y, nY, t)} `;
+      })
+      .join('');
   };
 };
 
 export default points;
+
+/**
+ * get vertexs.
+ * get numbers of steps
+ * ceil start
+ * map vertexs.
+ */

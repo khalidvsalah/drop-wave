@@ -119,12 +119,12 @@ export default class Trigger {
     if (this.#animate || this.#tween) {
       const start =
         typeof this.options.start === 'function'
-          ? this.options.start(coords[this.#dir])
+          ? this.options.start(coords)
           : coords[this.#dir] +
             toPixels(this.options.start || '0', coords[this.#size]).pixels;
       const end =
         typeof this.options.end === 'function'
-          ? this.options.end(coords[this.#dirEnd])
+          ? this.options.end(coords)
           : coords[this.#dirEnd] +
             toPixels(this.options.end || '0', coords[this.#size]).pixels;
 
@@ -135,12 +135,12 @@ export default class Trigger {
     if (this.#pin) {
       const start =
         typeof this.#pin.start === 'function'
-          ? this.#pin.start(coords[this.#dir])
+          ? this.#pin.start(coords)
           : coords[this.#dir] +
             toPixels(this.#pin.start || '0', coords[this.#size]).pixels;
       const end =
         typeof this.#pin.end === 'function'
-          ? this.#pin.end(coords[this.#dirEnd])
+          ? this.#pin.end(coords)
           : coords[this.#dirEnd] +
             toPixels(this.#pin.end || '0', coords[this.#size]).pixels;
 

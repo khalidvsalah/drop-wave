@@ -18,6 +18,8 @@
  * @property {CLIP_PATH} [clipPath]
  * @property {{gray:FROM_TO, blur:FROM_TO, contrast:FROM_TO}} [filter]
  * @property {NUMBER_ARR} [draw]
+ * @property {string} [points]
+ * @property {string} [path]
  */
 
 /**
