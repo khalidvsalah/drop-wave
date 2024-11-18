@@ -34,7 +34,11 @@ class Raf {
         o.cb(elapsed);
 
         if (elapsed === 1) this.kill(o.id);
-      } else o.cb(t);
+      } else if (o.d === -1) {
+        o.cb(t);
+      } else {
+        this.kill(o.id);
+      }
     }
 
     this.#loop();
