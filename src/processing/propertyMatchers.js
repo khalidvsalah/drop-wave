@@ -58,12 +58,16 @@ export function propertyMatchers(name) {
  * @return {object}
  */
 export function propertyTweener(element, name) {
-  const { type, callback, property } = propertyMatchers(name);
-  return {
-    setValue: (value) =>
-      type === 'css'
-        ? (element.style[property] = value)
-        : element.setAttribute(property, value),
-    callback,
-  };
+  try {
+    const { type, callback, property } = propertyMatchers(name);
+    return {
+      setValue: (value) =>
+        type === 'css'
+          ? (element.style[property] = value)
+          : element.setAttribute(property, value),
+      callback,
+    };
+  } catch (e) {
+    throw new ReferenceError(`The Provided CSS Property not defined (${name})`);
+  }
 }
