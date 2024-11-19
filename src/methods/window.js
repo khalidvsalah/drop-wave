@@ -6,4 +6,5 @@ export const win = {
   head: document.head,
   body: document.body,
   has: (obj, prop) => window.hasOwnProperty.call(obj, prop),
+  is: (obj1, obj2) => Object.is(obj1, obj2),
 };
