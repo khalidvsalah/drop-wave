@@ -14,9 +14,9 @@ export { Delay } from './utils/Delay';
 
 export { processing } from './processing/processing';
 
-export { kill } from './tween/kill';
-export { tween } from './tween/tween';
-export { Timeline } from './tween/Timeline';
+export { kill } from './core/tween/kill';
+export { tween } from './core/tween/tween';
+export { Timeline } from './core/timeline/Timeline';
 
 export { VirtualScroll } from './virtual-scroll/VirtualScroll';
 

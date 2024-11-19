@@ -1,16 +1,16 @@
-import { ease } from '../math/easing';
-import { clamp } from '../math/math';
+import { ease } from '../../math/easing';
+import { clamp } from '../../math/math';
 
-import { processing } from '../processing/processing';
-import { raf } from '../utils/Raf';
+import { processing } from '../../processing/processing';
 
-import { Delay } from '../Utils/Delay';
+import { raf } from '../../utils/Raf';
+import { Delay } from '../../utils/Delay';
 
 export default class TweenBase {
   /**
    *
    * @param {HTMLElement} element
-   * @param {TWEEN_OPTIONS} options
+   * @param {tweenOptionsType} options
    */
   constructor(element, options) {
     this.element = element;
@@ -33,42 +33,48 @@ export default class TweenBase {
     this.properties.forEach(({ setValue, cb }) => setValue(cb(easedValue)));
 
     if (this.onUpdate) this.onUpdate(easedValue, this.element);
-    if (this.elapsed === 1) this.done();
+    if (this.elapsed === 1) this._done();
+  }
+
+  fire() {
+    this.animationId = raf.push({
+      cb: this.update.bind(this),
+      d: this.duration,
+    });
   }
 
   execute(nextTween) {
-    if (this.isRunning) this.done();
-
-    this.dir = nextTween.mode === 'reverse' ? 1 : 0;
-    this.mode = nextTween.mode;
-
-    if (this.onStart) {
-      this.onStart(this.element);
-      this.onStart = null;
-    }
-
     if (nextTween.props) {
+      if (this.isRunning) this._done();
+      this.dir = 0;
+
+      if (this.onStart) {
+        this.onStart(this.element);
+        this.onStart = null;
+      }
+
       this.duration = nextTween.duration;
       this.ease = ease[nextTween.ease];
 
       this.properties = processing(this.element, nextTween.props);
       this.progress = 0;
+
+      this.fire();
     } else {
-      this.progress = 1 - this.elapsed;
+      this.dir = nextTween.mode === 'reverse' ? 1 : 0;
+      if (nextTween.mode !== this.mode) {
+        if (this.isRunning) this._done();
+        this.fire();
+        this.progress = 1 - this.elapsed;
+      }
     }
 
-    if (this.properties.length) {
-      this.animationId = raf.push({
-        cb: this.update.bind(this),
-        d: this.duration,
-      });
-    }
+    this.mode = nextTween.mode;
   }
 
   /**
-   *
    * @param {string} mode
-   * @param {import('../types/tweenTypes').TWEEN_OPTIONS} options
+   * @param {tweenOptionsType} options
    */
   push(mode, options = {}) {
     ++this.callIndex;
@@ -77,16 +83,9 @@ export default class TweenBase {
     this.onUpdate = options.onUpdate;
     this.onComplete = options.onComplete;
 
-    this.queue.push({
-      duration: options.duration,
-      delay: options.delay,
-      space: options.space,
-      ease: options.ease,
-      props: options.props,
-      mode,
-    });
+    const nextTween = { mode, ...options };
+    this.queue.push(nextTween);
 
-    const nextTween = this.queue[this.callIndex];
     this.delay = new Delay({
       cb: this.execute.bind(this, nextTween),
       d: nextTween.delay,
@@ -94,13 +93,13 @@ export default class TweenBase {
     this.delay.play();
   }
 
-  stop() {
+  _stop() {
     this.isRunning = false;
     raf.kill(this.animationId);
   }
 
-  done() {
-    this.stop();
+  _done() {
+    this._stop();
     if (this.onComplete) {
       this.onComplete(this.element);
       this.onComplete = null;
