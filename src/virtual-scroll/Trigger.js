@@ -5,8 +5,8 @@ import { processing } from '../processing/processing.js';
 import { offset } from '../methods/coordinate.js';
 import { clamp, normalize, inRange } from '../math/math.js';
 import { ease } from '../math/easing.js';
-import { tween } from '../tween/tween.js';
-import XY from './utils/XY.js';
+import { tween } from '../core/tween/tween.js';
+import { CSSTransform } from './utils/helpers.js';
 
 export default class Trigger {
   #ease;
@@ -32,7 +32,7 @@ export default class Trigger {
 
   /**
    * @param {HTMLElement} target
-   * @param {TRIGGER_OPTIONS} options
+   * @param {triggerOptionsType} options
    */
   constructor(target, options) {
     this.target = selector(target)[0]; // do: edit it for multiple elements
@@ -88,14 +88,14 @@ export default class Trigger {
     if (inRange(this.#pinStart, this.#pinEnd, this.scroll)) {
       this.#pinOut = false;
       const dist = Math.max(0, this.scroll - this.#pinStart);
-      XY(this.target, dist, this.#isY);
+      CSSTransform(this.target, dist, this.#isY);
     } else {
       if (!this.#pinOut) {
         if (this.scroll > this.#pinEnd) {
           const dist = this.#pinEnd - this.#pinStart;
-          XY(this.target, dist, this.#isY);
+          CSSTransform(this.target, dist, this.#isY);
         } else {
-          XY(this.target, 0, this.#isY);
+          CSSTransform(this.target, 0, this.#isY);
         }
         this.#pinOut = true;
       }

@@ -5,24 +5,14 @@ import { clamp, damp } from '../math/math.js';
 import Events from './Events.js';
 import Trigger from './Trigger.js';
 
-import XY from './utils/XY.js';
-
-const childInRange = (child, { topBar, bottomBar }, coords, scroll, isY) => {
-  if (topBar <= coords.end && bottomBar >= coords.start) {
-    XY(child, -scroll, isY);
-    coords.out = false;
-  } else if (!coords.out) {
-    XY(child, -scroll, isY);
-    coords.out = true;
-  }
-};
+import { CSSTransform, inRange } from './utils/helpers.js';
 
 export class VirtualScroll extends Events {
   #isY = false;
 
   /**
    * @param {HTMLElement} target
-   * @param {SCROLL_OPTIONS} [options]
+   * @param {scrollOptionsType} [options]
    */
   constructor(target, options = {}) {
     super();
@@ -34,7 +24,7 @@ export class VirtualScroll extends Events {
       drag = true,
       wheel = true,
       key = true,
-      speed = 0.09,
+      ease = 0.09,
     } = options;
 
     this.target = target;
@@ -46,7 +36,7 @@ export class VirtualScroll extends Events {
 
     this.init({ drag, wheel, key, name });
 
-    this.speed = speed;
+    this.ease = ease;
     this.infinite = options.infinite;
     this.children = [...this.target.children];
 
@@ -55,7 +45,7 @@ export class VirtualScroll extends Events {
 
   /**
    * @param {HTMLElement} target
-   * @param {TRIGGER_OPTIONS} options
+   * @param {triggerOptionsType} options
    */
   add(target, options = {}) {
     options.channel = this.observer.name;
@@ -67,7 +57,7 @@ export class VirtualScroll extends Events {
     if (!this.infinite) {
       this.scroll.value = clamp(0, this.totalHeight, this.scroll.value);
     }
-    this.scroll.lerp = damp(this.scroll.lerp, this.scroll.value, this.speed);
+    this.scroll.lerp = damp(this.scroll.lerp, this.scroll.value, this.ease);
 
     if (this.infinite) {
       // switching
@@ -91,9 +81,9 @@ export class VirtualScroll extends Events {
             this.viewportSize;
           const offsetEnd = offsetStart + this.viewportSize;
           if (offsetStart <= coords.end && offsetEnd >= coords.start) {
-            XY(child, this.viewportSize - offsetEnd, this.#isY);
+            CSSTransform(child, this.viewportSize - offsetEnd, this.#isY);
           } else {
-            childInRange(
+            inRange(
               child,
               { topBar, bottomBar },
               coords,
@@ -102,7 +92,7 @@ export class VirtualScroll extends Events {
             );
           }
         } else {
-          childInRange(
+          inRange(
             child,
             { topBar, bottomBar },
             coords,
@@ -112,7 +102,7 @@ export class VirtualScroll extends Events {
         }
       });
     } else {
-      XY(this.target, -this.scroll.lerp, this.#isY);
+      CSSTransform(this.target, -this.scroll.lerp, this.#isY);
     }
     this.observer.notify(this.scroll);
   }

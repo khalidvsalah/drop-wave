@@ -1,30 +1,21 @@
 import { observer } from '../utils/Observer';
-import { Choke } from '../methods/choke';
 import { win } from '../methods/window';
-import { css } from '../methods/css';
 
 import { raf } from '../utils/Raf';
-import { keyCodes } from './utils/keycodes';
+import { keyCodes, scaler, device } from './utils/support';
 
 export default class Events {
-  #choke = new Choke({
-    d: 0.3,
-    cb: () => {
-      css.set(this.overlay, 'pointer-events', 'none');
-    },
-  });
-
   #dist = 0;
 
   constructor() {
-    this.#overlay();
     this.scroll = { value: 0, lerp: 0, dir: 1 };
   }
 
   init({ drag, key, wheel, name }) {
     this.observer = observer.create(name);
 
-    if (Object.is(this.container, window)) {
+    if (win.is(this.container, window)) {
+      window.history.scrollRestoration = 'manual';
       this.global = true;
 
       if (!observer.check('pointerdown')) {
@@ -67,7 +58,7 @@ export default class Events {
     }
 
     if (!observer.check('raf')) {
-      raf.push({ cb: observer.create('raf').notify });
+      raf.push({ cb: observer.create('raf').notify, d: -1 });
     }
     if (!observer.check('resize')) {
       window.onresize = observer.create('resize').notify;
@@ -81,26 +72,12 @@ export default class Events {
     this.ipointerup = observer.subscribe('pointerup', this.#_up.bind(this));
   }
 
-  #overlay() {
-    const isOverlay = document.querySelector('[data-overlay]');
-
-    if (!isOverlay) {
-      window.history.scrollRestoration = 'manual';
-      this.overlay = document.createElement('div');
-      win.body.appendChild(this.overlay);
-      this.overlay.setAttribute('data-overlay', '');
-      this.overlay.style.cssText = `
-        position: fixed; z-index: 999;
-        top: 0; left: 0;
-        width: 100vw; height: 100vh;
-        pointer-events: none;
-      `;
-    } else this.overlay = isOverlay;
-  }
-
   #_wheel(e) {
-    const multip = e.deltaMode === 1 ? 0.83 : 0.55;
-    const offset = e.wheelDeltaY * multip;
+    let offset = e.wheelDeltaY || e.deltaY;
+
+    if (device.isFirefox && e.deltaMode === 1) {
+      offset *= scaler.mouse;
+    }
 
     this.scroll.value -= offset;
     this.scroll.dir = Math.sign(offset);
@@ -112,39 +89,36 @@ export default class Events {
       switch (e.code) {
         case keyCodes.LEFT:
         case keyCodes.UP:
-          this.scroll.value -= 66.6;
+          this.scroll.value -= 120;
           break;
         case keyCodes.RIGHT:
         case keyCodes.DOWN:
-          this.scroll.value += 66.6;
+          this.scroll.value += 120;
           break;
 
         case keyCodes.SPACE:
-          this.scroll.value -= win.screen.h * 0.75 * (e.shiftKey ? 1 : -1);
+          this.scroll.value -= (win.screen.h - 40) * (e.shiftKey ? 1 : -1);
           break;
       }
     }
   }
 
   #_down(e) {
-    this.mousedown = true;
+    this.isMouseDown = true;
     this.#dist = e[this.axis];
   }
 
   #_move(e) {
-    if (this.mousedown) {
-      const offset = e[this.axis] - this.#dist;
+    if (this.isMouseDown) {
+      const offset = (e[this.axis] - this.#dist) * scaler.drag;
       this.scroll.value -= offset;
       this.#dist = e[this.axis];
       this.scroll.dir = Math.sign(offset);
-
-      if (this.global) css.set(this.overlay, 'pointer-events', 'all');
     }
   }
 
   #_up() {
-    this.mousedown = false;
-    this.#choke.run();
+    this.isMouseDown = false;
   }
 
   _destroy() {
