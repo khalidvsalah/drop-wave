@@ -27,15 +27,15 @@ class Raf {
     for (let i = 0; i < this.#items.length; i++) {
       const o = this.#items[i];
 
-      if (o.d) {
+      if (o.d === -1) {
+        o.cb(t);
+      } else if (typeof o.d === 'number') {
         if (!o.st) o.st = t;
         const time = (t - o.st) / (o.d * 1e3);
         const elapsed = clamp(0, 1, time);
         o.cb(elapsed);
 
         if (elapsed === 1) this.kill(o.id);
-      } else if (o.d === -1) {
-        o.cb(t);
       } else {
         this.kill(o.id);
       }
