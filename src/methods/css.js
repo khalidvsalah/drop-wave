@@ -1,4 +1,4 @@
-import { computed } from './coordinate';
+import { computed } from '../helpers/computed';
 
 /**
  * @typedef {Object} css

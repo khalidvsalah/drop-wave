@@ -1,10 +1,6 @@
 /**
- * @typedef {{w:number, h:number, x:number, y:number, xE:number, yE:number}} Coordinates
- * */
-
-/**
  * @param {HTMLElement} element
- * @returns {Coordinates}
+ * @returns {coordinatesType}
  */
 const bounds = (element) => {
   const rect = element.getBoundingClientRect();
@@ -20,7 +16,7 @@ const bounds = (element) => {
 
 /**
  * @param {HTMLElement} element
- * @returns {Coordinates}
+ * @returns {coordinatesType}
  */
 const offset = (element) => {
   const width = element.offsetWidth;
@@ -38,8 +34,4 @@ const offset = (element) => {
   };
 };
 
-/**
- * @param {HTMLElement} element
- */
-const computed = (element) => window.getComputedStyle(element);
-export { bounds, computed, offset };
+export { bounds, offset };

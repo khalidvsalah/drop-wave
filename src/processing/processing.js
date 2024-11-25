@@ -1,13 +1,13 @@
-import { computed } from '../methods/coordinate';
+import { computed } from '../helpers/computed';
 import tweeningObj from './helpers/tweeningObj';
 
 /**
  * Get properties tween function
  * @param {HTMLElement} element - targeted element.
- * @param {object} ps - properties.
+ * @param {object} props - properties.
  * @returns {Array} - array of tweened function.
  */
-function processDOMElement(element, ps) {
+function processDOMElement(element, props) {
   const results = [];
   const info = {};
 
@@ -15,7 +15,7 @@ function processDOMElement(element, ps) {
   info.parent = element.parentNode;
   info.computed = computed(element);
 
-  for (const [regex, obj] of Object.entries(ps)) {
+  for (const [regex, obj] of Object.entries(props)) {
     const { setValue, callback } = tweeningObj(element, regex);
     results.push({
       setValue,
@@ -28,15 +28,15 @@ function processDOMElement(element, ps) {
 
 /**
  * Handling object tween like {x: 0}.
- * @param {HTMLElement} e - targeted element.
- * @param {object} ps - properties.
+ * @param {HTMLElement} element - targeted element.
+ * @param {object} props - properties.
  * @returns {Array} - array of tweened function.
  */
-function processObjectProperties(element, ps) {
+function processObjectProperties(element, props) {
   const results = [];
 
-  for (const key in ps) {
-    const end = ps[key];
+  for (const key in props) {
+    const end = props[key];
     const isArray = Array.isArray(end);
 
     if (typeof end === 'object' && !isArray) {

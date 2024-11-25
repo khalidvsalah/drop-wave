@@ -1,4 +1,4 @@
-import { computed } from '../methods/coordinate';
+import { computed } from '../helpers/computed';
 
 const space = ' ';
 
