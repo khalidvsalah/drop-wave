@@ -1,8 +1,6 @@
-import {
-  propertyMatchers,
-  cssProperties,
-  attributes,
-} from '../processing/propertyMatchers';
+import matcher from '../processing/helpers/matcher';
+import attributes from '../processing/property/attributes';
+import cssProperties from '../processing/property/cssProperties';
 
 class Register {
   /**
@@ -26,7 +24,7 @@ class Register {
    * @param {string} name - check if property exist
    */
   check(name) {
-    return !!propertyMatchers(name);
+    return !!matcher(name);
   }
 }
 
