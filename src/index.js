@@ -1,9 +1,11 @@
 import './types/types';
 
-export { ease } from './math/easing';
+export { easingFn } from './math/easing/index';
 export { clamp, lerp, normalize, map, round, dist, damp } from './math/math';
 
-export { bounds, computed, offset } from './methods/coordinate';
+export { computed } from './helpers/computed';
+
+export { bounds, offset } from './methods/coordinate';
 export { win } from './methods/window';
 export { css } from './methods/css';
 export { Choke } from './methods/choke';

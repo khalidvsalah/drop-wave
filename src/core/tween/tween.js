@@ -72,8 +72,8 @@ export function tween(elements, options = {}) {
     }
 
     const newOption = { ...options, delay };
-    if (TWEENS_STORAGE.has(node)) {
-      const tweenbase = TWEENS_STORAGE.get(node);
+    let tweenbase;
+    if ((tweenbase = TWEENS_STORAGE.get(node))) {
       tweenbase.push('play', newOption);
       tweens.push(tweenbase);
     } else {

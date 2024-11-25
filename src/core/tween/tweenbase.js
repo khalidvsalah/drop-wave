@@ -1,4 +1,4 @@
-import { ease } from '../../math/easing';
+import { easingFn } from '../../math/easing/index';
 import { clamp } from '../../math/math';
 
 import { processing } from '../../processing/processing';
@@ -54,7 +54,7 @@ export default class TweenBase {
       }
 
       this.duration = nextTween.duration;
-      this.ease = ease[nextTween.ease];
+      this.ease = easingFn[nextTween.ease];
 
       this.properties = processing(this.element, nextTween.props);
       this.progress = 0;

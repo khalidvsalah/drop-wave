@@ -1,12 +1,12 @@
-import { toPixels } from '../helpers/handleUnits.js';
-import selector from '../helpers/selector.js';
-import { observer } from '../utils/Observer.js';
-import { processing } from '../processing/processing.js';
-import { offset } from '../methods/coordinate.js';
-import { clamp, normalize, inRange } from '../math/math.js';
-import { ease } from '../math/easing.js';
-import { tween } from '../core/tween/tween.js';
-import { CSSTransform } from './utils/helpers.js';
+import { toPixels } from '../helpers/handleUnits';
+import selector from '../helpers/selector';
+import { observer } from '../utils/Observer';
+import { processing } from '../processing/processing';
+import { offset } from '../methods/coordinate';
+import { clamp, normalize, inRange } from '../math/math';
+import { easingFn } from '../math/easing/index';
+import { tween } from '../core/tween/tween';
+import { CSSTransform } from './utils/helpers';
 
 export default class Trigger {
   #ease;
@@ -39,7 +39,7 @@ export default class Trigger {
     this.options = options;
 
     this.#trigger = options.trigger ? selector(options.trigger) : [target];
-    this.#ease = ease[options.ease || 'linear'];
+    this.#ease = easingFn[options.ease || 'linear'];
 
     this.#pin = options.pin;
     this.#animate = options.animate;
