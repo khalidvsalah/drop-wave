@@ -57,7 +57,9 @@ export class VirtualScroll extends Events {
     if (!this.infinite) {
       this.scroll.value = clamp(0, this.totalHeight, this.scroll.value);
     }
-    this.scroll.lerp = damp(this.scroll.lerp, this.scroll.value, this.ease);
+    this.scroll.lerp =
+      ((damp(this.scroll.lerp, this.scroll.value, this.ease) * 1000) >> 0) /
+      1000;
 
     if (this.infinite) {
       // switching
