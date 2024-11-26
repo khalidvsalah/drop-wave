@@ -1,4 +1,4 @@
-import { computed } from '../helpers/computed';
+import { computed } from '../methods/computed';
 
 /**
  * @typedef {Object} css
