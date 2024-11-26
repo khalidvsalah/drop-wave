@@ -2,29 +2,37 @@ import matcher from '../processing/helpers/matcher';
 import attributes from '../processing/property/attributes';
 import cssProperties from '../processing/property/cssProperties';
 
+/**
+ * registerType
+ * @typedef {object} registerType
+ * @property {string} [tweeningName] - short name of the property.
+ * @property {string} [CSSName] - the property actual css name.
+ * @property {string} [HTMLAttr] - the attribute actual css name.
+ * @property {(target:Node, info:elementContextType)=> Function} TweeningFn - the tweeing function.
+ */
+
 class Register {
   /**
-   * @param {string} name - property tweening name
-   * @param {{CSSName:string, HTMLAttr:string, TweenFn:Function}}
+   * @param {registerType}
    */
-  push(name, { CSSName, HTMLAttr, TweenFn }) {
-    if (this.check(name)) {
-      throw new Error(name + ' is already registered');
+  push({ tweeningName, CSSName, HTMLAttr, TweeningFn }) {
+    if (this.check(tweeningName)) {
+      throw new Error(tweeningName + ' is already registered');
     } else {
-      const regex = new RegExp(`^(${name})`);
+      const regex = new RegExp(`^(${tweeningName})`);
       if (CSSName) {
-        cssProperties.push([regex, TweenFn, CSSName]);
+        cssProperties.push([regex, TweeningFn, CSSName]);
       } else if (HTMLAttr) {
-        attributes.push([regex, TweenFn, HTMLAttr]);
+        attributes.push([regex, TweeningFn, HTMLAttr]);
       }
     }
   }
 
   /**
-   * @param {string} name - check if property exist
+   * @param {string} tweeningName - check if property exist
    */
-  check(name) {
-    return !!matcher(name);
+  check(tweeningName) {
+    return !!matcher(tweeningName);
   }
 }
 

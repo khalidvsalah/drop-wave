@@ -1,4 +1,15 @@
 /**
+ * coordinatesType
+ * @typedef {object} coordinatesType
+ * @property {number} w
+ * @property {number} h
+ * @property {number} x
+ * @property {number} y
+ * @property {number} xE
+ * @property {number} yE
+ */
+
+/**
  * @param {HTMLElement} element
  * @returns {coordinatesType}
  */

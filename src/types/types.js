@@ -8,8 +8,16 @@
 /* End Properties */
 
 /**
+ * elementContextType
+ * @typedef {object} elementContextType
+ * @property {Node} element - the element
+ * @property {CSSStyleDeclaration} computed - computed style
+ * @property {Node} parent - parent node
+ */
+
+/**
  * Tweened Properties
- * @typedef {Object} propertiesType
+ * @typedef {object} propertiesType
  * @property {number} [opacity]
  * @property {number} [alpha]
  * @property {transformType} [transform]
@@ -24,7 +32,7 @@
 
 /**
  * Tween Options
- * @typedef {Object} tweenOptionsType
+ * @typedef {object} tweenOptionsType
  * @property {number} [duration]
  * @property {number} [delay]
  * @property {number} [space]
@@ -37,7 +45,7 @@
 
 /**
  * Tween returned Object
- * @typedef {Object} tweenReturnsType
+ * @typedef {object} tweenReturnsType
  * @property {Function} reverse
  * @property {Function} play
  * @property {Function} pause
@@ -45,8 +53,15 @@
  */
 
 /**
+ * Timeline options
+ * @typedef {object} timelineOptionsType
+ * @property {number} [delay]
+ * @property {string|symbol} [name]
+ */
+
+/**
  * Virtual Scroll Options
- * @typedef {Object} scrollOptionsType
+ * @typedef {object} scrollOptionsType
  * @property {string} [name]
  * @property {HTMLElement} [container]
  * @property {'x'|'y'} [dir]
@@ -59,7 +74,7 @@
 
 /**
  * Trigger options
- * @typedef {Object} triggerOptionsType
+ * @typedef {object} triggerOptionsType
  * @property {ELEMENTS} [trigger]
  * @property {propertiesType} [animate]
  * @property {tweenOptionsType} [tween]
@@ -68,11 +83,4 @@
  * @property {string|number|Function} [end]
  * @property {{start:string|number|Function, end:start|number|Function}} [pin]
  * @property {Function} [onUpdate]
- */
-
-/**
- * Timeline options
- * @typedef {Object} timelineOptionsType
- * @property {number} [delay]
- * @property {string|symbol} [name]
  */
