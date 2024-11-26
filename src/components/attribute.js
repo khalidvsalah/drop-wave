@@ -5,18 +5,18 @@ const unit = (attr) => {
 };
 
 /**
- * @param {object} p - attribute.
- * @param {object} info - {computed, element, parent} .
+ * @param {object} target - attribute.
+ * @param {object} info - {computed, element, parent}.
  * @param {string} attribute - attribute style.
  * @return {Function}
  */
-const setAttribute = (end, { element }, attribute) => {
+const setAttribute = (target, { element }, attribute) => {
   attr = attribute;
   const start = unit(element.getAttribute(attr));
-  const ofrom = Array.isArray(end);
+  const ofrom = Array.isArray(target);
   const o = {
-    start: ofrom ? +end[0] : start[0],
-    end: ofrom ? +end[1] : +end,
+    start: ofrom ? +target[0] : start[0],
+    end: ofrom ? +target[1] : +target,
     unit: start[1] || '',
   };
 

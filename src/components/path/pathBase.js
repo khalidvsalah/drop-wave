@@ -1,5 +1,3 @@
-import { lerp } from '../math/math';
-
 const commandLengths = {
   a: 7,
   c: 6,
@@ -86,34 +84,4 @@ function normalizePathLengths(startCommands, endCommands) {
   return { normalizedStart, normalizedEnd };
 }
 
-/**
- * Creates an interpolated SVG path string generator between two path data strings.
- * @param {Array} startPath - The starting path data as an array of commands.
- * @param {Object} endPathElement - The end path element containing its 'd' attribute.
- * @returns {Function} - A function that returns the interpolated path string based on parameter t (0 to 1).
- */
-const path = (p, { element }) => {
-  const start = parsePathData(p);
-  const end = parsePathData(element.getAttribute('d'));
-
-  const { normalizedStart, normalizedEnd } = normalizePathLengths(start, end);
-
-  return (t) => {
-    let interpolatedPath = '';
-
-    for (let i = 0; i < normalizedStart.length; i++) {
-      const startCommand = normalizedStart[i];
-      const endCommand = normalizedEnd[i];
-
-      const interpolatedCommand = startCommand.map((value, index) => {
-        return isNaN(value) ? value : lerp(value, endCommand[index], t);
-      });
-
-      interpolatedPath += interpolatedCommand.join(' ') + ' ';
-    }
-
-    return interpolatedPath.trim();
-  };
-};
-
-export default path;
+export { parsePathData, normalizePathLengths };

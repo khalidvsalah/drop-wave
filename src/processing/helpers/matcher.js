@@ -7,21 +7,19 @@ import attributes from '../property/attributes';
  * @return {object} - get properties function.
  */
 export default function matcher(name) {
-  for (const [regex, callback, propertyName] of cssProperties) {
+  for (const [regex, property] of cssProperties) {
     if (name.match(regex)) {
       return {
         type: 'CSS',
-        callback,
-        property: propertyName,
+        property,
       };
     }
   }
-  for (const [regex, callback, attr] of attributes) {
+  for (const [regex, property] of attributes) {
     if (name.match(regex)) {
       return {
         type: 'ATTR',
-        callback,
-        property: attr,
+        property,
       };
     }
   }

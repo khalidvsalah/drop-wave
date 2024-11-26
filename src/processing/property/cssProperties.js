@@ -1,13 +1,13 @@
-import opacity from '../../components/opacity';
-import transform from '../../components/transform';
-import clipPath from '../../components/clipPath';
-import filter from '../../components/filter';
-import draw from '../../components/draw';
+import opacity from '../../components/opacity/opacity';
+import transform from '../../components/transform/transform';
+import clipPath from '../../components/clipPath/clipPath';
+import filter from '../../components/filter/filter';
+import draw from '../../components/draw/draw';
 
 export default [
-  [/^(transform|move)/, transform, 'transform'],
-  [/^(opacity|alpha)/, opacity, 'opacity'],
-  [/^(clip|clipPath)/, clipPath, 'clip-path'],
-  [/^(filter)/, filter, 'filter'],
-  [/^(draw)/, draw, 'strokeDashoffset'],
+  [/^(transform|move)/, transform],
+  [/^(opacity|alpha)/, opacity],
+  [/^(clip|clipPath)/, clipPath],
+  [/^(filter)/, filter],
+  [/^(draw)/, draw],
 ];

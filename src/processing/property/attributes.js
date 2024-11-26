@@ -1,10 +1,10 @@
-import points from '../../components/points';
-import path from '../../components/path';
+import points from '../../components/points/points';
+import path from '../../components/path/path';
 
 // attribute
 // import attribute from './components/properties/attribute';
 
 export default [
-  [/^(points)/, points, 'points'],
-  [/^(path)/, path, 'path'],
+  [/^(points)/, points],
+  [/^(path)/, path],
 ];

@@ -1,4 +1,4 @@
-import { unitConventer, getUnit, getValue } from '../helpers/handleUnits.js';
+import { unitConventer, getUnit, getValue } from '../../helpers/handleUnits.js';
 
 function matrix2d(match) {
   const values = match[1].split(',').map(Number);
@@ -132,6 +132,7 @@ const _translate = (start, end, [width, height]) => {
 
   return (t) => `translate3d(${xV(t)}, ${yV(t)}, 0)`;
 };
+
 const scale = (start, end) => {
   const o = { start, end: end != null ? end : start };
   o.lerp = o.end - o.start;
@@ -157,6 +158,7 @@ const _scale = (start, end) => {
 
   return (t) => `scale(${sxV(t)}, ${syV(t)})`;
 };
+
 const _rotate = (start, end) => {
   const xfrom = Array.isArray(end[0]);
   const yfrom = Array.isArray(end[1]);
@@ -186,83 +188,4 @@ const _rotate = (start, end) => {
     `rotate(${rzV(t)}deg) rotateX(${rxV(t)}deg) rotateY(${ryV(t)}deg)`;
 };
 
-/**
- * @param {object} p - transform.
- * @param {object} info - {computed, element, parent}.
- * @return {Function}
- */
-const transform = (p, { element, computed, parent }) => {
-  let startPoint = computed.transform;
-
-  let width = computed.width;
-  let height = computed.height;
-
-  width = width === 'auto' ? parent.clientWidth : element.clientWidth;
-  height = height === 'auto' ? parent.clientHeight : element.clientHeight;
-
-  if (startPoint !== 'none') {
-    const isMatrix3d = /3d/.exec(startPoint);
-    const matrix = /\((.*)\)/.exec(startPoint);
-
-    if (isMatrix3d) {
-      startPoint = matrix3d(matrix);
-    } else {
-      startPoint = matrix2d(matrix);
-    }
-  } else {
-    startPoint = {
-      translate: { x: 0, y: 0 },
-      scale: { x: 1, y: 1 },
-      rotate: { x: 0, y: 0, z: 0 },
-    };
-  }
-
-  if (p.scale != null) [p.scaleX, p.scaleY] = [p.scale, p.scale];
-  if (p.rotate != null) p.rotateZ = p.rotate;
-
-  const arr = [];
-
-  if (
-    p.x != null ||
-    p.y != null ||
-    startPoint.translate.x ||
-    startPoint.translate.y
-  ) {
-    arr.push(
-      _translate(
-        [startPoint.translate.x, startPoint.translate.y],
-        [p.x, p.y],
-        [width, height]
-      )
-    );
-  }
-  if (
-    p.scaleX != null ||
-    p.scaleY != null ||
-    startPoint.scale.x ||
-    startPoint.scale.y
-  ) {
-    arr.push(
-      _scale([startPoint.scale.x, startPoint.scale.y], [p.scaleX, p.scaleY])
-    );
-  }
-  if (
-    p.rotateX != null ||
-    p.rotateY != null ||
-    p.rotateZ != null ||
-    startPoint.rotate.x ||
-    startPoint.rotate.y ||
-    startPoint.rotate.z
-  ) {
-    arr.push(
-      _rotate(
-        [startPoint.rotate.x, startPoint.rotate.y, startPoint.rotate.z],
-        [p.rotateX, p.rotateY, p.rotateZ]
-      )
-    );
-  }
-
-  return (t) => arr.map((a) => a(t)).join(' ');
-};
-
-export default transform;
+export { matrix2d, matrix3d, _translate, _scale, _rotate };
