@@ -1,45 +1,60 @@
+import { NUMERIC } from '../../helpers/regex';
 import { _blur, _gray, _contrast } from './filterBase';
 
+const BLUR_REGEX = new RegExp('blur\\(' + NUMERIC);
+const GRAY_REGEX = new RegExp('grayscale\\(' + NUMERIC);
+const CONTRAST_REGEX = new RegExp('contrast\\(' + NUMERIC);
+
+const getFilterValue = (regex, str) => {
+  let blurStartValue = regex.exec(str);
+  blurStartValue = blurStartValue ? +blurStartValue[1] : 0;
+  return blurStartValue;
+};
+
 /**
- * @param {object} target
+ * @param {object} endValue
  * @param {elementContextType}
  * @return {Function}
  */
-function filter(target, { computed }) {
-  const start = computed.filter;
+function filter(endValue, { computed }) {
+  const startVaue = computed.filter;
 
-  const blur = /blur\((.*)px\)/.exec(start);
-  const gray = /grayscale\((.*)\)/.exec(start);
-  const contrast = /contrast\((.*)\)/.exec(start);
+  const blur = BLUR_REGEX.test(startVaue === 'none' ? endValue : startVaue);
+  const grayscale = GRAY_REGEX.test(
+    startVaue === 'none' ? endValue : startVaue
+  );
+  const contrast = CONTRAST_REGEX.test(
+    startVaue === 'none' ? endValue : startVaue
+  );
 
-  const arrs = [];
+  const filters = [];
 
-  for (const key in target) {
-    if (key === 'blur' || blur) {
-      const b = target.blur;
-      const bfrom = Array.isArray(b);
-      arrs.push(_blur(bfrom ? b[0] : blur ? +blur[1] : 0, bfrom ? b[1] : b));
-    }
-    if (key === 'gray' || gray) {
-      const g = target.gray;
-      const gfrom = Array.isArray(g);
-      arrs.push(
-        _gray(gfrom ? g[0] : (gray ? +gray[1] : 0) * 100, gfrom ? g[1] : g)
-      );
-    }
-    if (key === 'contrast' || contrast) {
-      const c = target.contrast;
-      const cfrom = Array.isArray(c);
-      arrs.push(
-        _contrast(
-          cfrom ? c[0] : (contrast ? +contrast[1] : 0) * 100,
-          cfrom ? c[1] : c
-        )
-      );
-    }
+  if (blur) {
+    filters.push(
+      _blur(
+        getFilterValue(BLUR_REGEX, startVaue),
+        getFilterValue(BLUR_REGEX, endValue)
+      )
+    );
+  }
+  if (grayscale) {
+    filters.push(
+      _gray(
+        getFilterValue(GRAY_REGEX, startVaue),
+        getFilterValue(GRAY_REGEX, endValue)
+      )
+    );
+  }
+  if (contrast) {
+    filters.push(
+      _contrast(
+        getFilterValue(CONTRAST_REGEX, startVaue),
+        getFilterValue(CONTRAST_REGEX, endValue)
+      )
+    );
   }
 
-  return (t) => arrs.map((arr) => arr(t)).join(' ');
+  return (t) => filters.map((filter) => filter(t)).join(' ');
 }
 
 export default {

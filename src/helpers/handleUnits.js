@@ -1,13 +1,41 @@
 import { win } from '../methods/window';
+import { UNITS, NUMERIC } from './regex';
 
-export const getValue = (value) => value.match(/^([+|-]?\d+(\.\d+)?)/g);
+const VALUE_REGEX = new RegExp('^[+|-]?' + NUMERIC, 'g');
+const UNITS_REGEX = new RegExp('(' + UNITS + ')', 'g');
 
-export const getUnit = (value) => value.match(/(%|px|vw|vh)/g) || ['px'];
+/**
+ * @param {string} value
+ * @returns {Array<string>}
+ */
+export const getValue = (value) => {
+  if (typeof value === 'string') {
+    value = value.match(VALUE_REGEX);
+    return value && +value[0];
+  }
+};
 
+/**
+ * @param {string} value
+ * @returns {Array<string>}
+ */
+export const getUnit = (value) => {
+  if (typeof value === 'string') {
+    value = value.match(UNITS_REGEX);
+    return value && value[0];
+  }
+};
+
+/**
+ *  Convert [%, vw, vh] values to pixels.
+ * @param {string|number} value
+ * @param {number} size
+ * @returns {{pixels:number, unit:string}}
+ */
 export function toPixels(value, size) {
   if (typeof value === 'string') {
-    const number = +getValue(value);
-    const unit = getUnit(value)[0];
+    const number = getValue(value) || 0;
+    const unit = getUnit(value);
 
     switch (unit) {
       case 'px':
@@ -31,6 +59,13 @@ export function toPixels(value, size) {
   }
 }
 
+/**
+ *  Convert pixels to [%, vw, vh] value.
+ * @param {string|number} value
+ * @param {number} size
+ * @param {string} newUnit
+ * @returns {{pixels:number, unit:string}}
+ */
 export function unitConventer(value, size, newUnit) {
   const { pixels } = toPixels(value, size);
   switch (newUnit) {

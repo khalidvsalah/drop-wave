@@ -1,46 +1,127 @@
+import { getUnit, getValue, unitConventer } from '../../helpers/handleUnits';
+import { NUMERIC, UNITS } from '../../helpers/regex';
 import { lerp } from '../../math/math';
-import { NUMERIC } from '../../helpers/regex';
 
-const NUMBER_REGEX = new RegExp(`${NUMERIC}`, 'g');
+const NUMBER_REGEX = new RegExp(`${NUMERIC}[${UNITS}]?`, 'g');
 
-const points = (arr) => {
+/**
+ * Handling Clip-Path circle shape.
+ *
+ * @param {string} startValue
+ * @param {string} endValue
+ * @param {Node} element
+ * @returns {Function}
+ */
+const _circle = (startValue, endValue, element) => {
+  const start = startValue.match(NUMBER_REGEX);
+  const end = endValue.match(NUMBER_REGEX);
+
+  startValue = {
+    radius: unitConventer(start[0], element.offsetWidth, getUnit(end[0])),
+    x: unitConventer(start[1] || '50%', element.offsetWidth, getUnit(end[1])),
+    y: unitConventer(start[2] || '50%', element.offsetHeight, getUnit(end[2])),
+  };
+
+  endValue = {
+    radius: getValue(end[0]),
+    x: getValue(end[1]),
+    y: getValue(end[2]),
+  };
+
+  return (t) =>
+    `${lerp(startValue.radius.value, endValue.radius, t)}${
+      startValue.radius.unit
+    } at ${lerp(startValue.x.value, endValue.x, t)}${startValue.x.unit} ${lerp(
+      startValue.y.value,
+      endValue.y,
+      t
+    )}${startValue.y.unit}`;
+};
+
+/**
+ * Returns array of pairs points for the polygon shap.
+ *
+ * @param {*} arr
+ * @returns {Array<Array<string>>}
+ */
+const getPairs = (arr) => {
   return arr.split(',').map((str) => {
     const arr = str.match(NUMBER_REGEX);
-    return [+arr[0], +arr[1]];
+    return [arr[0], arr[1]];
   });
 };
 
-const _circle = (s, e) => {
-  const start = s.match(NUMBER_REGEX);
-  const end = e.match(NUMBER_REGEX);
+/**
+ * Handling Clip-Path polygon shape.
+ *
+ * @param {string} startValue
+ * @param {string} endValue
+ * @param {Node} element
+ * @returns {Function}
+ */
+const _polygon = (startValue, endValue, element) => {
+  const startPoints = getPairs(startValue);
+  const endPoints = getPairs(endValue);
+  const length = startPoints.length - 1;
 
-  const startValue = {
-    radius: +start[0],
-    x: +start[1] || 50,
-    y: +start[2] || 50,
-  };
-  const endValue = { radius: +end[0], x: +end[1], y: +end[2] };
-
-  return (t) =>
-    `${lerp(startValue.radius, endValue.radius, t)}% at ${lerp(
-      startValue.x,
-      endValue.x,
-      t
-    )}% ${lerp(startValue.y, endValue.y, t)}%`;
-};
-const _polygon = (start, end) => {
-  const startPoints = points(start);
-  const endPoints = points(end);
+  startValue = startPoints.map((pair, idx) => {
+    const x = unitConventer(
+      pair[0],
+      element.offsetWidth,
+      getUnit(endPoints[idx][0])
+    );
+    const y = unitConventer(
+      pair[1],
+      element.offsetHeight,
+      getUnit(endPoints[idx][1])
+    );
+    return [x, y];
+  });
+  endValue = endPoints.map((pair) => {
+    const x = getValue(pair[0]);
+    const y = getValue(pair[1]);
+    return [x, y];
+  });
 
   return (t) => {
-    return startPoints
+    return startValue
       .map(([x, y], idx) => {
-        const [nX, nY] = endPoints[idx];
-        const sperator = idx === startPoints.length - 1 ? '' : ', ';
-        return `${lerp(x, nX, t)}% ${lerp(y, nY, t)}%` + sperator;
+        const [eX, eY] = endValue[idx];
+        const comma = idx === length ? '' : ', ';
+        return (
+          `${lerp(x.value, eX, t)}${x.unit} ${lerp(y.value, eY, t)}${y.unit}` +
+          comma
+        );
       })
       .join('');
   };
 };
 
-export { _circle, _polygon };
+/**
+ * Handling Clip-Path inset shape.
+ *
+ * @param {string} startValue
+ * @param {string} endValue
+ * @param {Node} element
+ * @returns {Function}
+ */
+const _inset = (startValue, endValue, element) => {
+  const startPoints = startValue.match(NUMBER_REGEX);
+  const endPoints = endValue.match(NUMBER_REGEX);
+  const length = startPoints.length - 1;
+
+  startValue = startPoints.map((point, idx) => {
+    return unitConventer(point, element.offsetWidth, getUnit(endPoints[idx]));
+  });
+  endValue = endPoints.map((point) => getValue(point));
+
+  return (t) =>
+    startValue
+      .map((point, idx) => {
+        const space = idx === length ? '' : ' ';
+        return lerp(point.value, endValue[idx], t) + point.unit + space;
+      })
+      .join('');
+};
+
+export { _circle, _polygon, _inset };

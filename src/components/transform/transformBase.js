@@ -107,7 +107,7 @@ function matrix3d(match) {
 }
 
 const translate = (start, end, size) => {
-  const unit = end ? getUnit(end)[0] : 'px';
+  const unit = end ? getUnit(end) : 'px';
   start = unitConventer(start, size, unit).value;
   const lerp = (end ? getValue(end)[0] : start) - start;
   return (t) => `${start + lerp * t}${unit}`;

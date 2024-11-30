@@ -19,7 +19,6 @@ const space = (time, length, idx) => {
   return Math.abs(time) * (Math.sign(time) < 0 ? length - idx : idx);
 };
 
-//
 /**
  * Tweening Starting Function
  * @param {any} elements

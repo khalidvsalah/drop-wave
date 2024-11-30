@@ -1,18 +1,15 @@
 import { lerp } from '../../math/math';
 
-function _blur(start, end) {
-  const o = { start: parseFloat(start), end: parseFloat(end) };
-  return (t) => `blur(${lerp(o.start, o.end, t)}px)`;
+function _blur(startValue, endValue) {
+  return (t) => `blur(${lerp(startValue, endValue, t)}px)`;
 }
 
-function _gray(start, end) {
-  const o = { start: parseFloat(start), end: parseFloat(end) };
-  return (t) => `grayscale(${lerp(o.start, o.end, t)}%)`;
+function _gray(startValue, endValue) {
+  return (t) => `grayscale(${lerp(startValue, endValue, t)}%)`;
 }
 
-function _contrast(start, end) {
-  const o = { start: parseFloat(start), end: parseFloat(end) };
-  return (t) => `contrast(${lerp(o.start, o.end, t)}%)`;
+function _contrast(startValue, endValue) {
+  return (t) => `contrast(${lerp(startValue, endValue, t)}%)`;
 }
 
 export { _blur, _gray, _contrast };

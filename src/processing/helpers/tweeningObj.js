@@ -10,10 +10,10 @@ export default function tweeningObj(element, name) {
   try {
     const { type, property } = matcher(name);
     return {
-      setValue: (value) =>
+      setValue:
         type === 'CSS'
-          ? (element.style[property.name] = value)
-          : element.setAttribute(property.name, value),
+          ? (value) => (element.style[property.name] = value)
+          : (value) => element.setAttribute(property.name, value),
       callback: property.callback,
     };
   } catch (e) {

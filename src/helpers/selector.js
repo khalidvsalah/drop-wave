@@ -1,9 +1,8 @@
 /**
- * selector
- *
+ * Selector
  * @param {any} elements target(s) or string selector
- * @param {Blob} obj select object also
- * @returns {Element | Element[] | null}
+ * @param {boolean} obj select object also
+ * @returns {Element[]}
  */
 
 export default function selector(elements, obj) {

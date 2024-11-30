@@ -5,9 +5,11 @@ import { processing } from '../../processing/processing';
 
 import { raf } from '../../utils/Raf';
 import { Delay } from '../../utils/Delay';
+import { computed } from '../../methods/computed';
 
 export default class TweenBase {
   /**
+   * Tween Controller
    *
    * @param {HTMLElement} element
    * @param {tweenOptionsType} options
@@ -30,7 +32,7 @@ export default class TweenBase {
     this.elapsed = clamp(0, 1, this.progress + time);
 
     const easedValue = this.ease(Math.abs(this.dir - this.elapsed));
-    this.properties.forEach(({ setValue, cb }) => setValue(cb(easedValue)));
+    this.properties.forEach(({ tween }) => tween(easedValue));
 
     if (this.onUpdate) this.onUpdate(easedValue, this.element);
     if (this.elapsed === 1) this._done();
@@ -44,7 +46,10 @@ export default class TweenBase {
   }
 
   execute(nextTween) {
-    if (nextTween.props) {
+    let from = nextTween.from;
+    let to = nextTween.to;
+
+    if (to || from) {
       if (this.isRunning) this._done();
       this.dir = 0;
 
@@ -56,7 +61,19 @@ export default class TweenBase {
       this.duration = nextTween.duration;
       this.ease = easingFn[nextTween.ease];
 
-      this.properties = processing(this.element, nextTween.props);
+      if (to) {
+        from = from || computed(this.element);
+      } else if (from) {
+        if (!to) {
+          const computedStyle = computed(this.element);
+          to = {};
+          Object.keys(from).map((key) => {
+            to[key] = computedStyle[key];
+          });
+        }
+      }
+
+      this.properties = processing(this.element, from, to);
       this.progress = 0;
 
       this.fire();

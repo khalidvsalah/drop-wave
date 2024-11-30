@@ -1,42 +1,43 @@
-import { computed } from '../methods/computed';
 import tweeningObj from './helpers/tweeningObj';
 
 /**
- * Get properties tween function
+ * Processing DOM Elements.
+ *
  * @param {HTMLElement} element - targeted element.
- * @param {object} props - properties.
- * @returns {Array} - array of tweened function.
+ * @param {object} startProps - start properties.
+ * @param {object} endProps - end properties.
+ * @returns {Array} - array of pre-tweened functions.
  */
-function processDOMElement(element, props) {
+function processDOMElement(element, startProps, endProps) {
   const results = [];
-  const info = {};
+  const info = {
+    element,
+    parent: element.parentElement,
+    computed: startProps,
+  };
 
-  info.element = element;
-  info.parent = element.parentNode;
-  info.computed = computed(element);
-
-  for (const [regex, obj] of Object.entries(props)) {
-    const { setValue, callback } = tweeningObj(element, regex);
-    results.push({
-      setValue,
-      cb: callback(obj, info, regex),
-    });
+  for (const [regex, obj] of Object.entries(endProps)) {
+    let { setValue, callback } = tweeningObj(element, regex);
+    callback = callback(obj, info, regex);
+    results.push({ tween: (t) => setValue(callback(t)) });
   }
 
   return results;
 }
 
 /**
- * Handling object tween like {x: 0}.
+ * Processing object.
+ *
  * @param {HTMLElement} element - targeted element.
- * @param {object} props - properties.
- * @returns {Array} - array of tweened function.
+ * @param {object} startProps - start properties.
+ * @param {object} endProps - end properties.
+ * @returns {Array} - array of pre-tweened functions.
  */
-function processObjectProperties(element, props) {
+function processObjectProperties(element, startProps, endProps) {
   const results = [];
 
-  for (const key in props) {
-    const end = props[key];
+  for (const key in endProps) {
+    const end = endProps[key];
     const isArray = Array.isArray(end);
 
     if (typeof end === 'object' && !isArray) {
@@ -58,10 +59,17 @@ function processObjectProperties(element, props) {
 }
 
 /**
+ * Check if an object or DOMElement.
+ *s
  * @param {HTMLElement} element - targeted element.
- * @param {object} props - properties.
+ * @param {object} startProps - start properties.
+ * @param {object} endProps - end properties.
+ * @returns {Array} - array of pre-tweened functions.
  */
-export function processing(target, props) {
-  if (target instanceof Node) return processDOMElement(target, props);
-  else return processObjectProperties(target, props);
+export function processing(target, startProps, endProps) {
+  if (target instanceof Node) {
+    return processDOMElement(target, startProps, endProps);
+  } else {
+    return processObjectProperties(target, startProps, endProps);
+  }
 }
