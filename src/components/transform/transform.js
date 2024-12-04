@@ -1,90 +1,104 @@
-import {
-  matrix2d,
-  matrix3d,
-  _translate,
-  _scale,
-  _rotate,
-} from './transformBase';
+import { _translate, _scale, _rotate } from './transformBase';
+import { matrix2d, matrix3d } from './transformMatrix';
 
 /**
- * @param {object} target
+ * Transform default value.
+ */
+const defaults = {
+  translate: { x: 0, y: 0 },
+  scale: { x: 1, y: 1 },
+  rotate: { x: 0, y: 0, z: 0 },
+};
+
+/**
+ * Parse tranform value to (translate, scale, rotate).
+ *
+ * @param {string} value
+ * @returns {object}
+ */
+const parseTransform = (value) => {
+  if (value.scale != null) {
+    [value.scaleX, value.scaleY] = [value.scale, value.scale];
+  }
+
+  if (typeof value === 'string') {
+    if (value === 'none') {
+      value = defaults;
+    } else {
+      const isMatrix3d = /3d/.exec(value);
+      const matrix = /\((.*)\)/.exec(value);
+      value = isMatrix3d ? matrix3d(matrix) : matrix2d(matrix);
+    }
+  }
+
+  if (value.rotate != null) {
+    value.rotateZ = value.rotate;
+  }
+
+  return {
+    translate: { x: value.x, y: value.y },
+    scale: { x: value.scaleX, y: value.scaleY },
+    rotate: { x: value.rotateX, y: value.rotateY, z: value.rotateZ },
+  };
+};
+
+/**
+ * @param {object} endValue
  * @param {elementContextType}
  * @return {Function}
  */
-const transform = (target, { element, computed, parent }) => {
-  let startPoint = computed.transform;
+const transform = (endValue, { element, computed }) => {
+  let startValue = computed.transform;
 
-  let width = computed.width;
-  let height = computed.height;
+  const width = element.offsetWidth;
+  const height = element.offsetHeight;
 
-  width = width === 'auto' ? parent.clientWidth : element.clientWidth;
-  height = height === 'auto' ? parent.clientHeight : element.clientHeight;
-
-  if (startPoint !== 'none') {
-    const isMatrix3d = /3d/.exec(startPoint);
-    const matrix = /\((.*)\)/.exec(startPoint);
-
-    if (isMatrix3d) {
-      startPoint = matrix3d(matrix);
-    } else {
-      startPoint = matrix2d(matrix);
-    }
-  } else {
-    startPoint = {
-      translate: { x: 0, y: 0 },
-      scale: { x: 1, y: 1 },
-      rotate: { x: 0, y: 0, z: 0 },
-    };
-  }
-
-  if (target.scale != null) {
-    [target.scaleX, target.scaleY] = [target.scale, target.scale];
-  }
-  if (target.rotate != null) {
-    target.rotateZ = target.rotate;
-  }
+  startValue = parseTransform(startValue);
+  endValue = parseTransform(endValue);
 
   const arr = [];
 
   if (
-    target.x != null ||
-    target.y != null ||
-    startPoint.translate.x ||
-    startPoint.translate.y
+    endValue.translate.x ||
+    endValue.translate.y ||
+    startValue.translate.x ||
+    startValue.translate.y
   ) {
     arr.push(
       _translate(
-        [startPoint.translate.x, startPoint.translate.y],
-        [target.x, target.y],
+        [endValue.translate.x, endValue.translate.y],
+        [startValue.translate.x, startValue.translate.y],
         [width, height]
       )
     );
   }
+
   if (
-    target.scaleX != null ||
-    target.scaleY != null ||
-    startPoint.scale.x ||
-    startPoint.scale.y
+    endValue.scale.x ||
+    endValue.scale.y ||
+    startValue.scale.x ||
+    startValue.scale.y
   ) {
     arr.push(
       _scale(
-        [startPoint.scale.x, startPoint.scale.y],
-        [target.scaleX, target.scaleY]
+        [endValue.scale.x, endValue.scale.y],
+        [startValue.scale.x, startValue.scale.y]
       )
     );
   }
+
   if (
-    target.rotateX != null ||
-    target.rotateY != null ||
-    target.rotateZ != null ||
-    startPoint.rotate.x ||
-    startPoint.rotate.y ||
-    startPoint.rotate.z
+    endValue.rotateX != null ||
+    endValue.rotateY != null ||
+    endValue.rotateZ != null ||
+    startValue.rotate.x ||
+    startValue.rotate.y ||
+    startValue.rotate.z
   ) {
     arr.push(
       _rotate(
-        [startPoint.rotate.x, startPoint.rotate.y, startPoint.rotate.z],
-        [target.rotateX, target.rotateY, target.rotateZ]
+        [endValue.rotateX, endValue.rotateY, endValue.rotateZ],
+        [startValue.rotate.x, startValue.rotate.y, startValue.rotate.z]
       )
     );
   }
