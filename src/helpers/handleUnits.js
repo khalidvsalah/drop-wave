@@ -12,6 +12,8 @@ export const getValue = (value) => {
   if (typeof value === 'string') {
     value = value.match(VALUE_REGEX);
     return value && +value[0];
+  } else if (typeof value === 'number') {
+    return value;
   }
 };
 
