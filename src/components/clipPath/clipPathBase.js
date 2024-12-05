@@ -41,13 +41,13 @@ const _circle = (startValue, endValue, element) => {
 /**
  * Returns array of pairs points for the polygon shap.
  *
- * @param {*} arr
+ * @param {string} value
  * @returns {Array<Array<string>>}
  */
-const getPairs = (arr) => {
-  return arr.split(',').map((str) => {
-    const arr = str.match(NUMBER_REGEX);
-    return [arr[0], arr[1]];
+const getPairs = (value) => {
+  return value.split(',').map((str) => {
+    const value = str.match(NUMBER_REGEX);
+    return [value[0], value[1]];
   });
 };
 
@@ -98,6 +98,21 @@ const _polygon = (startValue, endValue, element) => {
 };
 
 /**
+ *
+ * @param {string} value
+ * @returns {Array<string>}
+ */
+const parseInset = (value) => {
+  const points = value.match(NUMBER_REGEX);
+  return [
+    points[0],
+    points[1] || points[0],
+    points[2] || points[0],
+    points[3] || points[1] || points[0],
+  ];
+};
+
+/**
  * Handling Clip-Path inset shape.
  *
  * @param {string} startValue
@@ -106,8 +121,8 @@ const _polygon = (startValue, endValue, element) => {
  * @returns {Function}
  */
 const _inset = (startValue, endValue, element) => {
-  const startPoints = startValue.match(NUMBER_REGEX);
-  const endPoints = endValue.match(NUMBER_REGEX);
+  const startPoints = parseInset(startValue);
+  const endPoints = parseInset(endValue);
   const length = startPoints.length - 1;
 
   startValue = startPoints.map((point, idx) => {
