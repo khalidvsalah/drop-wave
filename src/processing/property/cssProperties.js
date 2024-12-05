@@ -5,8 +5,8 @@ import filter from '../../components/filter/filter';
 import draw from '../../components/draw/draw';
 
 export default [
-  [/^(transform|move)/, transform],
-  [/^(opacity|alpha)/, opacity],
+  [/^(transform)/, transform],
+  [/^(opacity)/, opacity],
   [/^(clipPath)/, clipPath],
   [/^(filter)/, filter],
   [/^(draw)/, draw],

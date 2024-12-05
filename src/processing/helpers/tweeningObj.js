@@ -2,6 +2,7 @@ import matcher from './matcher';
 
 /**
  * Return tweened object
+ * 
  * @param {HTMLElement} element
  * @param {string} name - regex.
  * @return {object}
