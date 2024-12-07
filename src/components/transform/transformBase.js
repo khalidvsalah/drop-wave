@@ -32,33 +32,19 @@ const _scale = (endValue, startValue) => {
   return (t) => `scale(${sxV(t)}, ${syV(t)})`;
 };
 
-const _rotate = (start, end) => {
-  // const xfrom = Array.isArray(end[0]);
-  // const yfrom = Array.isArray(end[1]);
-  // const zfrom = Array.isArray(end[2]);
+const _rotate = (endValue, startValue) => {
+  console.log(endValue, startValue);
 
-  // let rxV;
-  // let ryV;
-  // let rzV;
+  let rxV;
+  let ryV;
+  let rzV;
 
-  // if (xfrom) {
-  //   rxV = scale(end[0][0], end[0][1]);
-  // } else {
-  //   rxV = scale(start[0], end[0]);
-  // }
-  // if (yfrom) {
-  //   ryV = scale(end[1][0], end[1][1]);
-  // } else {
-  //   ryV = scale(start[1], end[1]);
-  // }
-  // if (zfrom) {
-  //   rzV = scale(end[2][0], end[2][1]);
-  // } else {
-  //   rzV = scale(start[2], end[2]);
-  // }
+  // rxV = scale(endValue[0], startValue[0]);
+  // ryV = scale(endValue[1], startValue[1]);
+  // rzV = scale(endValue[2], startValue[2]);
 
-  return (t) =>
-    `rotate(${rzV(t)}deg) rotateX(${rxV(t)}deg) rotateY(${ryV(t)}deg)`;
+  // return (t) =>
+  //   `rotate(${rzV(t)}deg) rotateX(${rxV(t)}deg) rotateY(${ryV(t)}deg)`;
 };
 
 export { _translate, _scale, _rotate };

@@ -21,6 +21,10 @@ const parseTransform = (value) => {
     [value.scaleX, value.scaleY] = [value.scale, value.scale];
   }
 
+  if (value.rotate != null) {
+    value.rotateZ = value.rotate;
+  }
+
   if (typeof value === 'string') {
     if (value === 'none') {
       value = defaults;
@@ -29,10 +33,6 @@ const parseTransform = (value) => {
       const matrix = /\((.*)\)/.exec(value);
       value = isMatrix3d ? matrix3d(matrix) : matrix2d(matrix);
     }
-  }
-
-  if (value.rotate != null) {
-    value.rotateZ = value.rotate;
   }
 
   return {
@@ -58,46 +58,46 @@ const transform = (endValue, { element, computed }) => {
 
   const arr = [];
 
-  if (
-    endValue.translate.x ||
-    endValue.translate.y ||
-    startValue.translate.x ||
-    startValue.translate.y
-  ) {
-    arr.push(
-      _translate(
-        [endValue.translate.x, endValue.translate.y],
-        [startValue.translate.x, startValue.translate.y],
-        [width, height]
-      )
-    );
-  }
+  // if (
+  //   endValue.translate.x ||
+  //   endValue.translate.y ||
+  //   startValue.translate.x ||
+  //   startValue.translate.y
+  // ) {
+  //   arr.push(
+  //     _translate(
+  //       [endValue.translate.x, endValue.translate.y],
+  //       [startValue.translate.x, startValue.translate.y],
+  //       [width, height]
+  //     )
+  //   );
+  // }
+
+  // if (
+  //   endValue.scale.x ||
+  //   endValue.scale.y ||
+  //   startValue.scale.x ||
+  //   startValue.scale.y
+  // ) {
+  //   arr.push(
+  //     _scale(
+  //       [endValue.scale.x, endValue.scale.y],
+  //       [startValue.scale.x, startValue.scale.y]
+  //     )
+  //   );
+  // }
 
   if (
-    endValue.scale.x ||
-    endValue.scale.y ||
-    startValue.scale.x ||
-    startValue.scale.y
-  ) {
-    arr.push(
-      _scale(
-        [endValue.scale.x, endValue.scale.y],
-        [startValue.scale.x, startValue.scale.y]
-      )
-    );
-  }
-
-  if (
-    endValue.rotateX != null ||
-    endValue.rotateY != null ||
-    endValue.rotateZ != null ||
+    endValue.rotate.x ||
+    endValue.rotate.y ||
+    endValue.rotate.z ||
     startValue.rotate.x ||
     startValue.rotate.y ||
     startValue.rotate.z
   ) {
     arr.push(
       _rotate(
-        [endValue.rotateX, endValue.rotateY, endValue.rotateZ],
+        [endValue.rotate.x, endValue.rotate.y, endValue.rotate.z],
         [startValue.rotate.x, startValue.rotate.y, startValue.rotate.z]
       )
     );
