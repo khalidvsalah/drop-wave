@@ -58,34 +58,34 @@ const transform = (endValue, { element, computed }) => {
 
   const arr = [];
 
-  // if (
-  //   endValue.translate.x ||
-  //   endValue.translate.y ||
-  //   startValue.translate.x ||
-  //   startValue.translate.y
-  // ) {
-  //   arr.push(
-  //     _translate(
-  //       [endValue.translate.x, endValue.translate.y],
-  //       [startValue.translate.x, startValue.translate.y],
-  //       [width, height]
-  //     )
-  //   );
-  // }
+  if (
+    endValue.translate.x ||
+    endValue.translate.y ||
+    startValue.translate.x ||
+    startValue.translate.y
+  ) {
+    arr.push(
+      _translate(
+        [endValue.translate.x, endValue.translate.y],
+        [startValue.translate.x, startValue.translate.y],
+        [width, height]
+      )
+    );
+  }
 
-  // if (
-  //   endValue.scale.x ||
-  //   endValue.scale.y ||
-  //   startValue.scale.x ||
-  //   startValue.scale.y
-  // ) {
-  //   arr.push(
-  //     _scale(
-  //       [endValue.scale.x, endValue.scale.y],
-  //       [startValue.scale.x, startValue.scale.y]
-  //     )
-  //   );
-  // }
+  if (
+    endValue.scale.x ||
+    endValue.scale.y ||
+    startValue.scale.x ||
+    startValue.scale.y
+  ) {
+    arr.push(
+      _scale(
+        [endValue.scale.x, endValue.scale.y],
+        [startValue.scale.x, startValue.scale.y]
+      )
+    );
+  }
 
   if (
     endValue.rotate.x ||
