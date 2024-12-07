@@ -185,8 +185,8 @@ export function splitText(element, options = {}) {
   }
 
   return {
-    lines: document.querySelectorAll(`${element.className} .tfx`),
-    words: document.querySelectorAll(`${element.className} .word`),
-    letters: document.querySelectorAll(`${element.className} .ltr`),
+    lines: element.querySelectorAll('.tfx'),
+    words: element.querySelectorAll('.word'),
+    letters: element.querySelectorAll('.ltr'),
   };
 }
