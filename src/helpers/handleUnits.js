@@ -1,4 +1,5 @@
 import { win } from '../methods/window';
+import { css } from '../methods/css';
 import { UNITS, NUMERIC } from './regex';
 
 const VALUE_REGEX = new RegExp('^[+|-]?' + NUMERIC, 'g');
@@ -29,7 +30,7 @@ export const getUnit = (value) => {
 };
 
 /**
- *  Convert [%, vw, vh] values to pixels.
+ *  Convert [%, vw, vh, rem] values to pixels.
  * @param {string|number} value
  * @param {number} size
  * @returns {{pixels:number, unit:string}}
@@ -51,6 +52,12 @@ export function toPixels(value, size) {
         return { pixels: (number * win.screen.w) / 100, unit: 'vw' };
       case 'vh':
         return { pixels: (number * win.screen.h) / 100, unit: 'vh' };
+      case 'rem':
+        return {
+          pixels:
+            getValue(css.get(document.documentElement, 'fontSize')) * number,
+          unit: 'rem',
+        };
       default:
         return { pixels: number, unit: 'px' };
     }
@@ -62,7 +69,7 @@ export function toPixels(value, size) {
 }
 
 /**
- *  Convert pixels to [%, vw, vh] value.
+ *  Convert pixels to [%, vw, vh, rem] value.
  * @param {string|number} value
  * @param {number} size
  * @param {string} newUnit
@@ -79,6 +86,11 @@ export function unitConventer(value, size, newUnit) {
       return { value: (pixels / win.screen.w) * 100, unit: 'vw' };
     case 'vh':
       return { value: (pixels / win.screen.h) * 100, unit: 'vh' };
+    case 'rem':
+      return {
+        value: pixels / getValue(css.get(document.documentElement, 'fontSize')),
+        unit: 'rem',
+      };
     default:
       return { value: pixels, unit: 'px' };
   }
