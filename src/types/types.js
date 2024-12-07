@@ -4,7 +4,6 @@
 
 /* Start Properties */
 /** * @typedef {{x:STRING_ARR, y:STRING_ARR, scale:NUMBER_ARR, scaleX:NUMBER_ARR, scaleY:NUMBER_ARR}} transformType */
-/** * @typedef {{circle:FROM_TO, polygon:FROM_TO}} clipPathType */
 /* End Properties */
 
 /**
@@ -19,12 +18,12 @@
  * Tweened Properties
  * @typedef {object} propertiesType
  * @property {number} [opacity]
- * @property {number} [alpha]
+ * // @property {number} [alpha]
  * @property {transformType} [transform]
- * @property {transformType} [move]
- * @property {clipPathType} [clip]
- * @property {clipPathType} [clipPath]
- * @property {{gray:FROM_TO, blur:FROM_TO, contrast:FROM_TO}} [filter]
+ * // @property {transformType} [move]
+ * @property {string} [clip]
+ * // @property {string} [clipPath]
+ * @property {string} [filter]
  * @property {NUMBER_ARR} [draw]
  * @property {string} [points]
  * @property {string} [path]
@@ -37,7 +36,9 @@
  * @property {number} [delay]
  * @property {number} [space]
  * @property {string} [ease]
- * @property {propertiesType} [props]
+ * @property {propertiesType} [from]
+ * @property {propertiesType} [to]
+ * @property {propertiesType} [set]
  * @property {Function} [onStart]
  * @property {Function} [onUpdate]
  * @property {Function} [onComplete]
