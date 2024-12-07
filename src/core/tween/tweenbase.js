@@ -5,7 +5,9 @@ import { processing } from '../../processing/processing';
 
 import { raf } from '../../utils/Raf';
 import { Delay } from '../../utils/Delay';
+
 import { computed } from '../../methods/computed';
+import { css } from '../../methods/css';
 
 export default class TweenBase {
   /**
@@ -20,7 +22,10 @@ export default class TweenBase {
     this.queue = [];
     this.properties = [];
 
+    // default values
     this.callIndex = -1;
+    this.dir = 0;
+    this.ease = easingFn.linear;
     this.progress = 0;
     this.elapsed = 0;
 
@@ -33,7 +38,6 @@ export default class TweenBase {
 
     const easedValue = this.ease(Math.abs(this.dir - this.elapsed));
     this.properties.forEach(({ tween }) => tween(easedValue));
-
     if (this.onUpdate) this.onUpdate(easedValue, this.element);
     if (this.elapsed === 1) this._done();
   }
@@ -48,6 +52,7 @@ export default class TweenBase {
   execute(nextTween) {
     let from = nextTween.from;
     let to = nextTween.to;
+    const set = nextTween.set;
 
     if (to || from) {
       if (this.isRunning) this._done();
@@ -77,6 +82,10 @@ export default class TweenBase {
       this.progress = 0;
 
       this.fire();
+    } else if (set) {
+      this.properties = processing(this.element, set, set);
+      this.progress = 0;
+      this.update(1);
     } else {
       this.dir = nextTween.mode === 'reverse' ? 1 : 0;
       if (nextTween.mode !== this.mode) {

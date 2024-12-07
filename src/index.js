@@ -4,7 +4,6 @@ export { easingFn } from './math/easing/index';
 export { clamp, lerp, normalize, map, round, dist, damp } from './math/math';
 
 export { computed } from './methods/computed';
-
 export { bounds, offset } from './methods/coordinate';
 export { win } from './methods/window';
 export { css } from './methods/css';
