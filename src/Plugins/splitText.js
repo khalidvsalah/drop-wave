@@ -156,7 +156,7 @@ function splitLines(node, children, width, str, wrapper) {
 
 /**
  * @param {HTMLElement} element - property name
- * @param {{line:boolean, word:boolean, letter:boolean}} o
+ * @param {{lines:boolean, words:boolean, letters:boolean}} o
  * @returns {{letters:Array, words:Array, lines:Array}}
  */
 export function splitText(element, options = {}) {
