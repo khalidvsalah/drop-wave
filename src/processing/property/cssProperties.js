@@ -3,6 +3,8 @@ import transform from '../../components/transform/transform';
 import clipPath from '../../components/clipPath/clipPath';
 import filter from '../../components/filter/filter';
 import draw from '../../components/draw/draw';
+import width from '../../components/width/width';
+import height from '../../components/height/height';
 
 export default [
   [/^(transform)/, transform],
@@ -10,4 +12,6 @@ export default [
   [/^(clipPath)/, clipPath],
   [/^(filter)/, filter],
   [/^(draw)/, draw],
+  [/^(width)/, width],
+  [/^(height)/, height],
 ];
