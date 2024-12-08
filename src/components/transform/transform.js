@@ -20,7 +20,6 @@ const parseTransform = (value) => {
   if (value.scale != null) {
     [value.scaleX, value.scaleY] = [value.scale, value.scale];
   }
-
   if (value.rotate != null) {
     value.rotateZ = value.rotate;
   }
@@ -33,12 +32,18 @@ const parseTransform = (value) => {
       const matrix = /\((.*)\)/.exec(value);
       value = isMatrix3d ? matrix3d(matrix) : matrix2d(matrix);
     }
+  } else {
+    value = {
+      translate: { x: value.x, y: value.y },
+      scale: { x: value.scaleX, y: value.scaleY },
+      rotate: { x: value.rotateX, y: value.rotateY, z: value.rotateZ },
+    };
   }
 
   return {
-    translate: { x: value.x, y: value.y },
-    scale: { x: value.scaleX, y: value.scaleY },
-    rotate: { x: value.rotateX, y: value.rotateY, z: value.rotateZ },
+    translate: { x: value.translate.x, y: value.translate.y },
+    scale: { x: value.scale.x, y: value.scale.y },
+    rotate: { x: value.rotate.x, y: value.rotate.y, z: value.rotate.z },
   };
 };
 
