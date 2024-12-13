@@ -62,7 +62,13 @@ export default class TweenBase {
       this.ease = easingFn[nextTween.ease];
 
       if (to) {
-        from = from || computed(this.element);
+        if (!from) {
+          const computedStyle = computed(this.element);
+          from = {};
+          Object.keys(to).map((key) => {
+            from[key] = computedStyle[key];
+          });
+        }
       } else if (from) {
         if (!to) {
           const computedStyle = computed(this.element);
