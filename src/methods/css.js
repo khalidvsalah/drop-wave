@@ -7,7 +7,11 @@ import { computed } from '../methods/computed';
  */
 export const css = {
   set: (element, key, value) => {
-    element.style[key] = value;
+    if (element.length) {
+      element.forEach((el) => (el.style[key] = value));
+    } else {
+      element.style[key] = value;
+    }
   },
   get: (element, key) => {
     return computed(element)[key];

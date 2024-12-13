@@ -1,3 +1,4 @@
+import selector from '../helpers/selector';
 import { computed } from '../methods/computed';
 
 const space = ' ';
@@ -155,11 +156,12 @@ function splitLines(node, children, width, str, wrapper) {
 }
 
 /**
- * @param {HTMLElement} element - property name
- * @param {{lines:boolean, words:boolean, letters:boolean}} o
- * @returns {{letters:Array, words:Array, lines:Array}}
+ * @param {string|Element} element - property name
+ * @param {{lines:boolean, words:boolean, letters:boolean}} options
+ * @returns {{lines:Array<HTMLElement>|null, letters:Array<HTMLElement>|null, words:Array<HTMLElement>|null}}
  */
 export function splitText(element, options = {}) {
+  element = selector(element)[0];
   const children = nodes(element);
   const width = element.offsetWidth;
   const node = document.createElement('div');

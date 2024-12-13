@@ -3,21 +3,7 @@ import TIMELINE_REVERSE_KEY from '../timeline/key.js';
 import selector from '../../helpers/selector.js';
 import TweenBase from './tweenbase.js';
 
-/**
- * Tweens storage
- */
-export const TWEENS_STORAGE = new WeakMap();
-
-/**
- * Handing time between tweens
- * @param {number} time
- * @param {number} length
- * @param {number} idx
- * @returns {number}
- */
-const space = (time, length, idx) => {
-  return Math.abs(time) * (Math.sign(time) < 0 ? length - idx : idx);
-};
+import { TWEENS_STORAGE, handleTweenSpace } from './helpers.js';
 
 /**
  * Tweening Starting Function
@@ -55,7 +41,7 @@ export function tween(elements, options = {}) {
   for (let i = 0; i <= length; i++) {
     const node = nodes[i];
     let delay = options.delay;
-    delay += space(options.space, length, i);
+    delay += handleTweenSpace(options.space, length, i);
 
     if (i !== 0) {
       options.onStart = undefined;
@@ -89,7 +75,8 @@ export function tween(elements, options = {}) {
       tweens.forEach((tween, idx) => {
         const isTimeline = key === TIMELINE_REVERSE_KEY;
         const delay =
-          (isTimeline ? time : 0) + space(options.space, length, length - idx);
+          (isTimeline ? time : 0) +
+          handleTweenSpace(options.space, length, length - idx);
         tween.push('reverse', { delay });
       });
     },

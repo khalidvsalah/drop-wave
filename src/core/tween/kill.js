@@ -1,5 +1,5 @@
 import selector from '../../helpers/selector';
-import { TWEENS_STORAGE } from './tween';
+import { TWEENS_STORAGE } from './helpers';
 
 export const kill = (elements) => {
   elements = selector(elements);

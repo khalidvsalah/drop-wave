@@ -3,8 +3,8 @@ import { unitConventer, getUnit, getValue } from '../../helpers/handleUnits.js';
 
 const translate = (endValue, startValue, size) => {
   const unit = getUnit(endValue) || 'px';
-  startValue = unitConventer(startValue || 0, size, unit).value;
-  endValue = getValue(endValue) || 0;
+  startValue = unitConventer(startValue, size, unit).value;
+  endValue = getValue(endValue);
   return (t) => `${lerp(startValue, endValue, t)}${unit}`;
 };
 const _translate = (endValue, startValue, [width, height]) => {
@@ -14,8 +14,6 @@ const _translate = (endValue, startValue, [width, height]) => {
 };
 
 const scale = (endValue, startValue) => {
-  startValue = startValue || 1;
-  endValue = endValue || 1;
   return (t) => `${lerp(startValue, endValue, t)}`;
 };
 const _scale = (endValue, startValue) => {
@@ -24,15 +22,10 @@ const _scale = (endValue, startValue) => {
   return (t) => `scale(${sxV(t)}, ${syV(t)})`;
 };
 
-const rotate = (endValue, startValue) => {
-  startValue = startValue || 0;
-  endValue = endValue || 0;
-  return (t) => `${lerp(startValue, endValue, t)}`;
-};
 const _rotate = (endValue, startValue) => {
-  const rxV = rotate(endValue[0], startValue[0]);
-  const ryV = rotate(endValue[1], startValue[1]);
-  const rzV = rotate(endValue[2], startValue[2]);
+  const rxV = scale(endValue[0], startValue[0]);
+  const ryV = scale(endValue[1], startValue[1]);
+  const rzV = scale(endValue[2], startValue[2]);
   return (t) =>
     `rotate(${rzV(t)}deg) rotateX(${rxV(t)}deg) rotateY(${ryV(t)}deg)`;
 };

@@ -1,15 +1,16 @@
 import { easingFn } from '../../math/easing/index';
 import { clamp } from '../../math/math';
 
-import { processing } from '../../processing/processing';
-
 import { raf } from '../../utils/Raf';
 import { Delay } from '../../utils/Delay';
 
-import { computed } from '../../methods/computed';
-import { css } from '../../methods/css';
+import { prepareTween } from './helpers';
 
 export default class TweenBase {
+  #elapsed = 0;
+  #queue = [];
+  #callIndex = -1;
+
   /**
    * Tween Controller
    *
@@ -18,28 +19,20 @@ export default class TweenBase {
    */
   constructor(element, options) {
     this.element = element;
-
-    this.queue = [];
     this.properties = [];
-
-    // default values
-    this.callIndex = -1;
-    this.dir = 0;
-    this.ease = easingFn.linear;
     this.progress = 0;
-    this.elapsed = 0;
-
     this.push('play', options);
   }
 
   update(time) {
     this.isRunning = true;
-    this.elapsed = clamp(0, 1, this.progress + time);
+    this.#elapsed = clamp(0, 1, this.progress + time);
 
-    const easedValue = this.ease(Math.abs(this.dir - this.elapsed));
+    const easedValue = this.ease(Math.abs(this.dir - this.#elapsed));
     this.properties.forEach(({ tween }) => tween(easedValue));
+
     if (this.onUpdate) this.onUpdate(easedValue, this.element);
-    if (this.elapsed === 1) this._done();
+    if (this.#elapsed === 1) this._done();
   }
 
   fire() {
@@ -50,14 +43,7 @@ export default class TweenBase {
   }
 
   execute(nextTween) {
-    let from = nextTween.from;
-    let to = nextTween.to;
-    const set = nextTween.set;
-
-    if (to || from) {
-      if (this.isRunning) this._done();
-      this.dir = 0;
-
+    if (nextTween.to || nextTween.from) {
       if (this.onStart) {
         this.onStart(this.element);
         this.onStart = null;
@@ -66,32 +52,16 @@ export default class TweenBase {
       this.duration = nextTween.duration;
       this.ease = easingFn[nextTween.ease];
 
-      if (to) {
-        from = from || computed(this.element);
-      } else if (from) {
-        if (!to) {
-          const computedStyle = computed(this.element);
-          to = {};
-          Object.keys(from).map((key) => {
-            to[key] = computedStyle[key];
-          });
-        }
-      }
-
-      this.properties = processing(this.element, from, to);
+      this.properties = prepareTween(this.element, nextTween);
       this.progress = 0;
 
       this.fire();
-    } else if (set) {
-      this.properties = processing(this.element, set, set);
-      this.progress = 0;
-      this.update(1);
     } else {
       this.dir = nextTween.mode === 'reverse' ? 1 : 0;
       if (nextTween.mode !== this.mode) {
         if (this.isRunning) this._done();
         this.fire();
-        this.progress = 1 - this.elapsed;
+        this.progress = 1 - this.#elapsed;
       }
     }
 
@@ -103,14 +73,14 @@ export default class TweenBase {
    * @param {tweenOptionsType} options
    */
   push(mode, options = {}) {
-    ++this.callIndex;
+    ++this.#callIndex;
 
     this.onStart = options.onStart;
     this.onUpdate = options.onUpdate;
     this.onComplete = options.onComplete;
 
     const nextTween = { mode, ...options };
-    this.queue.push(nextTween);
+    this.#queue.push(nextTween);
 
     this.delay = new Delay({
       cb: this.execute.bind(this, nextTween),
