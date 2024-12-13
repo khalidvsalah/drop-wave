@@ -33,17 +33,9 @@ export const prepareTween = (element, nextTween) => {
 
   let { to, from } = nextTween;
   if (to) {
-    if (!from) {
-      const computedStyle = computed(element);
-      from = {};
-      Object.keys(to).map((key) => (from[key] = computedStyle[key]));
-    }
+    if (!from) from = from || computed(element);
   } else if (from) {
-    if (!to) {
-      const computedStyle = computed(element);
-      to = {};
-      Object.keys(from).map((key) => (to[key] = computedStyle[key]));
-    }
+    if (!to) to = to || computed(element);
   }
 
   return processing(element, from, to);
