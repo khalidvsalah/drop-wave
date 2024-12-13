@@ -1,7 +1,7 @@
 import { lerp } from '../../math/math';
 
 /**
- * @param {object} endValue
+ * @param {number} endValue
  * @param {elementContextType}
  * @return {Function}
  */
