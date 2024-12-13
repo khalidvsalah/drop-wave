@@ -1,3 +1,4 @@
+import selector from '../helpers/selector';
 import { computed } from '../methods/computed';
 
 const space = ' ';
@@ -155,11 +156,12 @@ function splitLines(node, children, width, str, wrapper) {
 }
 
 /**
- * @param {HTMLElement} element - property name
- * @param {{line:boolean, word:boolean, letter:boolean}} o
- * @returns {{letters:Array, words:Array, lines:Array}}
+ * @param {string|Element} element - property name
+ * @param {{lines:boolean, words:boolean, letters:boolean}} options
+ * @returns {{lines:Array<HTMLElement>|null, letters:Array<HTMLElement>|null, words:Array<HTMLElement>|null}}
  */
 export function splitText(element, options = {}) {
+  element = selector(element)[0];
   const children = nodes(element);
   const width = element.offsetWidth;
   const node = document.createElement('div');
@@ -185,8 +187,8 @@ export function splitText(element, options = {}) {
   }
 
   return {
-    lines: document.querySelectorAll(`${element.className} .tfx`),
-    words: document.querySelectorAll(`${element.className} .word`),
-    letters: document.querySelectorAll(`${element.className} .ltr`),
+    lines: element.querySelectorAll('.tfx'),
+    words: element.querySelectorAll('.word'),
+    letters: element.querySelectorAll('.ltr'),
   };
 }
