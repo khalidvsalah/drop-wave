@@ -43,7 +43,17 @@ export default class TweenBase {
   }
 
   execute(nextTween) {
+<<<<<<< HEAD
     if (nextTween.to || nextTween.from) {
+=======
+    let from = nextTween.from;
+    let to = nextTween.to;
+
+    if (to || from) {
+      if (this.isRunning) this._done();
+      this.dir = 0;
+
+>>>>>>> 61584eaa2aab25be63a028f69a031926e91d81dd
       if (this.onStart) {
         this.onStart(this.element);
         this.onStart = null;
@@ -52,7 +62,29 @@ export default class TweenBase {
       this.duration = nextTween.duration;
       this.ease = easingFn[nextTween.ease];
 
+<<<<<<< HEAD
       this.properties = prepareTween(this.element, nextTween);
+=======
+      if (to) {
+        if (!from) {
+          const computedStyle = computed(this.element);
+          from = {};
+          Object.keys(to).map((key) => {
+            from[key] = computedStyle[key];
+          });
+        }
+      } else if (from) {
+        if (!to) {
+          const computedStyle = computed(this.element);
+          to = {};
+          Object.keys(from).map((key) => {
+            to[key] = computedStyle[key];
+          });
+        }
+      }
+
+      this.properties = processing(this.element, from, to);
+>>>>>>> 61584eaa2aab25be63a028f69a031926e91d81dd
       this.progress = 0;
 
       this.fire();
