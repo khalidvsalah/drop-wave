@@ -1,29 +1,34 @@
-import { lerp } from '../../math/math';
+import selector from '../../helpers/selector';
 import { NUMERIC } from '../../helpers/regex';
+
+import { lerp } from '../../math/math';
 import { interpolatePoints } from './pointsBase';
 
-const PAIR = new RegExp(NUMERIC + ',' + NUMERIC, 'g');
-const getPairs = (str) => str.match(PAIR).map((pair) => pair.split(','));
+const PAIR = new RegExp(NUMERIC + '[,|\\s]' + NUMERIC, 'g');
+const getPairs = (str) => str.match(PAIR).map((pair) => pair.split(/[,|\s]/));
 
 /**
- * @param {object} target
+ * @param {string} endValue
  * @param {elementContextType}
  * @return {Function}
  */
-const points = (target, { element }) => {
-  let start = getPairs(element.getAttribute('points'));
-  let end = getPairs(target);
+const points = (endValue, { element }) => {
+  const node = selector(endValue)[0];
+  let startValue = getPairs(element.getAttribute('points'));
 
-  const newPoints = interpolatePoints(start, end);
+  endValue = node ? node.getAttribute('points') : endValue;
+  endValue = getPairs(endValue);
 
-  if (start.length > end.length) end = newPoints;
-  else start = newPoints;
+  const newPoints = interpolatePoints(endValue, startValue);
+
+  if (startValue.length > endValue.length) endValue = newPoints;
+  else startValue = newPoints;
 
   return (t) => {
-    return start
+    return startValue
       .map((point, idx) => {
         const [x, y] = point;
-        const [nX, nY] = end[idx];
+        const [nX, nY] = endValue[idx];
         return `${lerp(x, nX, t)},${lerp(y, nY, t)} `;
       })
       .join('');
