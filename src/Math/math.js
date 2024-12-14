@@ -67,6 +67,6 @@ const damp = (t, s, i, n = 0.50399) => lerp(t, s, 1 - Math.exp(-i * n));
  * @param {number}  x
  * @return {boolean} inRange
  */
-const inRange = (a, b, x) => x >= a && b >= x;
+const inRange = (a, b, x) => x > a && b > x;
 
 export { clamp, lerp, normalize, map, round, dist, damp, inRange };
