@@ -1,21 +1,18 @@
 import { lerp } from '../../math/math';
 
 /**
- * @param {object} target
+ * @param {number} endValue
  * @param {elementContextType}
  * @return {Function}
  */
-const draw = (target, { element, computed }) => {
-  const start = parseFloat(computed.strokeDashoffset);
+const draw = (endValue, { element, computed }) => {
+  const startValue = parseFloat(computed.strokeDashoffset);
+
   const length = element.getTotalLength();
   element.style.strokeDasharray = length;
 
-  const ofrom = Array.isArray(target);
-  const o = {
-    start: ofrom ? (1 - target[0]) * length : start,
-    end: (1 - (ofrom ? target[1] : target)) * length,
-  };
-  return (t) => `${lerp(o.start, o.end, t)}`;
+  endValue = (1 - endValue) * length;
+  return (t) => `${lerp(startValue, endValue, t)}`;
 };
 
 export default {
