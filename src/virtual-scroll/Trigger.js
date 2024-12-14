@@ -52,7 +52,7 @@ export default class Trigger {
     this.trigger = selector(trigger)[0]; // do: edit it for multiple elements
     this.options = options;
 
-    this.#target = options.trigger ? selector(options.trigger) : [this.trigger];
+    this.#target = options.target ? selector(options.target) : [this.trigger];
 
     this.#pinObj = options.pin;
     this.#animateObj = options.animate;
