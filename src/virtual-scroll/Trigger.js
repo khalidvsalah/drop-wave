@@ -120,7 +120,7 @@ export default class Trigger {
     this.#pinOut = false;
     const coords = offset(this.target);
 
-    if (this.#animateObj || this.#tweenObj) {
+    if (this.#animateObj || this.#tweenObj || this.#onUpdate) {
       const start =
         typeof this.options.start === 'function'
           ? this.options.start(coords)
