@@ -7,7 +7,7 @@ export { computed } from './methods/computed';
 export { bounds, offset } from './methods/coordinate';
 export { win } from './methods/window';
 export { css } from './methods/css';
-export { Choke } from './methods/choke';
+export { debounce } from './methods/debounce';
 
 export { observer } from './utils/Observer';
 export { raf } from './utils/Raf';
