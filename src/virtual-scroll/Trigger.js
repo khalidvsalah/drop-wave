@@ -14,7 +14,7 @@ import { prepareTween } from '../core/tween/helpers';
 import { CSSTransform } from './utils/helpers';
 
 export default class Trigger {
-  #trigger;
+  #target;
 
   #properties = [];
 
@@ -28,6 +28,8 @@ export default class Trigger {
   #size;
   #dirEnd;
 
+  #isOut = true;
+
   #pinOut;
   #pinStart;
   #pinEnd;
@@ -35,17 +37,22 @@ export default class Trigger {
   #iresize;
   #iupdate;
 
+  #onEnter;
+  #onLeave;
+  #onEnterBack;
+  #onLeaveBack;
+
   #onUpdate;
 
   /**
-   * @param {HTMLElement} target
+   * @param {HTMLElement} trigger
    * @param {triggerOptionsType} options
    */
-  constructor(target, options) {
-    this.target = selector(target)[0]; // do: edit it for multiple elements
+  constructor(trigger, options) {
+    this.trigger = selector(trigger)[0]; // do: edit it for multiple elements
     this.options = options;
 
-    this.#trigger = options.trigger ? selector(options.trigger) : [this.target];
+    this.#target = options.trigger ? selector(options.trigger) : [this.trigger];
 
     this.#pinObj = options.pin;
     this.#animateObj = options.animate;
@@ -56,6 +63,10 @@ export default class Trigger {
     this.#size = this.#isY ? 'h' : 'w';
     this.#dirEnd = this.#dir === 'y' ? 'yE' : 'xE';
 
+    this.#onEnter = options.onEnter;
+    this.#onLeave = options.onLeave;
+    this.#onEnterBack = options.onEnterBack;
+    this.#onLeaveBack = options.onLeaveBack;
     this.#onUpdate = options.onUpdate;
 
     this.#init();
@@ -64,7 +75,7 @@ export default class Trigger {
   #init() {
     if (this.#animateObj) {
       this.#ease = easingFn[this.#animateObj.ease || 'linear'];
-      this.#trigger.forEach((element) => {
+      this.#target.forEach((element) => {
         this.#properties.push(prepareTween(element, this.#animateObj));
       });
     }
@@ -84,7 +95,7 @@ export default class Trigger {
   }
 
   #_tween() {
-    tween(this.#trigger, this.#tweenObj);
+    tween(this.#target, this.#tweenObj);
     this._destroy();
   }
 
@@ -92,14 +103,14 @@ export default class Trigger {
     if (inRange(this.#pinStart, this.#pinEnd, this.scroll)) {
       this.#pinOut = false;
       const dist = Math.max(0, this.scroll - this.#pinStart);
-      CSSTransform(this.#trigger, dist, this.#isY);
+      CSSTransform(this.#target, dist, this.#isY);
     } else {
       if (!this.#pinOut) {
         if (this.scroll > this.#pinEnd) {
           const dist = this.#pinEnd - this.#pinStart;
-          CSSTransform(this.#trigger, dist, this.#isY);
+          CSSTransform(this.#target, dist, this.#isY);
         } else {
-          CSSTransform(this.#trigger, 0, this.#isY);
+          CSSTransform(this.#target, 0, this.#isY);
         }
         this.#pinOut = true;
       }
@@ -108,33 +119,69 @@ export default class Trigger {
 
   #_update({ lerp }) {
     this.scroll = lerp;
-    const elapsed = clamp(0, 1, normalize(this.start, this.end, this.scroll));
+    this.preElapsed = this.elapsed;
+    this.elapsed = clamp(0, 1, normalize(this.start, this.end, this.scroll));
 
     if (this.#pinObj) this.#_pin();
-    if (this.#animateObj) this.#_animate(elapsed);
+    if (this.#animateObj) this.#_animate(this.elapsed);
     if (this.#tweenObj) if (this.start <= this.scroll) this.#_tween();
-    if (this.#onUpdate) this.#onUpdate(elapsed, this.target);
+
+    if (this.elapsed === 1 && !this.#isOut) {
+      if (this.#onLeave) {
+        this.#onLeave();
+      }
+    }
+
+    if (this.elapsed === 0 && !this.#isOut) {
+      if (this.#onLeaveBack) {
+        this.#onLeaveBack();
+      }
+    }
+
+    if (inRange(0, 1, this.elapsed)) {
+      this.#isOut = false;
+    } else {
+      this.#isOut = true;
+    }
+
+    if (this.preElapsed === 0 && !this.#isOut) {
+      if (this.#onEnter) {
+        this.#onEnter();
+      }
+    }
+
+    if (this.preElapsed === 1 && !this.#isOut) {
+      if (this.#onEnterBack) {
+        this.#onEnterBack();
+      }
+    }
+
+    if (this.#onUpdate) {
+      this.#onUpdate({
+        progress: this.elapsed,
+        target: this.#target,
+        trigger: this.trigger,
+      });
+    }
   }
 
   #_resize() {
     this.#pinOut = false;
-    const coords = offset(this.target);
+    const coords = offset(this.trigger);
 
-    if (this.#animateObj || this.#tweenObj || this.#onUpdate) {
-      const start =
-        typeof this.options.start === 'function'
-          ? this.options.start(coords)
-          : coords[this.#dir] +
-            toPixels(this.options.start || '0', coords[this.#size]).pixels;
-      const end =
-        typeof this.options.end === 'function'
-          ? this.options.end(coords)
-          : coords[this.#dirEnd] +
-            toPixels(this.options.end || '0', coords[this.#size]).pixels;
+    const start =
+      typeof this.options.start === 'function'
+        ? this.options.start(coords)
+        : coords[this.#dir] +
+          toPixels(this.options.start || '0', coords[this.#size]).pixels;
+    const end =
+      typeof this.options.end === 'function'
+        ? this.options.end(coords)
+        : coords[this.#dirEnd] +
+          toPixels(this.options.end || '0', coords[this.#size]).pixels;
 
-      this.start = start;
-      this.end = end;
-    }
+    this.start = start;
+    this.end = end;
 
     if (this.#pinObj) {
       const start =
