@@ -1,5 +1,6 @@
 import { processing } from '../../processing/processing';
 import { computed } from '../../methods/computed';
+import matcher from '../../processing/helpers/matcher';
 
 /**
  * Tweens storage
@@ -18,6 +19,28 @@ export const handleTweenSpace = (time, length, idx) => {
 };
 
 /**
+ *
+ * @param {HTMLElement} element
+ * @param {propertiesType} obj
+ * @returns {propertiesType}
+ */
+const getComputedValues = (element, obj) => {
+  let computedValues;
+  const values = {};
+
+  Object.keys(obj).map((key) => {
+    if (matcher(key).type === 'CSS') {
+      if (!computedValues) computedValues = computed(element);
+      values[key] = computedValues[key];
+    } else {
+      values[key] = element.getAttribute(key);
+    }
+  });
+
+  return values;
+};
+
+/**
  * Prepare Tween for animatnig
  *
  * @param {HTMLElement} element
@@ -32,11 +55,9 @@ export const prepareTween = (element, nextTween) => {
   }
 
   let { to, from } = nextTween;
-  if (to) {
-    if (!from) from = from || computed(element);
-  } else if (from) {
-    if (!to) to = to || computed(element);
-  }
+
+  from = from || getComputedValues(element, to);
+  to = to || getComputedValues(element, from);
 
   return processing(element, from, to);
 };

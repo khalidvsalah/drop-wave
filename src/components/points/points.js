@@ -8,13 +8,13 @@ const PAIR = new RegExp(NUMERIC + '[,|\\s]' + NUMERIC, 'g');
 const getPairs = (str) => str.match(PAIR).map((pair) => pair.split(/[,|\s]/));
 
 /**
- * @param {string} endValue
+ * @param {string|HTMLElement} endValue
  * @param {elementContextType}
  * @return {Function}
  */
-const points = (endValue, { element }) => {
+const points = (endValue, { computed }) => {
   const node = selector(endValue)[0];
-  let startValue = getPairs(element.getAttribute('points'));
+  let startValue = getPairs(computed.points);
 
   endValue = node ? node.getAttribute('points') : endValue;
   endValue = getPairs(endValue);
