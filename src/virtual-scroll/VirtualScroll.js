@@ -1,15 +1,18 @@
+import { observer } from '../utils/Observer';
+
+import selector from '../helpers/selector.js';
+
 import { win } from '../methods/window.js';
 import { offset } from '../methods/coordinate.js';
-import { clamp, damp } from '../math/math.js';
 
-import Events from './Events.js';
-import Trigger from './Trigger.js';
+import { clamp, damp, lerp } from '../math/math.js';
 
-import { CSSTransform, inRange } from './utils/helpers.js';
+import { Events } from './Events.js';
+import { Trigger } from './Trigger.js';
+
+import { CSSTransform, inRange, SCROLLS_STORAGE } from './utils/helpers.js';
 
 export class VirtualScroll extends Events {
-  #isY = false;
-
   /**
    * @param {HTMLElement} target
    * @param {scrollOptionsType} [options]
@@ -17,30 +20,60 @@ export class VirtualScroll extends Events {
   constructor(target, options = {}) {
     super();
 
+    if (!options.name) {
+      throw new Error('Please pass a unique name for this scroll');
+    }
+
     const {
-      name = Symbol('virtual'),
-      container = window,
+      // main
+      name,
+      wrapper = window,
       dir = 'y',
+      // inputs
       drag = true,
       wheel = true,
       key = true,
+      // easing
       ease = 0.09,
+      lerpFn = 'damp',
+      dampEase = 0.50399,
+      offset = 1,
+      // infinite
+      infinite = false,
     } = options;
 
-    this.target = target;
-    this.container = container;
+    this.target = selector(target)[0];
+    this.scroll = { value: 0, lerp: 0, dir: 1 };
 
-    this.dir = dir === 'x' ? 'x' : 'y';
-    this.#isY = this.dir === 'y';
-    this.axis = this.#isY ? 'pageY' : 'pageX';
+    this.wrapper = wrapper;
 
-    this.init({ drag, wheel, key, name });
+    this.isY = dir === 'y';
+    this.axis = this.isY ? 'pageY' : 'pageX';
 
+    this.pause = false;
+
+    this.lerpFn = lerpFn === 'damp' ? damp : lerp;
+    this.dampEase = dampEase;
     this.ease = ease;
-    this.infinite = options.infinite;
-    this.children = [...this.target.children];
+    this.offset = offset;
 
+    this.infinite = infinite;
+
+    this.observer = {
+      update: observer.create('update-' + name),
+      resize: observer.create('resize-' + name),
+    };
+
+    this.init({ drag, wheel, key });
     this._resize();
+
+    SCROLLS_STORAGE.set(this.target, {
+      observer: {
+        update: this.observer.update.name,
+        resize: this.observer.resize.name,
+      },
+      dir,
+    });
   }
 
   /**
@@ -48,81 +81,93 @@ export class VirtualScroll extends Events {
    * @param {triggerOptionsType} options
    */
   add(target, options = {}) {
-    options.channel = this.observer.name;
-    options.dir = this.dir;
+    options.container = this.target;
+    options.isY = this.isY;
     return new Trigger(target, options);
   }
 
   _update() {
-    if (!this.infinite) {
-      this.scroll.value = clamp(0, this.totalHeight, this.scroll.value);
-    }
-    this.scroll.lerp =
-      ((damp(this.scroll.lerp, this.scroll.value, this.ease) * 1000) >> 0) /
-      1000;
-
-    if (this.infinite) {
-      // switching
-      if (this.scroll.lerp > this.totalHeight) {
-        this.scroll.value = this.scroll.value - this.totalHeight;
-        this.scroll.lerp = this.scroll.lerp - this.totalHeight;
-      } else if (this.scroll.lerp < 0) {
-        this.scroll.value = this.totalHeight + this.scroll.value;
-        this.scroll.lerp = this.totalHeight + this.scroll.lerp;
+    if (!this.isStopped) {
+      if (!this.infinite) {
+        this.scroll.value = clamp(0, this.height, this.scroll.value);
       }
+      this.scroll.lerp =
+        ((this.lerpFn(
+          this.scroll.lerp,
+          this.scroll.value,
+          this.ease,
+          this.dampEase
+        ) *
+          1000) >>
+          0) /
+        1000;
 
-      const topBar = this.scroll.lerp; // topBar > End === "out"
-      const bottomBar = this.scroll.lerp + this.viewportSize; // bottomBar < start === 'out';
+      if (this.infinite) {
+        // switching
+        if (this.scroll.lerp > this.height) {
+          this.scroll.value = this.scroll.value - this.height;
+          this.scroll.lerp = this.scroll.lerp - this.height;
+        } else if (this.scroll.lerp < 0) {
+          this.scroll.value = this.height + this.scroll.value;
+          this.scroll.lerp = this.height + this.scroll.lerp;
+        }
 
-      // transform children
-      this.childrenSize.forEach(([child, coords]) => {
-        if (this.scroll.lerp > this.totalHeight - this.viewportSize) {
-          const offsetStart =
-            this.scroll.lerp -
-            (this.totalHeight - this.viewportSize) -
-            this.viewportSize;
-          const offsetEnd = offsetStart + this.viewportSize;
-          if (offsetStart <= coords.end && offsetEnd >= coords.start) {
-            CSSTransform(child, this.viewportSize - offsetEnd, this.#isY);
+        const topBar = this.scroll.lerp; // topBar > End === "out"
+        const bottomBar = this.scroll.lerp + this.viewportSize; // bottomBar < start === 'out';
+
+        // transform children
+        this.childrenSize.forEach(([child, coords]) => {
+          if (this.scroll.lerp > this.height - this.viewportSize) {
+            const offsetStart =
+              this.scroll.lerp -
+              (this.height - this.viewportSize) -
+              this.viewportSize;
+            const offsetEnd = offsetStart + this.viewportSize;
+            if (offsetStart <= coords.end && offsetEnd >= coords.start) {
+              CSSTransform(child, this.viewportSize - offsetEnd, this.isY);
+            } else {
+              inRange(
+                child,
+                { topBar, bottomBar },
+                coords,
+                this.scroll.lerp,
+                this.isY
+              );
+            }
           } else {
             inRange(
               child,
               { topBar, bottomBar },
               coords,
               this.scroll.lerp,
-              this.#isY
+              this.isY
             );
           }
-        } else {
-          inRange(
-            child,
-            { topBar, bottomBar },
-            coords,
-            this.scroll.lerp,
-            this.#isY
-          );
-        }
-      });
-    } else {
-      CSSTransform(this.target, -this.scroll.lerp, this.#isY);
+        });
+      } else {
+        CSSTransform(this.target, -this.scroll.lerp, this.isY);
+      }
+      this.observer.update.notify(this.scroll);
     }
-    this.observer.notify(this.scroll);
   }
 
   _resize() {
-    this.coords = offset(this.target);
+    const dim = this.isY ? 'h' : 'w';
 
-    const dim = this.#isY ? 'h' : 'w';
+    this.coords = offset(this.target);
     this.viewportSize = win.screen[dim];
-    this.totalHeight =
-      this.coords[dim] - (this.infinite ? 0 : this.viewportSize);
+    this.height = this.coords[dim] - (this.infinite ? 0 : this.viewportSize);
 
     if (this.infinite) {
+      this.children = [...this.target.children];
+
       this.childrenSize = this.children.map((child) => {
-        const start = this.#isY ? child.offsetTop : child.offsetLeft;
-        const size = this.#isY ? child.offsetHeight : child.offsetWidth;
+        const start = this.isY ? child.offsetTop : child.offsetLeft;
+        const size = this.isY ? child.offsetHeight : child.offsetWidth;
         return [child, { start, end: start + size, out: true }];
       });
     }
+
+    this.observer.resize.notify();
   }
 }

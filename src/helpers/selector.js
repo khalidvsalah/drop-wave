@@ -17,13 +17,16 @@ export default function selector(elements, obj) {
     if (obj && elements.every((element) => typeof element === 'number')) {
       return elements;
     } else {
-      return elements;
+      const eles = [];
+      for (let i = 0; i < elements.length; i++) {
+        const el = selector(elements[i]);
+        if (el) eles.push(...el);
+      }
+      return eles;
     }
   } else if (elements instanceof Node) {
     return [elements];
   } else if (obj && typeof elements === 'object' && elements !== null) {
     return [elements];
   }
-
-  console.warn(`Drop-Wave target element ${elements} not found.`);
 }

@@ -6,10 +6,10 @@ import { getUnit, getValue, unitConventer } from '../../helpers/handleUnits';
  * @param {elementContextType}
  * @return {Function}
  */
-const height = (endValue, { computed }) => {
+const height = (endValue, { computed, parent }) => {
   const unit = getUnit(endValue) || 'px';
   let startValue = computed.height;
-  startValue = unitConventer(startValue, 0, unit).value;
+  startValue = unitConventer(startValue, parent.offsetHeight, unit).value;
   endValue = getValue(endValue);
   return (t) => `${lerp(startValue, endValue, t)}${unit}`;
 };

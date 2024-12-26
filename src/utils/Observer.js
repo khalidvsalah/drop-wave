@@ -3,7 +3,7 @@ class Observer {
 
   /**
    * @param {string} name - observer name
-   * @returns {{notify:Function, remove:Function}}
+   * @returns {{notify:Function, remove:Function, name:string}}
    */
   create(name) {
     const store = this.#store;

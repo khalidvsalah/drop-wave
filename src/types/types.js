@@ -1,11 +1,10 @@
-/** * @typedef {NodeList|Node|HTMLElement|Array} ELEMENTS */
-/** * @typedef {string|Array<string>} STRING_ARR */
-/** * @typedef {string|Array<number>} NUMBER_ARR */
+// /** * @typedef {string|Array<string>} STRING_ARR */
+// /** * @typedef {string|Array<number>} NUMBER_ARR */
 
-/* Start Properties */
-/** * @typedef {{x:STRING_ARR, y:STRING_ARR, scale:NUMBER_ARR, scaleX:NUMBER_ARR, scaleY:NUMBER_ARR}} transformType */
-/** * @typedef {{circle:FROM_TO, polygon:FROM_TO}} clipPathType */
-/* End Properties */
+// /* Start Properties */
+// /** * @typedef {{x:STRING_ARR, y:STRING_ARR, scale:NUMBER_ARR, scaleX:NUMBER_ARR, scaleY:NUMBER_ARR}} transformType */
+// /** * @typedef {{circle:FROM_TO, polygon:FROM_TO}} clipPathType */
+// /* End Properties */
 
 /**
  * elementContextType
@@ -63,7 +62,7 @@
  * Virtual Scroll Options
  * @typedef {object} scrollOptionsType
  * @property {string} [name]
- * @property {HTMLElement} [container]
+ * @property {HTMLElement} [wrapper]
  * @property {'x'|'y'} [dir]
  * @property {boolean} [drag]
  * @property {boolean} [wheel]
@@ -75,7 +74,8 @@
 /**
  * Trigger options
  * @typedef {object} triggerOptionsType
- * @property {ELEMENTS} [trigger]
+ * @property {any} [target]
+ * @property {any} [container]
  * @property {propertiesType} [animate]
  * @property {tweenOptionsType} [tween]
  * @property {string} [ease]

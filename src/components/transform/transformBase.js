@@ -5,6 +5,7 @@ const translate = (endValue, startValue, size) => {
   const unit = getUnit(endValue) || 'px';
   startValue = unitConventer(startValue, size, unit).value;
   endValue = getValue(endValue);
+
   return (t) => `${lerp(startValue, endValue, t)}${unit}`;
 };
 const _translate = (endValue, startValue, [width, height]) => {

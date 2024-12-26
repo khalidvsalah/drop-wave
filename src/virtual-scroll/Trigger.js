@@ -3,7 +3,7 @@ import selector from '../helpers/selector';
 
 import { observer } from '../utils/Observer';
 
-import { offset } from '../methods/coordinate';
+import { bounds, offset } from '../methods/coordinate';
 
 import { clamp, normalize, inRange } from '../math/math';
 import { easingFn } from '../math/easing/index';
@@ -11,10 +11,12 @@ import { easingFn } from '../math/easing/index';
 import { tween } from '../core/tween/tween';
 import { prepareTween } from '../core/tween/helpers';
 
-import { CSSTransform } from './utils/helpers';
+import { CSSTransform, SCROLLS_STORAGE } from './utils/helpers';
+import { computed } from '../methods/computed';
 
-export default class Trigger {
+export class Trigger {
   #target;
+  #observer;
 
   #properties = [];
 
@@ -25,7 +27,7 @@ export default class Trigger {
   #dir;
   #ease;
   #isY;
-  #size;
+  #dim;
   #dirEnd;
 
   #isOut = true;
@@ -49,18 +51,24 @@ export default class Trigger {
    * @param {triggerOptionsType} options
    */
   constructor(trigger, options) {
-    this.trigger = selector(trigger)[0]; // do: edit it for multiple elements
+    this.trigger = selector(trigger)[0];
     this.options = options;
 
     this.#target = options.target ? selector(options.target) : [this.trigger];
+
+    const wrapper = selector(options.container)[0];
+    const { observer, dir } = SCROLLS_STORAGE.get(wrapper);
+
+    this.#observer = observer;
 
     this.#pinObj = options.pin;
     this.#animateObj = options.animate;
     this.#tweenObj = options.tween;
 
-    this.#dir = options.dir;
-    this.#isY = options.dir === 'y';
-    this.#size = this.#isY ? 'h' : 'w';
+    this.#isY = dir === 'y';
+    this.#dim = this.#isY ? 'h' : 'w';
+
+    this.#dir = this.#isY ? 'y' : 'x';
     this.#dirEnd = this.#dir === 'y' ? 'yE' : 'xE';
 
     this.#onEnter = options.onEnter;
@@ -80,12 +88,16 @@ export default class Trigger {
       });
     }
 
-    this.#iresize = observer.subscribe('resize', this.#_resize.bind(this));
-    this.#_resize();
     this.#iupdate = observer.subscribe(
-      this.options.channel,
+      this.#observer.update,
       this.#_update.bind(this)
     );
+    this.#iresize = observer.subscribe(
+      this.#observer.resize,
+      this.#_resize.bind(this)
+    );
+
+    this.#_resize();
   }
 
   #_animate(elapsed) {
@@ -95,8 +107,8 @@ export default class Trigger {
   }
 
   #_tween() {
+    this.isTweened = true;
     tween(this.#target, this.#tweenObj);
-    this._destroy();
   }
 
   #_pin() {
@@ -122,9 +134,17 @@ export default class Trigger {
     this.preElapsed = this.elapsed;
     this.elapsed = clamp(0, 1, normalize(this.start, this.end, this.scroll));
 
-    if (this.#pinObj) this.#_pin();
-    if (this.#animateObj) this.#_animate(this.elapsed);
-    if (this.#tweenObj) if (this.start <= this.scroll) this.#_tween();
+    if (this.#pinObj) {
+      this.#_pin();
+    }
+    if (this.#animateObj) {
+      this.#_animate(this.elapsed);
+    }
+    if (this.#tweenObj) {
+      if (this.start <= this.scroll && !this.isTweened) {
+        this.#_tween();
+      }
+    }
 
     if (this.elapsed === 1 && !this.#isOut) {
       if (this.#onLeave) {
@@ -173,12 +193,12 @@ export default class Trigger {
       typeof this.options.start === 'function'
         ? this.options.start(coords)
         : coords[this.#dir] +
-          toPixels(this.options.start || '0', coords[this.#size]).pixels;
+          toPixels(this.options.start || '0', coords[this.#dim]).pixels;
     const end =
       typeof this.options.end === 'function'
         ? this.options.end(coords)
         : coords[this.#dirEnd] +
-          toPixels(this.options.end || '0', coords[this.#size]).pixels;
+          toPixels(this.options.end || '0', coords[this.#dim]).pixels;
 
     this.start = start;
     this.end = end;
@@ -188,12 +208,12 @@ export default class Trigger {
         typeof this.#pinObj.start === 'function'
           ? this.#pinObj.start(coords)
           : coords[this.#dir] +
-            toPixels(this.#pinObj.start || '0', coords[this.#size]).pixels;
+            toPixels(this.#pinObj.start || '0', coords[this.#dim]).pixels;
       const end =
         typeof this.#pinObj.end === 'function'
           ? this.#pinObj.end(coords)
           : coords[this.#dirEnd] +
-            toPixels(this.#pinObj.end || '0', coords[this.#size]).pixels;
+            toPixels(this.#pinObj.end || '0', coords[this.#dim]).pixels;
 
       this.#pinStart = start;
       this.#pinEnd = end;
@@ -201,7 +221,7 @@ export default class Trigger {
   }
 
   _destroy() {
-    this.#iresize.unsubscribe();
+    window.removeEventListener('resize', this.#_resize.bind(this));
     this.#iupdate.unsubscribe();
   }
 }

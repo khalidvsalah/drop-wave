@@ -1,3 +1,5 @@
+import { win } from '../../methods/window';
+
 export const keyCodes = {
   LEFT: 'ArrowLeft',
   UP: 'ArrowUp',
@@ -18,5 +20,10 @@ export const device = {
 
 export const scaler = {
   mouse: 1,
-  drag: device.isMobile ? 3 : 1.25,
+  drag:
+    device.isMobile ||
+    win.html.classList.contains('mobile') ||
+    win.html.classList.contains('tablet')
+      ? 2
+      : 1.25,
 };

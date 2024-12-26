@@ -1,3 +1,4 @@
+import { bounds } from '../../methods/coordinate';
 import { _translate, _scale, _rotate } from './transformBase';
 import { matrix2d, matrix3d } from './transformMatrix';
 
@@ -92,8 +93,8 @@ const fill = (value, fillValue) => {
 const transform = (endValue, { element, computed }) => {
   let startValue = computed.transform;
 
-  const width = element.offsetWidth;
-  const height = element.offsetHeight;
+  const width = element.offsetWidth || bounds(element).w;
+  const height = element.offsetHeight || bounds(element).h;
 
   startValue = parseTransform(startValue);
   endValue = parseTransform(endValue);

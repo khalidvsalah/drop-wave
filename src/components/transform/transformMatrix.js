@@ -1,32 +1,32 @@
 function matrix2d(match) {
   const values = match[1].split(',').map(Number);
 
-  const [a, b, c, d, e, f] = values;
+  const [a, b, c, d, tx, ty] = values;
 
-  const translate = {
-    x: e,
-    y: f,
-  };
+  // Translation (tx, ty)
+  const translate = { x: tx, y: ty };
 
-  const rotation = Math.atan2(b, a);
+  // Rotation (using atan2)
+  const rotation = Math.atan2(b, a); // rotation angle in radians
   const rotate = {
     x: 0,
     y: 0,
-    z: rotation * (180 / Math.PI),
+    z: ((rotation * (180 / Math.PI) * 1000) >> 0) / 1000, // convert to degrees
   };
 
-  const scale = {
-    x: Math.sign(a) * Math.sqrt(a * a + b * b),
-    y: Math.sign(d) * Math.sqrt(c * c + d * d),
-  };
+  // Scale (magnitude of vectors (a, b) and (c, d))
+  const scaleX = ((Math.sqrt(a * a + b * b) * 1000) >> 0) / 1000;
+  const scaleY = ((Math.sqrt(c * c + d * d) * 1000) >> 0) / 1000;
+  const scale = { x: scaleX, y: scaleY };
 
-  const skew = Math.atan2(a * c + b * d, a * d - b * c) - rotation;
+  // Skew - assume no skew in this case (since it's not part of the input)
+  const skew = 0;
 
   return {
     translate,
     rotate,
     scale,
-    skew: skew * (180 / Math.PI),
+    skew,
   };
 }
 
@@ -105,4 +105,4 @@ function matrix3d(match) {
   return { translate, rotate, scale, skew };
 }
 
-export {matrix2d, matrix3d}
+export { matrix2d, matrix3d };

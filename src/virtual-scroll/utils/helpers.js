@@ -1,4 +1,5 @@
 import { css } from '../../methods/css';
+import { win } from '../../methods/window';
 
 export const CSSTransform = (element, value, isVertical) => {
   if (isVertical) {
@@ -17,3 +18,5 @@ export const inRange = (child, { topBar, bottomBar }, coords, scroll, isY) => {
     coords.out = true;
   }
 };
+
+export const SCROLLS_STORAGE = new WeakMap();

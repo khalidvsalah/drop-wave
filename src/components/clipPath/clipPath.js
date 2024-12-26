@@ -1,3 +1,4 @@
+import { bounds } from '../../methods/coordinate';
 import { _circle, _polygon, _inset } from './clipPathBase';
 
 /**
@@ -19,23 +20,26 @@ function clipPath(endValue, { element, computed }) {
   let startValue = computed.clipPath;
   shape = shape || /(.*)\((.*)\)/.exec(startValue);
 
+  const width = element.offsetWidth || bounds(element).w;
+  const height = element.offsetHeight || bounds(element).h;
+
   switch (shape[1]) {
     case 'circle': {
       if (startValue === 'none') startValue = defaults.circle;
       if (endValue === 'none') endValue = defaults.circle;
-      const circle = _circle(startValue, endValue, element);
+      const circle = _circle(startValue, endValue, width, height);
       return (t) => `circle(${circle(t)})`;
     }
     case 'polygon': {
       if (startValue === 'none') startValue = defaults.polygon;
       if (endValue === 'none') endValue = defaults.polygon;
-      const polygon = _polygon(startValue, endValue, element);
+      const polygon = _polygon(startValue, endValue, width, height);
       return (t) => `polygon(${polygon(t)})`;
     }
     case 'inset': {
       if (startValue === 'none') startValue = defaults.inset;
       if (endValue === 'none') endValue = defaults.inset;
-      const inset = _inset(startValue, endValue, element);
+      const inset = _inset(startValue, endValue, width, height);
       return (t) => `inset(${inset(t)})`;
     }
   }

@@ -12,14 +12,14 @@ const NUMBER_REGEX = new RegExp(`${NUMERIC}[${UNITS}]?`, 'g');
  * @param {Node} element
  * @returns {Function}
  */
-const _circle = (startValue, endValue, element) => {
+const _circle = (startValue, endValue, width, height) => {
   const start = startValue.match(NUMBER_REGEX);
   const end = endValue.match(NUMBER_REGEX);
 
   startValue = {
-    radius: unitConventer(start[0], element.offsetWidth, getUnit(end[0])),
-    x: unitConventer(start[1] || '50%', element.offsetWidth, getUnit(end[1])),
-    y: unitConventer(start[2] || '50%', element.offsetHeight, getUnit(end[2])),
+    radius: unitConventer(start[0], width, getUnit(end[0])),
+    x: unitConventer(start[1] || '50%', width, getUnit(end[1])),
+    y: unitConventer(start[2] || '50%', height, getUnit(end[2])),
   };
 
   endValue = {
@@ -59,22 +59,14 @@ const getPairs = (value) => {
  * @param {Node} element
  * @returns {Function}
  */
-const _polygon = (startValue, endValue, element) => {
+const _polygon = (startValue, endValue, width, height) => {
   const startPoints = getPairs(startValue);
   const endPoints = getPairs(endValue);
   const length = startPoints.length - 1;
 
   startValue = startPoints.map((pair, idx) => {
-    const x = unitConventer(
-      pair[0],
-      element.offsetWidth,
-      getUnit(endPoints[idx][0])
-    );
-    const y = unitConventer(
-      pair[1],
-      element.offsetHeight,
-      getUnit(endPoints[idx][1])
-    );
+    const x = unitConventer(pair[0], width, getUnit(endPoints[idx][0]));
+    const y = unitConventer(pair[1], height, getUnit(endPoints[idx][1]));
     return [x, y];
   });
   endValue = endPoints.map((pair) => {
@@ -120,13 +112,13 @@ const parseInset = (value) => {
  * @param {Node} element
  * @returns {Function}
  */
-const _inset = (startValue, endValue, element) => {
+const _inset = (startValue, endValue, width) => {
   const startPoints = parseInset(startValue);
   const endPoints = parseInset(endValue);
   const length = startPoints.length - 1;
 
   startValue = startPoints.map((point, idx) => {
-    return unitConventer(point, element.offsetWidth, getUnit(endPoints[idx]));
+    return unitConventer(point, width, getUnit(endPoints[idx]));
   });
   endValue = endPoints.map((point) => getValue(point));
 
