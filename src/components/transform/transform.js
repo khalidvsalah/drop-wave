@@ -65,12 +65,12 @@ const fill = (value, fillValue) => {
       x: isNumber(
         value.translate.x,
         fillValue.translate.x,
-        defaults.translate.x
+        defaults.translate.x,
       ),
       y: isNumber(
         value.translate.y,
         fillValue.translate.y,
-        defaults.translate.y
+        defaults.translate.y,
       ),
     },
     scale: {
@@ -87,7 +87,7 @@ const fill = (value, fillValue) => {
 
 /**
  * @param {object} endValue
- * @param {elementContextType}
+ * @param {DOMElementContext}
  * @return {Function}
  */
 const transform = (endValue, { element, computed }) => {
@@ -114,8 +114,8 @@ const transform = (endValue, { element, computed }) => {
       _translate(
         [endValue.translate.x, endValue.translate.y],
         [startValue.translate.x, startValue.translate.y],
-        [width, height]
-      )
+        [width, height],
+      ),
     );
   }
 
@@ -128,8 +128,8 @@ const transform = (endValue, { element, computed }) => {
     arr.push(
       _scale(
         [endValue.scale.x, endValue.scale.y],
-        [startValue.scale.x, startValue.scale.y]
-      )
+        [startValue.scale.x, startValue.scale.y],
+      ),
     );
   }
 
@@ -144,8 +144,8 @@ const transform = (endValue, { element, computed }) => {
     arr.push(
       _rotate(
         [endValue.rotate.x, endValue.rotate.y, endValue.rotate.z],
-        [startValue.rotate.x, startValue.rotate.y, startValue.rotate.z]
-      )
+        [startValue.rotate.x, startValue.rotate.y, startValue.rotate.z],
+      ),
     );
   }
 

@@ -3,7 +3,7 @@ import { getUnit, getValue, unitConventer } from '../../helpers/handleUnits';
 
 /**
  * @param {object} endValue
- * @param {elementContextType}
+ * @param {DOMElementContext}
  * @return {Function}
  */
 const top = (endValue, { computed, parent }) => {

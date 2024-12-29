@@ -9,7 +9,7 @@ const getPairs = (str) => str.match(PAIR).map((pair) => pair.split(/[,|\s]/));
 
 /**
  * @param {string|HTMLElement} endValue
- * @param {elementContextType}
+ * @param {DOMElementContext}
  * @return {Function}
  */
 const points = (endValue, { computed }) => {

@@ -2,7 +2,7 @@ import { lerp } from '../../math/math';
 
 /**
  * @param {number} endValue
- * @param {elementContextType}
+ * @param {DOMElementContext}
  * @return {Function}
  */
 const draw = (endValue, { element, computed }) => {

@@ -11,8 +11,8 @@ const defaults = {
 };
 
 /**
- * @param {object} endValue
- * @param {elementContextType}
+ * @param {string} endValue
+ * @param {DOMElementContext}
  * @return {Function}
  */
 function clipPath(endValue, { element, computed }) {

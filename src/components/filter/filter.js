@@ -12,8 +12,8 @@ const getFilterValue = (regex, str) => {
 };
 
 /**
- * @param {object} endValue
- * @param {elementContextType}
+ * @param {string} endValue
+ * @param {DOMElementContext}
  * @return {Function}
  */
 function filter(endValue, { computed }) {
@@ -21,10 +21,10 @@ function filter(endValue, { computed }) {
 
   const blur = BLUR_REGEX.test(startVaue === 'none' ? endValue : startVaue);
   const grayscale = GRAY_REGEX.test(
-    startVaue === 'none' ? endValue : startVaue
+    startVaue === 'none' ? endValue : startVaue,
   );
   const contrast = CONTRAST_REGEX.test(
-    startVaue === 'none' ? endValue : startVaue
+    startVaue === 'none' ? endValue : startVaue,
   );
 
   const filters = [];
@@ -33,24 +33,24 @@ function filter(endValue, { computed }) {
     filters.push(
       _blur(
         getFilterValue(BLUR_REGEX, startVaue),
-        getFilterValue(BLUR_REGEX, endValue)
-      )
+        getFilterValue(BLUR_REGEX, endValue),
+      ),
     );
   }
   if (grayscale) {
     filters.push(
       _gray(
         getFilterValue(GRAY_REGEX, startVaue),
-        getFilterValue(GRAY_REGEX, endValue)
-      )
+        getFilterValue(GRAY_REGEX, endValue),
+      ),
     );
   }
   if (contrast) {
     filters.push(
       _contrast(
         getFilterValue(CONTRAST_REGEX, startVaue),
-        getFilterValue(CONTRAST_REGEX, endValue)
-      )
+        getFilterValue(CONTRAST_REGEX, endValue),
+      ),
     );
   }
 

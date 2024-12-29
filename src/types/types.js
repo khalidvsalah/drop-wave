@@ -1,15 +1,12 @@
-// /** * @typedef {string|Array<string>} STRING_ARR */
-// /** * @typedef {string|Array<number>} NUMBER_ARR */
-
-// /* Start Properties */
-// /** * @typedef {{x:STRING_ARR, y:STRING_ARR, scale:NUMBER_ARR, scaleX:NUMBER_ARR, scaleY:NUMBER_ARR}} transformType */
-// /** * @typedef {{circle:FROM_TO, polygon:FROM_TO}} clipPathType */
-// /* End Properties */
+/**
+ * DOM Element or Selector String
+ * @typedef {HTMLElement|string} DOMSelector
+ */
 
 /**
- * elementContextType
- * @typedef {object} elementContextType
- * @property {Node} element - the element
+ * DOMElementContext
+ * @typedef {object} DOMElementContext
+ * @property {Node} element - targeted element
  * @property {CSSStyleDeclaration} computed - computed style
  * @property {Node} parent - parent node
  */
@@ -18,13 +15,10 @@
  * Tweened Properties
  * @typedef {object} propertiesType
  * @property {number} [opacity]
- * @property {number} [alpha]
- * @property {transformType} [transform]
- * @property {transformType} [move]
- * @property {clipPathType} [clip]
- * @property {clipPathType} [clipPath]
- * @property {{gray:FROM_TO, blur:FROM_TO, contrast:FROM_TO}} [filter]
- * @property {NUMBER_ARR} [draw]
+ * @property {object} [transform]
+ * @property {string} [clipPath]
+ * @property {string} [filter]
+ * @property {number} [draw]
  * @property {string} [points]
  * @property {string} [path]
  */
@@ -36,7 +30,8 @@
  * @property {number} [delay]
  * @property {number} [space]
  * @property {string} [ease]
- * @property {propertiesType} [props]
+ * @property {propertiesType} [to]
+ * @property {propertiesType} [from]
  * @property {Function} [onStart]
  * @property {Function} [onUpdate]
  * @property {Function} [onComplete]
@@ -61,13 +56,14 @@
 /**
  * Virtual Scroll Options
  * @typedef {object} scrollOptionsType
- * @property {string} [name]
+ * @property {string} name
  * @property {HTMLElement} [wrapper]
+ * @property {number} [multiplier]
  * @property {'x'|'y'} [dir]
  * @property {boolean} [drag]
  * @property {boolean} [wheel]
  * @property {boolean} [key]
- * @property {number} [speed]
+ * @property {number} [ease]
  * @property {boolean} [infinite]
  */
 

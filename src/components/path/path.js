@@ -3,7 +3,7 @@ import { parsePathData, normalizePathLengths } from './pathBase';
 
 /**
  * @param {object} target
- * @param {elementContextType}
+ * @param {DOMElementContext}
  * @return {Function}
  */
 const path = (target, { element }) => {
