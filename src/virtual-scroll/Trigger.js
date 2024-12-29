@@ -12,7 +12,6 @@ import { tween } from '../core/tween/tween';
 import { prepareTween } from '../core/tween/helpers';
 
 import { CSSTransform, SCROLLS_STORAGE } from './utils/helpers';
-import { computed } from '../methods/computed';
 
 export class Trigger {
   #target;
@@ -47,7 +46,7 @@ export class Trigger {
   #onUpdate;
 
   /**
-   * @param {HTMLElement} trigger
+   * @param {DOMSelector} trigger
    * @param {triggerOptionsType} options
    */
   constructor(trigger, options) {
@@ -221,7 +220,7 @@ export class Trigger {
   }
 
   _destroy() {
-    window.removeEventListener('resize', this.#_resize.bind(this));
+    this.#iresize.unsubscribe();
     this.#iupdate.unsubscribe();
   }
 }

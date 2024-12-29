@@ -10,6 +10,9 @@ export const keyCodes = {
 
 export const device = {
   agent: navigator.userAgent.toLowerCase(),
+  get iPadIOS13() {
+    return 'MacIntel' === navigator.platform && 1 < navigator.maxTouchPoints;
+  },
   get isMobile() {
     return /mobi|android|tablet|ipad|iphone/.test(this.agent);
   },
@@ -18,7 +21,7 @@ export const device = {
   },
 };
 
-export const scaler = {
+export const multipliers = {
   mouse: 1,
   drag:
     device.isMobile ||

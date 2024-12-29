@@ -56,7 +56,6 @@
 /**
  * Virtual Scroll Options
  * @typedef {object} scrollOptionsType
- * @property {string} name
  * @property {HTMLElement} [wrapper]
  * @property {number} [multiplier]
  * @property {'x'|'y'} [dir]

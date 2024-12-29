@@ -1,116 +1,134 @@
-import { observer } from '../utils/Observer';
 import { win } from '../methods/window';
+import { debounce } from '../methods/debounce';
 
 import { raf } from '../utils/Raf';
-import { keyCodes, scaler, device } from './utils/support';
+import { keyCodes, multipliers, device } from './utils/support';
+
+const KEYSTEPS = 120;
 
 export class Events {
-  init({ drag, key, wheel }) {
-    if (win.is(this.wrapper, window)) {
-      this.global = true;
-      window.history.scrollRestoration = 'manual';
+  constructor(options) {
+    this.pause = false;
+    this.scroll = { value: 0, dir: 1 };
 
-      if (key) {
-        this.keyOn = true;
-        this.wrapper.addEventListener('keydown', this.#_onkey.bind(this));
-      }
-    }
+    this.multiplier = options.multiplier;
+    this.axis = options.isY ? 'pageY' : 'pageX';
 
-    if (drag) {
-      this.dragOn = true;
-      this.wrapper.addEventListener('pointerdown', this.#_down.bind(this));
-      this.wrapper.addEventListener('pointermove', this.#_move.bind(this));
-    }
-
-    if (wheel) {
-      this.wheelOn = true;
-      this.wrapper.addEventListener('wheel', this.#_wheel.bind(this));
-    }
-
-    this.updateId = raf.push({ cb: this._update.bind(this), d: -1 });
-
-    window.addEventListener('resize', this._resize.bind(this));
-    window.addEventListener('pointerup', this.#_up.bind(this));
+    this.#init(options);
   }
 
-  #_wheel(e) {
-    if (!this.pause) {
-      let offset = e.wheelDeltaY || e.deltaY;
+  #init(options) {
+    const { key, drag, wheel, wrapper, resize, update } = options;
 
-      if (device.isFirefox && e.deltaMode === 1) {
-        offset *= scaler.mouse;
+    if (key && win.is(wrapper, document)) {
+      this.keyOn = true;
+      wrapper.addEventListener('keydown', this.#_onKey.bind(this));
+    }
+    if (drag) {
+      this.dragOn = true;
+      wrapper.addEventListener('touchstart', this.#_onDown.bind(this));
+      wrapper.addEventListener('touchmove', this.#_onMove.bind(this));
+      wrapper.addEventListener('touchend', this.#_onUp.bind(this));
+
+      wrapper.addEventListener('mousedown', this.#_onDown.bind(this));
+      wrapper.addEventListener('mousemove', this.#_onMove.bind(this));
+      wrapper.addEventListener('mouseup', this.#_onUp.bind(this));
+    }
+    if (wheel) {
+      this.wheelOn = true;
+      wrapper.addEventListener('wheel', this.#_onWheel.bind(this));
+    }
+
+    this.updateId = raf.push({ cb: update, d: -1 });
+    this.debounceResize = debounce({ time: 0.15, cb: resize });
+
+    window.addEventListener('resize', this.debounceResize);
+    resize();
+  }
+
+  #_onWheel(event) {
+    if (!this.pause) {
+      let offset = event.wheelDeltaY || event.deltaY;
+      if (device.isFirefox && event.deltaMode === 1) {
+        offset *= multipliers.mouse;
       }
 
-      this.scroll.value -= offset * this.offset;
+      this.scroll.value -= offset * this.multiplier;
       this.scroll.dir = Math.sign(offset);
     }
   }
 
-  #_onkey(e) {
+  #_onKey(event) {
     if (!this.pause) {
-      if (e.code === 'Tab') e.preventDefault();
-      else {
-        switch (e.code) {
+      if (event.code === 'Tab') {
+        event.preventDefault();
+      } else {
+        const offset = KEYSTEPS * this.multiplier;
+        switch (event.code) {
           case keyCodes.LEFT:
           case keyCodes.UP:
-            this.scroll.value -= 120 * this.offset;
+            this.scroll.value -= offset;
             break;
           case keyCodes.RIGHT:
           case keyCodes.DOWN:
-            this.scroll.value += 120 * this.offset;
+            this.scroll.value += offset;
             break;
-
           case keyCodes.SPACE:
-            this.scroll.value -= (win.screen.h - 40) * (e.shiftKey ? 1 : -1);
+            this.scroll.value -=
+              (win.screen.h - 40) * (event.shiftKey ? 1 : -1);
             break;
         }
       }
     }
   }
 
-  #_down(e) {
+  #_onDown(event) {
+    event = event.targetTouches ? event.targetTouches[0] : event;
     if (!this.pause) {
       this.isMouseDown = true;
-      this.startPoint = e[this.axis];
+      this.dragFirst = event[this.axis];
     }
   }
 
-  #_move(e) {
+  #_onMove(event) {
     if (!this.pause) {
       if (this.isMouseDown) {
-        const offset = (e[this.axis] - this.startPoint) * scaler.drag;
-        this.scroll.value -= offset * this.offset;
-        this.startPoint = e[this.axis];
+        event = event.targetTouches ? event.targetTouches[0] : event;
+
+        const offset = (event[this.axis] - this.dragFirst) * multipliers.drag;
+        this.scroll.value -= offset * this.multiplier;
+
+        this.dragFirst = event[this.axis];
         this.scroll.dir = Math.sign(offset);
       }
     }
   }
 
-  #_up() {
+  #_onUp() {
     this.isMouseDown = false;
   }
 
-  _destroy() {
+  destroy() {
     raf.kill(this.updateId);
-    this.observer.resize.remove();
 
-    this.iupdate.unsubscribe();
+    window.removeEventListener('resize', this.debounceResize);
 
-    window.removeEventListener('resize', this._resize.bind(this));
-    window.removeEventListener('pointerup', this.#_up.bind(this));
+    if (this.keyOn) {
+      this.wrapper.removeEventListener('keydown', this.#_onKey.bind(this));
+    }
 
-    if (this.global) {
-      if (this.keyOn) {
-        this.wrapper.removeEventListener('keydown', this.#_onkey.bind(this));
-      }
-    } else {
-      if (this.dragOn) {
-        this.wrapper.removeEventListener('pointerdown', this.#_down.bind(this));
-        this.wrapper.removeEventListener('pointermove', this.#_move.bind(this));
-      }
-      if (this.wheelOn) {
-        this.wrapper.removeEventListener('onwheel', this.#_wheel.bind(this));
-      }
+    if (this.dragOn) {
+      this.wrapper.removeEventListener('touchstart', this.#_onDown.bind(this));
+      this.wrapper.removeEventListener('touchmove', this.#_onMove.bind(this));
+      this.wrapper.removeEventListener('touchend', this.#_onUp.bind(this));
+
+      this.wrapper.removeEventListener('mousedown', this.#_onDown.bind(this));
+      this.wrapper.removeEventListener('mousemove', this.#_onMove.bind(this));
+      this.wrapper.removeEventListener('mouseup', this.#_onUp.bind(this));
+    }
+
+    if (this.wheelOn) {
+      this.wrapper.removeEventListener('wheel', this.#_onWheel.bind(this));
     }
   }
 }

@@ -5,67 +5,53 @@ import selector from '../helpers/selector.js';
 import { win } from '../methods/window.js';
 import { offset } from '../methods/coordinate.js';
 
-import { clamp, damp, lerp } from '../math/math.js';
+import { clamp, damp } from '../math/math.js';
 
 import { Events } from './Events.js';
 import { Trigger } from './Trigger.js';
 
 import { CSSTransform, inRange, SCROLLS_STORAGE } from './utils/helpers.js';
 
-export class VirtualScroll extends Events {
+export class VirtualScroll {
   /**
-   * @param {HTMLElement} target
+   * @param {DOMSelector} target
    * @param {scrollOptionsType} [options]
    */
   constructor(target, options = {}) {
-    super();
-
-    if (!options.name) {
-      throw new Error('Please pass a unique name for this scroll');
-    }
-
     const {
-      // main
-      name,
-      wrapper = window,
+      // main options
+      wrapper = document,
       dir = 'y',
-      // inputs
+      // scroll options
       drag = true,
       wheel = true,
       key = true,
-      // easing
+      // easing options
       ease = 0.09,
-      lerpFn = 'damp',
-      dampEase = 0.50399,
-      offset = 1,
-      // infinite
+      // multiplier options
+      multiplier = 1,
+      // infinite options
       infinite = false,
     } = options;
 
-    this.target = selector(target)[0];
-    this.scroll = { value: 0, lerp: 0, dir: 1 };
+    if (!target) {
+      throw new Error('Please pass a targeted element');
+    }
 
-    this.wrapper = wrapper;
+    this.target = selector(target)[0];
 
     this.isY = dir === 'y';
-    this.axis = this.isY ? 'pageY' : 'pageX';
+    options.isY = this.isY;
 
-    this.pause = false;
-
-    this.lerpFn = lerpFn === 'damp' ? damp : lerp;
-    this.dampEase = dampEase;
     this.ease = ease;
-    this.offset = offset;
 
+    this.multiplier = multiplier;
     this.infinite = infinite;
 
     this.observer = {
-      update: observer.create('update-' + name),
-      resize: observer.create('resize-' + name),
+      update: observer.create(Symbol('update')),
+      resize: observer.create(Symbol('resize')),
     };
-
-    this.init({ drag, wheel, key });
-    this._resize();
 
     SCROLLS_STORAGE.set(this.target, {
       observer: {
@@ -74,6 +60,19 @@ export class VirtualScroll extends Events {
       },
       dir,
     });
+
+    this.events = new Events({
+      drag,
+      wheel,
+      key,
+      wrapper,
+      pause: this.pause,
+      multiplier: this.multiplier,
+      isY: this.isY,
+      resize: this.#_onResize.bind(this),
+      update: this.#_onUpdate.bind(this),
+    });
+    window.history.scrollRestoration = 'manual';
   }
 
   /**
@@ -86,40 +85,45 @@ export class VirtualScroll extends Events {
     return new Trigger(target, options);
   }
 
-  _update() {
-    if (!this.isStopped) {
+  pause() {
+    this.events.pause = true;
+  }
+
+  resume() {
+    this.events.pause = false;
+  }
+
+  #_onUpdate() {
+    if (!this.events.pause) {
       if (!this.infinite) {
-        this.scroll.value = clamp(0, this.height, this.scroll.value);
+        this.events.scroll.value = clamp(
+          0,
+          this.height,
+          this.events.scroll.value
+        );
       }
-      this.scroll.lerp =
-        ((this.lerpFn(
-          this.scroll.lerp,
-          this.scroll.value,
-          this.ease,
-          this.dampEase
-        ) *
+
+      this.events.scroll.lerp =
+        ((damp(this.events.scroll.lerp, this.events.scroll.value, this.ease) *
           1000) >>
           0) /
         1000;
 
       if (this.infinite) {
-        // switching
-        if (this.scroll.lerp > this.height) {
-          this.scroll.value = this.scroll.value - this.height;
-          this.scroll.lerp = this.scroll.lerp - this.height;
-        } else if (this.scroll.lerp < 0) {
-          this.scroll.value = this.height + this.scroll.value;
-          this.scroll.lerp = this.height + this.scroll.lerp;
+        if (this.events.scroll.lerp > this.height) {
+          this.events.scroll.value = this.events.scroll.value - this.height;
+          this.events.scroll.lerp = this.events.scroll.lerp - this.height;
+        } else if (this.events.scroll.lerp < 0) {
+          this.events.scroll.value = this.height + this.events.scroll.value;
+          this.events.scroll.lerp = this.height + this.events.scroll.lerp;
         }
+        const topBar = this.events.scroll.lerp;
+        const bottomBar = this.events.scroll.lerp + this.viewportSize;
 
-        const topBar = this.scroll.lerp; // topBar > End === "out"
-        const bottomBar = this.scroll.lerp + this.viewportSize; // bottomBar < start === 'out';
-
-        // transform children
         this.childrenSize.forEach(([child, coords]) => {
-          if (this.scroll.lerp > this.height - this.viewportSize) {
+          if (this.events.scroll.lerp > this.height - this.viewportSize) {
             const offsetStart =
-              this.scroll.lerp -
+              this.events.scroll.lerp -
               (this.height - this.viewportSize) -
               this.viewportSize;
             const offsetEnd = offsetStart + this.viewportSize;
@@ -130,7 +134,7 @@ export class VirtualScroll extends Events {
                 child,
                 { topBar, bottomBar },
                 coords,
-                this.scroll.lerp,
+                this.events.scroll.lerp,
                 this.isY
               );
             }
@@ -139,19 +143,20 @@ export class VirtualScroll extends Events {
               child,
               { topBar, bottomBar },
               coords,
-              this.scroll.lerp,
+              this.events.scroll.lerp,
               this.isY
             );
           }
         });
       } else {
-        CSSTransform(this.target, -this.scroll.lerp, this.isY);
+        CSSTransform(this.target, -this.events.scroll.lerp, this.isY);
       }
-      this.observer.update.notify(this.scroll);
+
+      this.observer.update.notify(this.events.scroll);
     }
   }
 
-  _resize() {
+  #_onResize() {
     const dim = this.isY ? 'h' : 'w';
 
     this.coords = offset(this.target);
@@ -160,7 +165,6 @@ export class VirtualScroll extends Events {
 
     if (this.infinite) {
       this.children = [...this.target.children];
-
       this.childrenSize = this.children.map((child) => {
         const start = this.isY ? child.offsetTop : child.offsetLeft;
         const size = this.isY ? child.offsetHeight : child.offsetWidth;
@@ -169,5 +173,11 @@ export class VirtualScroll extends Events {
     }
 
     this.observer.resize.notify();
+  }
+
+  destroy() {
+    this.events.destroy();
+    this.observer.resize.remove();
+    this.observer.update.remove();
   }
 }
