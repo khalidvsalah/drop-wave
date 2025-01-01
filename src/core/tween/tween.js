@@ -7,7 +7,7 @@ import { TWEENS_STORAGE, handleTweenSpace } from './helpers.js';
 
 /**
  * Tweening Starting Function
- * @param {any} elements
+ * @param {DOMSelector} elements
  * @param {tweenOptionsType} options
  * @returns {tweenReturnsType}
  */

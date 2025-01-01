@@ -1,6 +1,6 @@
 /**
  * Selector
- * @param {any} elements target(s) or string selector
+ * @param {DOMSelector} elements target(s) or string selector
  * @param {boolean} obj select object also
  * @returns {Element[]}
  */

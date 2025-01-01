@@ -1,12 +1,9 @@
-/**
- * DOM Element or Selector String
- * @typedef {HTMLElement|string} DOMSelector
- */
+/** * @typedef {string|Node|NodeList|HTMLCollection|Array<Node|number>|object} DOMSelector */
 
 /**
- * DOMElementContext
- * @typedef {object} DOMElementContext
- * @property {Node} element - targeted element
+ * elementContextType
+ * @typedef {object} elementContextType
+ * @property {Node} element - the element
  * @property {CSSStyleDeclaration} computed - computed style
  * @property {Node} parent - parent node
  */
@@ -15,10 +12,10 @@
  * Tweened Properties
  * @typedef {object} propertiesType
  * @property {number} [opacity]
- * @property {object} [transform]
- * @property {string} [clipPath]
+ * @property {transformType} [transform]
+ * @property {clipPathType} [clipPath]
  * @property {string} [filter]
- * @property {number} [draw]
+ * @property {string|Node} [draw]
  * @property {string} [points]
  * @property {string} [path]
  */
@@ -56,26 +53,28 @@
 /**
  * Virtual Scroll Options
  * @typedef {object} scrollOptionsType
- * @property {HTMLElement} [wrapper]
- * @property {number} [multiplier]
+ * @property {string} [name]
+ * @property {HTMLElement} [container]
  * @property {'x'|'y'} [dir]
  * @property {boolean} [drag]
  * @property {boolean} [wheel]
  * @property {boolean} [key]
- * @property {number} [ease]
+ * @property {number} [speed]
  * @property {boolean} [infinite]
  */
 
 /**
  * Trigger options
  * @typedef {object} triggerOptionsType
- * @property {any} [target]
- * @property {any} [container]
- * @property {propertiesType} [animate]
+ * @property {DOMSelector} [target]
  * @property {tweenOptionsType} [tween]
- * @property {string} [ease]
+ * @property {tweenOptionsType} [animate]
  * @property {string|number|Function} [start]
  * @property {string|number|Function} [end]
- * @property {{start:string|number|Function, end:start|number|Function}} [pin]
+ * @property {boolean | {start:string|number|Function, end:start|number|Function}} [pin]
+ * @property {Function} [onEnter]
+ * @property {Function} [onLeave]
+ * @property {Function} [onEnterBack]
+ * @property {Function} [onLeaveBack]
  * @property {Function} [onUpdate]
  */

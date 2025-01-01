@@ -1,21 +1,27 @@
-import { toPixels } from '../helpers/handleUnits';
-import selector from '../helpers/selector';
+import { raf } from '../../utils/Raf';
 
-import { observer } from '../utils/Observer';
+import { toPixels } from '../../helpers/handleUnits';
+import selector from '../../helpers/selector';
 
-import { bounds, offset } from '../methods/coordinate';
+import { css } from '../../methods/css';
+import { offset } from '../../methods/coordinate';
 
-import { clamp, normalize, inRange } from '../math/math';
-import { easingFn } from '../math/easing/index';
+import { clamp, normalize, inRange } from '../../math/math';
+import { easingFn } from '../../math/easing/index';
 
-import { tween } from '../core/tween/tween';
-import { prepareTween } from '../core/tween/helpers';
+import { tween } from '../tween/tween';
+import { prepareTween } from '../tween/helpers';
 
-import { CSSTransform, SCROLLS_STORAGE } from './utils/helpers';
+const CSSTransform = (element, value, isVertical) => {
+  if (isVertical) {
+    css.set(element, 'transform', `translate3d(0, ${value}px, 0)`);
+  } else {
+    css.set(element, 'transform', `translate3d(${value}px, 0, 0)`);
+  }
+};
 
 export class Trigger {
   #target;
-  #observer;
 
   #properties = [];
 
@@ -28,6 +34,7 @@ export class Trigger {
   #isY;
   #dim;
   #dirEnd;
+  #scrollDir;
 
   #isOut = true;
 
@@ -35,8 +42,7 @@ export class Trigger {
   #pinStart;
   #pinEnd;
 
-  #iresize;
-  #iupdate;
+  #updateId;
 
   #onEnter;
   #onLeave;
@@ -55,20 +61,16 @@ export class Trigger {
 
     this.#target = options.target ? selector(options.target) : [this.trigger];
 
-    const wrapper = selector(options.container)[0];
-    const { observer, dir } = SCROLLS_STORAGE.get(wrapper);
-
-    this.#observer = observer;
-
     this.#pinObj = options.pin;
     this.#animateObj = options.animate;
     this.#tweenObj = options.tween;
 
-    this.#isY = dir === 'y';
-    this.#dim = this.#isY ? 'h' : 'w';
+    this.#dir = options.dir ? options.dir : 'y';
+    this.#isY = this.#dir === 'y';
 
-    this.#dir = this.#isY ? 'y' : 'x';
-    this.#dirEnd = this.#dir === 'y' ? 'yE' : 'xE';
+    this.#dim = this.#isY ? 'h' : 'w';
+    this.#dirEnd = this.#isY ? 'yE' : 'xE';
+    this.#scrollDir = this.#isY ? 'scrollY' : 'scrollX';
 
     this.#onEnter = options.onEnter;
     this.#onLeave = options.onLeave;
@@ -81,22 +83,15 @@ export class Trigger {
 
   #init() {
     if (this.#animateObj) {
-      this.#ease = easingFn[this.#animateObj.ease || 'linear'];
+      this.#ease = easingFn[this.#animateObj.ease];
       this.#target.forEach((element) => {
         this.#properties.push(prepareTween(element, this.#animateObj));
       });
     }
 
-    this.#iupdate = observer.subscribe(
-      this.#observer.update,
-      this.#_update.bind(this)
-    );
-    this.#iresize = observer.subscribe(
-      this.#observer.resize,
-      this.#_resize.bind(this)
-    );
-
     this.#_resize();
+    window.addEventListener('resize', this.#_resize.bind(this));
+    this.#updateId = raf.push({ cb: this.#_update.bind(this), d: -1 });
   }
 
   #_animate(elapsed) {
@@ -112,9 +107,9 @@ export class Trigger {
 
   #_pin() {
     if (inRange(this.#pinStart, this.#pinEnd, this.scroll)) {
-      this.#pinOut = false;
       const dist = Math.max(0, this.scroll - this.#pinStart);
       CSSTransform(this.#target, dist, this.#isY);
+      this.#pinOut = false;
     } else {
       if (!this.#pinOut) {
         if (this.scroll > this.#pinEnd) {
@@ -128,8 +123,9 @@ export class Trigger {
     }
   }
 
-  #_update({ lerp }) {
-    this.scroll = lerp;
+  #_update() {
+    this.scroll = window[this.#scrollDir];
+
     this.preElapsed = this.elapsed;
     this.elapsed = clamp(0, 1, normalize(this.start, this.end, this.scroll));
 
@@ -219,8 +215,8 @@ export class Trigger {
     }
   }
 
-  _destroy() {
-    this.#iresize.unsubscribe();
-    this.#iupdate.unsubscribe();
+  destroy() {
+    raf.kill(this.#updateId);
+    window.removeEventListener('resize', this.#_resize.bind(this));
   }
 }

@@ -18,9 +18,7 @@ export { processing } from './processing/processing';
 export { kill } from './core/tween/kill';
 export { tween } from './core/tween/tween';
 export { Timeline } from './core/timeline/Timeline';
-
-export { VirtualScroll } from './virtual-scroll/VirtualScroll';
-export { Trigger } from './virtual-scroll/Trigger';
+export { Trigger } from './core/trigger/Trigger';
 
 export { splitText } from './plugins/splitText';
 export { register } from './plugins/register';
