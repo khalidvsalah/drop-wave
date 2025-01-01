@@ -1,4 +1,7 @@
-import { processing } from '../../processing/processing';
+import {
+  processDOMElement,
+  processObjectProperties,
+} from '../../processing/processing';
 import { computed } from '../../methods/computed';
 import matcher from '../../processing/helpers/matcher';
 
@@ -24,18 +27,22 @@ export const handleTweenSpace = (time, length, idx) => {
  * @param {propertiesType} obj
  * @returns {propertiesType}
  */
-const getComputedValues = (element, obj) => {
+const getComputedValues = (element, obj, isRegularObj) => {
   let computedValues;
   const values = {};
 
-  Object.keys(obj).map((key) => {
-    if (matcher(key).type === 'CSS') {
-      if (!computedValues) computedValues = computed(element);
-      values[key] = computedValues[key];
-    } else {
-      values[key] = element.getAttribute(key);
-    }
-  });
+  if (isRegularObj) {
+    Object.keys(obj).map((key) => (values[key] = element[key]));
+  } else {
+    Object.keys(obj).map((key) => {
+      if (matcher(key).type === 'CSS') {
+        if (!computedValues) computedValues = computed(element);
+        values[key] = computedValues[key];
+      } else {
+        values[key] = element.getAttribute(key);
+      }
+    });
+  }
 
   return values;
 };
@@ -54,10 +61,19 @@ export const prepareTween = (element, nextTween) => {
     tweennInstance.dir = 0;
   }
 
-  let { to, from } = nextTween;
+  const { to, from } = nextTween;
 
-  from = from || getComputedValues(element, to);
-  to = to || getComputedValues(element, from);
-
-  return processing(element, from, to);
+  if (element instanceof Node) {
+    return processDOMElement(
+      element,
+      from || getComputedValues(element, to, false),
+      to || getComputedValues(element, from, false),
+    );
+  } else {
+    return processObjectProperties(
+      element,
+      from || getComputedValues(element, to, true),
+      to || getComputedValues(element, from, true),
+    );
+  }
 };

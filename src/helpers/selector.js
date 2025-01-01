@@ -1,11 +1,10 @@
 /**
  * Selector
  * @param {DOMSelector} elements target(s) or string selector
- * @param {boolean} obj select object also
  * @returns {Element[]}
  */
 
-export default function selector(elements, obj) {
+export default function selector(elements) {
   if (typeof elements === 'string') {
     return document.querySelectorAll(elements);
   } else if (
@@ -14,7 +13,7 @@ export default function selector(elements, obj) {
   ) {
     return elements;
   } else if (elements instanceof Array) {
-    if (obj && elements.every((element) => typeof element === 'number')) {
+    if (elements.every((element) => typeof element === 'number')) {
       return elements;
     } else {
       const eles = [];
@@ -26,7 +25,7 @@ export default function selector(elements, obj) {
     }
   } else if (elements instanceof Node) {
     return [elements];
-  } else if (obj && typeof elements === 'object' && elements !== null) {
+  } else if (typeof elements === 'object' && elements !== null) {
     return [elements];
   }
 }

@@ -8,7 +8,7 @@ import tweeningObj from './helpers/tweeningObj';
  * @param {object} endProps - end properties.
  * @returns {Array} - array of pre-tweened functions.
  */
-function processDOMElement(element, startProps, endProps) {
+export function processDOMElement(element, startProps, endProps) {
   const results = [];
   const info = {
     element,
@@ -33,43 +33,22 @@ function processDOMElement(element, startProps, endProps) {
  * @param {object} endProps - end properties.
  * @returns {Array} - array of pre-tweened functions.
  */
-function processObjectProperties(element, startProps, endProps) {
+export function processObjectProperties(element, startProps, endProps) {
   const results = [];
 
   for (const key in endProps) {
     const end = endProps[key];
-    const isArray = Array.isArray(end);
 
-    if (typeof end === 'object' && !isArray) {
-      processObjectProperties(element[key], end).forEach((property) => {
-        results.push(property);
-      });
+    if (typeof end === 'object') {
+      const depth = processObjectProperties(element[key], startProps[key], end);
+      depth.forEach((property) => results.push(property));
     } else {
-      const start = isArray ? end[0] : element[key];
-      const lerp = (isArray ? end[1] : end) - start;
-
-      results.push({
-        setValue: (value) => (element[key] = value),
-        cb: (t) => start + lerp * t,
-      });
+      const start = startProps[key];
+      const lerp = end - start;
+      const callback = (t) => start + lerp * t;
+      results.push({ tween: (t) => (element[key] = callback(t)) });
     }
   }
 
   return results;
-}
-
-/**
- * Check if an object or DOMElement.
- *s
- * @param {HTMLElement} element - targeted element.
- * @param {object} startProps - start properties.
- * @param {object} endProps - end properties.
- * @returns {Array} - array of pre-tweened functions.
- */
-export function processing(target, startProps, endProps) {
-  if (target instanceof Node) {
-    return processDOMElement(target, startProps, endProps);
-  } else {
-    return processObjectProperties(target, startProps, endProps);
-  }
 }

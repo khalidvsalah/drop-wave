@@ -13,8 +13,6 @@ export { observer } from './utils/Observer';
 export { raf } from './utils/Raf';
 export { Delay } from './utils/Delay';
 
-export { processing } from './processing/processing';
-
 export { kill } from './core/tween/kill';
 export { tween } from './core/tween/tween';
 export { Timeline } from './core/timeline/Timeline';
