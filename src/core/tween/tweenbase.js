@@ -31,7 +31,7 @@ export default class TweenBase {
     const easedValue = this.ease(Math.abs(this.dir - this.#elapsed));
     this.properties.forEach(({ tween }) => tween(easedValue));
 
-    if (this.onUpdate) this.onUpdate(easedValue, this.element);
+    if (this.onUpdate) this.onUpdate(this.element, easedValue);
     if (this.#elapsed === 1) this._done();
   }
 
@@ -43,6 +43,10 @@ export default class TweenBase {
   }
 
   execute(nextTween) {
+    this.onStart = nextTween.onStart;
+    this.onUpdate = nextTween.onUpdate;
+    this.onComplete = nextTween.onComplete;
+
     if (nextTween.to || nextTween.from) {
       if (this.onStart) {
         this.onStart(this.element);
@@ -75,10 +79,6 @@ export default class TweenBase {
   push(mode, options = {}) {
     ++this.#callIndex;
 
-    this.onStart = options.onStart;
-    this.onUpdate = options.onUpdate;
-    this.onComplete = options.onComplete;
-
     const nextTween = { mode, ...options };
     this.#queue.push(nextTween);
 
@@ -90,8 +90,8 @@ export default class TweenBase {
   }
 
   _stop() {
-    this.isRunning = false;
     raf.kill(this.animationId);
+    this.isRunning = false;
   }
 
   _done() {

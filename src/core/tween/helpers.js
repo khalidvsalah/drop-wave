@@ -57,7 +57,7 @@ export const prepareTween = (element, nextTween) => {
   const tweennInstance = TWEENS_STORAGE.get(element);
 
   if (tweennInstance) {
-    if (tweennInstance.isRunning) tweennInstance._done();
+    if (tweennInstance.isRunning) tweennInstance._stop();
     tweennInstance.dir = 0;
   }
 
