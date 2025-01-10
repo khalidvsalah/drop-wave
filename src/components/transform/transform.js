@@ -17,7 +17,7 @@ const defaults = {
  * @param {string} value
  * @returns {object}
  */
-const parseTransform = (value) => {
+export const parseTransform = (value) => {
   if (value.scale != null) {
     [value.scaleX, value.scaleY] = [value.scale, value.scale];
   }
