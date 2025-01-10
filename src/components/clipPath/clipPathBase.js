@@ -18,14 +18,22 @@ const _circle = (startValue, endValue, width, height) => {
 
   startValue = {
     radius: unitConventer(start[0], width, getUnit(end[0])),
-    x: unitConventer(start[1] || '50%', width, getUnit(end[1])),
-    y: unitConventer(start[2] || '50%', height, getUnit(end[2])),
+    x: unitConventer(
+      start[1] || end[1] || '50%',
+      width,
+      getUnit(end[1]) || '%',
+    ),
+    y: unitConventer(
+      start[2] || end[2] || '50%',
+      height,
+      getUnit(end[2]) || '%',
+    ),
   };
 
   endValue = {
     radius: getValue(end[0]),
-    x: getValue(end[1]),
-    y: getValue(end[2]),
+    x: getValue(end[1] || start[1]),
+    y: getValue(end[2] || start[2]),
   };
 
   return (t) =>
@@ -34,7 +42,7 @@ const _circle = (startValue, endValue, width, height) => {
     } at ${lerp(startValue.x.value, endValue.x, t)}${startValue.x.unit} ${lerp(
       startValue.y.value,
       endValue.y,
-      t
+      t,
     )}${startValue.y.unit}`;
 };
 
