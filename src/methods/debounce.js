@@ -3,7 +3,7 @@
  * @param {Function} cb
  * @returns {Function}
  */
-export function debounce({ time, cb }) {
+export function debounce({ time = 0, cb }) {
   time *= 1000;
   let timer = 0;
 
