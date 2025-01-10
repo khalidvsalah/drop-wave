@@ -3,25 +3,30 @@ import { raf } from '../../utils/Raf';
 import { toPixels } from '../../helpers/handleUnits';
 import selector from '../../helpers/selector';
 
-import { css } from '../../methods/css';
 import { offset } from '../../methods/coordinate';
+import { debounce } from '../../methods/debounce';
+import { computed } from '../../methods/computed';
 
-import { clamp, normalize, inRange } from '../../math/math';
+import { clamp, normalize, inRange, lerp, round } from '../../math/math';
 import { easingFn } from '../../math/easing/index';
 
 import { tween } from '../tween/tween';
 import { prepareTween } from '../tween/helpers';
 
-const CSSTransform = (element, value, isVertical) => {
-  if (isVertical) {
-    css.set(element, 'transform', `translate3d(0, ${value}px, 0)`);
-  } else {
-    css.set(element, 'transform', `translate3d(${value}px, 0, 0)`);
-  }
+import { parseTransform } from '../../components/transform/transform';
+
+const pinOut = (eles, values) => {
+  eles.forEach((ele) => {
+    ele.style.cssText = `
+      transform: translate(${values.translate.x}px, ${values.translate.y}px) scale(${values.scale.x}, ${values.scale.y});
+      inset: 0px auto auto 0px;
+      position: static;
+    `;
+  });
 };
 
 export class Trigger {
-  #target;
+  #targets;
 
   #properties = [];
 
@@ -38,11 +43,12 @@ export class Trigger {
 
   #isOut = true;
 
-  #pinOut;
+  #pinOut = true;
   #pinStart;
   #pinEnd;
 
   #updateId;
+  #updateOn = false;
 
   #onEnter;
   #onLeave;
@@ -59,7 +65,7 @@ export class Trigger {
     this.trigger = selector(trigger)[0];
     this.options = options;
 
-    this.#target = options.target ? selector(options.target) : [this.trigger];
+    this.#targets = options.target ? selector(options.target) : [this.trigger];
 
     this.#pinObj = options.pin;
     this.#animateObj = options.animate;
@@ -78,20 +84,52 @@ export class Trigger {
     this.#onLeaveBack = options.onLeaveBack;
     this.#onUpdate = options.onUpdate;
 
+    // scroll
+    this.preScroll = 0;
+    this.scroll = 0;
+
     this.#init();
   }
 
   #init() {
     if (this.#animateObj) {
       this.#ease = easingFn[this.#animateObj.ease];
-      this.#target.forEach((element) => {
+      this.#targets.forEach((element) => {
         this.#properties.push(prepareTween(element, this.#animateObj));
       });
     }
 
+    // resize - update
     this.#_resize();
-    window.addEventListener('resize', this.#_resize.bind(this));
-    this.#updateId = raf.push({ cb: this.#_update.bind(this), d: -1 });
+    this.debounce = debounce({ cb: this.#_resize.bind(this), time: 0.15 });
+    this.pushRef = () => {
+      if (!this.#updateOn) {
+        this.#updateId = raf.push({ cb: this.#_update.bind(this), d: -1 });
+      }
+    };
+
+    window.addEventListener('scroll', this.pushRef);
+    window.addEventListener('resize', this.debounce);
+
+    // pin - setup
+    if (this.#pinObj) {
+      this.computeds = this.#targets.map((ele) => computed(ele));
+      this.#targets.forEach((ele, idx) => {
+        const { margin, width, height } = this.computeds[idx];
+        const placeHolder = document.createElement('div');
+        placeHolder.style.cssText = `
+            position: relative;
+            overflow: visiable;
+            box-sizing: border-box;
+            padding: 0;
+            margin: ${margin};
+            width: ${width};
+            height: ${height};
+        `;
+        ele.insertAdjacentElement('beforebegin', placeHolder);
+        placeHolder.appendChild(ele);
+      });
+    }
   }
 
   #_animate(elapsed) {
@@ -102,28 +140,49 @@ export class Trigger {
 
   #_tween() {
     this.isTweened = true;
-    tween(this.#target, this.#tweenObj);
+    tween(this.#targets, this.#tweenObj);
   }
 
   #_pin() {
-    if (inRange(this.#pinStart, this.#pinEnd, this.scroll)) {
-      const dist = Math.max(0, this.scroll - this.#pinStart);
-      CSSTransform(this.#target, dist, this.#isY);
-      this.#pinOut = false;
-    } else {
-      if (!this.#pinOut) {
-        if (this.scroll > this.#pinEnd) {
-          const dist = this.#pinEnd - this.#pinStart;
-          CSSTransform(this.#target, dist, this.#isY);
-        } else {
-          CSSTransform(this.#target, 0, this.#isY);
+    if (this.scroll < this.#pinStart && !this.#pinOut) {
+      this.#pinOut = true;
+      pinOut(this.#targets, this.tSartV);
+    } else if (
+      inRange(this.#pinStart, this.#pinEnd, this.scroll) &&
+      this.#pinOut
+    ) {
+      const dist = this.coords[this.#dir] - this.#pinStart;
+      this.#targets.forEach((element, idx) => {
+        const { width, height, transform } = this.computeds[idx];
+        if (!this.tSartV) {
+          this.tSartV = parseTransform(transform);
         }
-        this.#pinOut = true;
-      }
+        element.style.cssText = `
+          transform: translate(${this.tSartV.translate.x}px, ${this.tSartV.translate.y}px) scale(${this.tSartV.scale.x}, ${this.tSartV.scale.y});
+          left: ${this.#isY ? element.offsetLeft : dist}px;
+          top: ${this.#isY ? dist : element.offsetTop}px;
+          position: fixed;
+          margin: 0;
+          max-width: ${width};
+          max-height: ${height};
+        `;
+      });
+      this.#pinOut = false;
+    } else if (this.scroll > this.#pinEnd && !this.#pinOut) {
+      this.#pinOut = true;
+      const dist = this.#pinEnd - this.coords[this.#dir];
+      pinOut(this.#targets, {
+        ...this.tSartV,
+        translate: {
+          x: (this.#isY ? 0 : dist) + this.tSartV.translate.x,
+          y: (this.#isY ? dist : 0) + this.tSartV.translate.y,
+        },
+      });
     }
   }
 
   #_update() {
+    this.preScroll = round(lerp(this.preScroll, this.scroll, 0.85), 4);
     this.scroll = window[this.#scrollDir];
 
     this.preElapsed = this.elapsed;
@@ -141,16 +200,24 @@ export class Trigger {
       }
     }
 
-    if (this.elapsed === 1 && !this.#isOut) {
-      if (this.#onLeave) {
-        this.#onLeave();
+    if (!this.#isOut) {
+      if (this.elapsed === 1) {
+        if (this.#onLeave) {
+          this.#onLeave();
+        }
+      }
+      if (this.elapsed === 0) {
+        if (this.#onLeaveBack) {
+          this.#onLeaveBack();
+        }
       }
     }
 
-    if (this.elapsed === 0 && !this.#isOut) {
-      if (this.#onLeaveBack) {
-        this.#onLeaveBack();
-      }
+    if (this.preScroll === this.scroll) {
+      raf.kill(this.#updateId);
+      this.#updateOn = false;
+    } else {
+      this.#updateOn = true;
     }
 
     if (inRange(0, 1, this.elapsed)) {
@@ -159,41 +226,42 @@ export class Trigger {
       this.#isOut = true;
     }
 
-    if (this.preElapsed === 0 && !this.#isOut) {
-      if (this.#onEnter) {
-        this.#onEnter();
+    if (!this.#isOut) {
+      if (this.preElapsed === 0) {
+        if (this.#onEnter) {
+          this.#onEnter();
+        }
       }
-    }
-
-    if (this.preElapsed === 1 && !this.#isOut) {
-      if (this.#onEnterBack) {
-        this.#onEnterBack();
+      if (this.preElapsed === 1) {
+        if (this.#onEnterBack) {
+          this.#onEnterBack();
+        }
       }
     }
 
     if (this.#onUpdate) {
       this.#onUpdate({
         progress: this.elapsed,
-        target: this.#target,
+        target: this.#targets,
         trigger: this.trigger,
       });
     }
   }
 
   #_resize() {
-    this.#pinOut = false;
-    const coords = offset(this.trigger);
+    // this.#pinOut = false;
+    this.coords = offset(this.trigger);
 
     const start =
       typeof this.options.start === 'function'
-        ? this.options.start(coords)
-        : coords[this.#dir] +
-          toPixels(this.options.start || '0', coords[this.#dim]).pixels;
+        ? this.options.start(this.coords)
+        : this.coords[this.#dir] +
+          toPixels(this.options.start || '0', this.coords[this.#dim]).pixels;
     const end =
       typeof this.options.end === 'function'
-        ? this.options.end(coords)
-        : coords[this.#dirEnd] +
-          toPixels(this.options.end || '0', coords[this.#dim]).pixels;
+        ? this.options.end(this.coords)
+        : this.coords[this.#dirEnd] +
+          toPixels(this.options.end || '0', this.coords[this.#dim]).pixels;
 
     this.start = start;
     this.end = end;
@@ -201,14 +269,14 @@ export class Trigger {
     if (this.#pinObj) {
       const start =
         typeof this.#pinObj.start === 'function'
-          ? this.#pinObj.start(coords)
-          : coords[this.#dir] +
-            toPixels(this.#pinObj.start || '0', coords[this.#dim]).pixels;
+          ? this.#pinObj.start(this.coords)
+          : this.coords[this.#dir] +
+            toPixels(this.#pinObj.start || '0', this.coords[this.#dim]).pixels;
       const end =
         typeof this.#pinObj.end === 'function'
-          ? this.#pinObj.end(coords)
-          : coords[this.#dirEnd] +
-            toPixels(this.#pinObj.end || '0', coords[this.#dim]).pixels;
+          ? this.#pinObj.end(this.coords)
+          : this.coords[this.#dirEnd] +
+            toPixels(this.#pinObj.end || '0', this.coords[this.#dim]).pixels;
 
       this.#pinStart = start;
       this.#pinEnd = end;
@@ -216,7 +284,8 @@ export class Trigger {
   }
 
   destroy() {
-    raf.kill(this.#updateId);
-    window.removeEventListener('resize', this.#_resize.bind(this));
+    if (this.#updateOn) raf.kill(this.#updateId);
+    window.removeEventListener('resize', this.debounce);
+    window.removeEventListener('scroll', this.pushRef);
   }
 }
