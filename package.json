@@ -1,6 +1,6 @@
 {
   "name": "drop-wave",
-  "version": "1.0.81",
+  "version": "1.0.93",
   "description": "A JavaScript Animation Library",
   "repository": "khalidvsalah/drop-wave.git",
   "author": "Khalid Salah <khalidvsalah@gmail.com> (https://www.khalidsalah.com)",
@@ -29,7 +29,7 @@
     "push": "bash scripts/push.sh",
     "lint": "eslint src/**/*.js",
     "publish": "bash scripts/publish.sh",
-    "vite": "vite"
+    "dev": "vite"
   },
   "dependencies": {
     "lenis": "^1.1.18"

@@ -6,7 +6,7 @@ import { lerp } from '../../math/math';
  * @return {Function}
  */
 const draw = (endValue, { element, computed }) => {
-  const startValue = parseFloat(computed.strokeDashoffset);
+  const startValue = parseFloat(computed.draw);
 
   const length = element.getTotalLength();
   element.style.strokeDasharray = length;

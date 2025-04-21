@@ -13,7 +13,7 @@ export default function selector(elements) {
   ) {
     return elements;
   } else if (elements instanceof Array) {
-    if (elements.every((element) => typeof element === 'number')) {
+    if (typeof elements[0] === 'number') {
       return elements;
     } else {
       const eles = [];
